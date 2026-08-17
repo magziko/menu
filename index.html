@@ -638,6 +638,7 @@ body.pub-design-dark .pub-more-menu{ background:#2A2825; border-color:#3A352D; }
       <button class="link-btn" id="customersBtn">العملاء</button>
       <button class="link-btn" id="importExcelBtn">استيراد من إكسيل</button>
       <button class="link-btn" id="exportExcelBtn">تصدير إلى إكسيل</button>
+      <button class="link-btn" id="notifPermBtn">🔔 تفعيل تنبيهات المتصفح</button>
       <button class="link-btn" id="restaurantSettingsBtn">إعدادات المطعم</button>
       <button class="link-btn hidden" id="adminPanelBtn" style="background:#3a2145; color:#e6c9ff;">🛠️ لوحة تحكم m@g</button>
       <input type="file" id="importExcelInput" accept=".xlsx,.xls" style="display:none;">
@@ -1233,6 +1234,7 @@ async function openDashboard(){
   await refreshData();
   subscribeToNewOrders();
   refreshNewOrdersCount();
+  setupNotificationPermission();
   show('dashboardScreen');
   document.getElementById('adminPanelBtn').classList.toggle('hidden', !isSuperAdmin);
   await checkSubscriptionExpiry();
@@ -1371,6 +1373,60 @@ async function refreshNewOrdersCount(){
   updateNewOrdersBadge();
 }
 
+function updateNotifPermBtn(){
+  const btn = document.getElementById('notifPermBtn');
+  if(!btn) return;
+  if(!('Notification' in window)){
+    btn.textContent = '🔕 المتصفح لا يدعم التنبيهات';
+    btn.disabled = true;
+    return;
+  }
+  if(Notification.permission === 'granted'){
+    btn.textContent = '🔔 تنبيهات المتصفح مفعّلة';
+  } else if(Notification.permission === 'denied'){
+    btn.textContent = '🔕 التنبيهات محظورة (فعّلها من إعدادات المتصفح)';
+  } else {
+    btn.textContent = '🔔 تفعيل تنبيهات المتصفح';
+  }
+}
+
+function setupNotificationPermission(){
+  const btn = document.getElementById('notifPermBtn');
+  if(!btn) return;
+  updateNotifPermBtn();
+  if(btn.dataset.bound) return;
+  btn.dataset.bound = '1';
+  btn.addEventListener('click', async ()=>{
+    if(!('Notification' in window)) return;
+    if(Notification.permission === 'default'){
+      await Notification.requestPermission();
+      updateNotifPermBtn();
+      if(Notification.permission === 'granted'){
+        new Notification('تم تفعيل التنبيهات ✅', { body: 'هتوصلك رسالة سطح مكتب مع كل أوردر جديد طول ما المتصفح شغال.' });
+      }
+    } else if(Notification.permission === 'denied'){
+      toast('التنبيهات محظورة من إعدادات المتصفح — لازم تفعّلها يدويًا من هناك');
+    } else {
+      updateNotifPermBtn();
+    }
+  });
+}
+
+function showDesktopOrderNotification(orderRow){
+  if(!('Notification' in window) || Notification.permission !== 'granted') return;
+  try{
+    const custName = orderRow && orderRow.customer_name ? orderRow.customer_name : 'عميل';
+    const typeLabel = orderRow && orderRow.order_type === 'delivery' ? 'توصيل' : 'استلام';
+    const n = new Notification('طلب جديد! 🔔', {
+      body: `من ${custName} — ${typeLabel}${orderRow && orderRow.total != null ? ` — ${orderRow.total} جنيه` : ''}`,
+      icon: (restaurant && restaurant.logo_url) ? restaurant.logo_url : undefined,
+      tag: 'new-order-' + (orderRow && orderRow.id ? orderRow.id : Date.now()),
+      renotify: true
+    });
+    n.onclick = ()=>{ window.focus(); n.close(); };
+  }catch(e){}
+}
+
 function playNewOrderSound(){
   try{
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1400,6 +1456,7 @@ function subscribeToNewOrders(){
       newOrdersCount++;
       updateNewOrdersBadge();
       playNewOrderSound();
+      showDesktopOrderNotification(payload.new);
       toast(`طلب جديد من ${payload.new && payload.new.customer_name ? payload.new.customer_name : 'عميل'}! 🔔`);
     })
     .on('postgres_changes', {

@@ -2255,6 +2255,15 @@ async function openAdminPanel(){
   overlay.innerHTML = `
     <div class="modal" style="max-width:820px;">
       <h3>🛠️ لوحة تحكم m@g <span style="opacity:.7; font-size:13px;">التحكم في مميزات كل عميل</span></h3>
+      <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+        <input type="text" id="adminSearchInput" placeholder="بحث بالاسم أو الإيميل أو الرابط..." style="flex:1; min-width:200px; padding:8px 12px; border-radius:8px; border:1px solid rgba(255,255,255,.15); background:rgba(255,255,255,.04); color:inherit; font-family:var(--body); font-size:13px;">
+        <select id="adminSortSelect" style="padding:8px 10px; border-radius:8px; border:1px solid rgba(255,255,255,.15); background:rgba(255,255,255,.04); color:inherit; font-family:var(--body); font-size:13px;">
+          <option value="created_desc">الأحدث انضمامًا</option>
+          <option value="sub_expiry_asc">الأقرب لانتهاء الاشتراك</option>
+          <option value="name_asc">الاسم (أ-ي)</option>
+        </select>
+        <button type="button" class="btn-export-sm" id="adminExportExcelBtn">📥 تصدير Excel</button>
+      </div>
       <div class="admin-table-wrap" id="adminTableWrap"><div class="orders-empty">جارِ التحميل...</div></div>
       <div class="modal-actions">
         <button class="btn-cancel" id="adminCloseBtn">إغلاق</button>
@@ -2363,6 +2372,7 @@ async function openAdminPanel(){
 
   wrap.innerHTML = allRestaurants.map((r, idx)=>rowHtml(r, idx)).join('');
 
+  function bindRowEvents(){
   wrap.querySelectorAll('.admin-reset-pw-btn').forEach(btn=>{
     btn.addEventListener('click', async ()=>{
       const email = btn.dataset.email;
@@ -2433,6 +2443,75 @@ async function openAdminPanel(){
         toast('تم الحفظ');
       });
     });
+  });
+  }
+  bindRowEvents();
+
+  function sortSubExpiryValue(r){
+    // من غير تاريخ اشتراك يتحط آخر القائمة دايمًا (قيمة كبيرة جدًا)
+    if(!r.subscription_end_date) return Infinity;
+    return new Date(r.subscription_end_date + 'T23:59:59').getTime();
+  }
+
+  function getFilteredSorted(){
+    const q = (searchInput.value || '').trim().toLowerCase();
+    let list = allRestaurants;
+    if(q){
+      list = list.filter(r=>{
+        const email = (emailByOwner[r.owner_id] || '').toLowerCase();
+        return (r.name || '').toLowerCase().includes(q) ||
+               (r.slug || '').toLowerCase().includes(q) ||
+               email.includes(q);
+      });
+    }
+    const sortMode = sortSelect.value;
+    list = list.slice();
+    if(sortMode === 'sub_expiry_asc'){
+      list.sort((a,b)=> sortSubExpiryValue(a) - sortSubExpiryValue(b));
+    } else if(sortMode === 'name_asc'){
+      list.sort((a,b)=> (a.name || '').localeCompare(b.name || '', 'ar'));
+    } else {
+      list.sort((a,b)=> new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    }
+    return list;
+  }
+
+  function renderTable(){
+    const list = getFilteredSorted();
+    if(list.length === 0){
+      wrap.innerHTML = `<div class="orders-empty">لا توجد نتائج مطابقة</div>`;
+      return;
+    }
+    wrap.innerHTML = list.map((r, idx)=>rowHtml(r, idx)).join('');
+    bindRowEvents();
+  }
+
+  const searchInput = overlay.querySelector('#adminSearchInput');
+  const sortSelect = overlay.querySelector('#adminSortSelect');
+  searchInput.addEventListener('input', renderTable);
+  sortSelect.addEventListener('change', renderTable);
+
+  overlay.querySelector('#adminExportExcelBtn').addEventListener('click', ()=>{
+    const list = getFilteredSorted();
+    const rows = [[ 'الاسم', 'النوع', 'الرابط', 'الإيميل', 'الباقة', 'تاريخ الانضمام', 'مدة Demo (أيام)', 'تاريخ انتهاء الاشتراك', 'الحساب معلّق؟' ]];
+    list.forEach(r=>{
+      rows.push([
+        r.name || '',
+        r.business_type === 'store' ? 'متجر' : 'مطعم',
+        r.slug || '',
+        emailByOwner[r.owner_id] || '',
+        r.feature_plan === 'menu_only' ? 'منيو فقط' : 'منيو + طلبات',
+        new Date(r.created_at).toLocaleDateString('ar-EG'),
+        r.demo_days ?? '',
+        r.subscription_end_date || '',
+        r.account_suspended ? 'نعم' : 'لا'
+      ]);
+    });
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'العملاء');
+    const dateTag = new Date().toISOString().slice(0,10);
+    XLSX.writeFile(wb, `mag-عملاء-${dateTag}.xlsx`);
   });
 }
 

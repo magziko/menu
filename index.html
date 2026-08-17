@@ -91,6 +91,10 @@ body{margin:0; font-family:var(--body); background:var(--ink); color:var(--ink);
 .topbar-actions{display:flex; gap:10px; flex-wrap:wrap;}
 .link-btn{ background:#2A2825; color:var(--paper); border:1px solid #454138; font-family:var(--body); font-weight:700; font-size:13px; padding:9px 16px; border-radius:6px; cursor:pointer; }
 .link-btn:hover{border-color:var(--stone);}
+#notifPermBtn.notif-granted{ background:#1f4d2e; border-color:#3a8f5a; color:#c8f0d6; }
+#notifPermBtn.notif-denied{ background:#4d1f1f; border-color:var(--danger); color:#f0c8c8; }
+#notifPermBtn.notif-default{ background:var(--ember); border-color:var(--ember-dark); color:var(--paper); animation:notifPulse 1.6s ease-in-out infinite; }
+@keyframes notifPulse{ 0%,100%{ opacity:1; } 50%{ opacity:0.6; } }
 .link-btn-split{ display:inline-flex; }
 .link-btn-split .split-copy{ border-radius:6px 0 0 6px; border-left:none; }
 .link-btn-split .split-open{ border-radius:0 6px 6px 0; padding:9px 12px; }
@@ -407,7 +411,10 @@ body.pub-menu-only .add-to-cart-btn{ display:none !important; }
 .trial-close-btn{ position:absolute; top:10px; left:10px; width:30px; height:30px; border-radius:50%; background:rgba(255,255,255,.08); color:#fff; border:none; font-size:16px; cursor:pointer; display:none; align-items:center; justify-content:center; }
 .trial-close-btn.show{ display:flex; }
 .admin-table-wrap{ max-height:65vh; overflow:auto; }
-.admin-restaurant-row{ display:flex; flex-wrap:wrap; align-items:center; gap:14px; padding:14px; border:1px solid rgba(255,255,255,.08); border-radius:12px; margin-bottom:10px; background:rgba(255,255,255,.02); }
+.admin-restaurant-row{ display:flex; flex-wrap:wrap; align-items:center; gap:14px; padding:14px 14px 14px 18px; border:1px solid rgba(255,255,255,.14); border-right:4px solid var(--ember); border-radius:12px; margin-bottom:16px; background:rgba(255,255,255,.02); }
+.admin-restaurant-row:nth-child(even){ background:rgba(255,255,255,.055); }
+.admin-restaurant-row + .admin-restaurant-row{ margin-top:2px; }
+.admin-r-num{ font-weight:800; font-size:13px; color:var(--ember); background:rgba(184,57,14,.15); border-radius:999px; padding:3px 10px; align-self:flex-start; flex-shrink:0; }
 .admin-r-name{ font-weight:800; font-size:15px; min-width:160px; }
 .admin-r-meta{ font-size:12px; color:var(--stone); min-width:110px; }
 .admin-toggle-group{ display:flex; align-items:center; gap:6px; font-size:12.5px; }
@@ -756,6 +763,7 @@ let previewCategoryId = null;
 let pendingImage = null;
 let newOrdersCount = 0;
 let ordersChannel = null;
+let orderAlertLoopId = null;
 
 /* ================= PWA install (save menu to home screen) ================= */
 let deferredInstallPrompt = null;
@@ -1129,6 +1137,7 @@ document.getElementById('forgotPasswordLink').addEventListener('click', async ()
 });
 
 document.getElementById('signOutLink').addEventListener('click', async ()=>{
+  stopOrderAlertLoop();
   await sb.auth.signOut();
   currentUser = null; restaurant = null;
   document.getElementById('authEmail').value='';
@@ -1376,17 +1385,22 @@ async function refreshNewOrdersCount(){
 function updateNotifPermBtn(){
   const btn = document.getElementById('notifPermBtn');
   if(!btn) return;
+  btn.classList.remove('notif-granted', 'notif-denied', 'notif-default');
   if(!('Notification' in window)){
     btn.textContent = '🔕 المتصفح لا يدعم التنبيهات';
     btn.disabled = true;
+    btn.classList.add('notif-denied');
     return;
   }
   if(Notification.permission === 'granted'){
-    btn.textContent = '🔔 تنبيهات المتصفح مفعّلة';
+    btn.textContent = '✅ تنبيهات المتصفح مفعّلة (اضغط للتجربة)';
+    btn.classList.add('notif-granted');
   } else if(Notification.permission === 'denied'){
-    btn.textContent = '🔕 التنبيهات محظورة (فعّلها من إعدادات المتصفح)';
+    btn.textContent = '⛔ التنبيهات محظورة — فعّلها من إعدادات المتصفح';
+    btn.classList.add('notif-denied');
   } else {
-    btn.textContent = '🔔 تفعيل تنبيهات المتصفح';
+    btn.textContent = '🔔 اضغط هنا لتفعيل تنبيهات المتصفح';
+    btn.classList.add('notif-default');
   }
 }
 
@@ -1394,22 +1408,94 @@ function setupNotificationPermission(){
   const btn = document.getElementById('notifPermBtn');
   if(!btn) return;
   updateNotifPermBtn();
+  // لو المستخدم غيّر الإذن من إعدادات المتصفح مباشرة (مش من الزرار)، نحدّث شكل الزرار تلقائيًا
+  if('permissions' in navigator && navigator.permissions.query){
+    navigator.permissions.query({ name: 'notifications' }).then(status=>{
+      status.onchange = updateNotifPermBtn;
+    }).catch(()=>{});
+  }
   if(btn.dataset.bound) return;
   btn.dataset.bound = '1';
-  btn.addEventListener('click', async ()=>{
+  btn.addEventListener('click', ()=>{
     if(!('Notification' in window)) return;
     if(Notification.permission === 'default'){
+      showNotifPermModal('ask');
+    } else if(Notification.permission === 'denied'){
+      showNotifPermModal('blocked');
+    } else {
+      showNotifPermModal('granted');
+    }
+  });
+}
+
+function showNotifPermModal(mode){
+  const existing = document.getElementById('notifPermModalOverlay');
+  if(existing) existing.remove();
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.id = 'notifPermModalOverlay';
+
+  if(mode === 'ask'){
+    overlay.innerHTML = `
+      <div class="modal" style="text-align:center; max-width:380px;">
+        <h3>🔔 فعّل تنبيهات الطلبات</h3>
+        <div class="orders-empty" style="padding:0 0 16px;">هيوصلك إشعار على سطح المكتب مع كل أوردر جديد أول ما يوصل، حتى لو التاب مش في الفوكس. المتصفح هيسألك للإذن بعد شوية — اضغط "سماح / Allow".</div>
+        <div class="modal-actions">
+          <button class="btn-cancel" id="notifModalCancelBtn">إلغاء</button>
+          <button class="btn-confirm" id="notifModalAskBtn">تفعيل الإشعارات الآن</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', (e)=>{ if(e.target===overlay) overlay.remove(); });
+    overlay.querySelector('#notifModalCancelBtn').addEventListener('click', ()=> overlay.remove());
+    overlay.querySelector('#notifModalAskBtn').addEventListener('click', async ()=>{
+      overlay.remove();
       await Notification.requestPermission();
       updateNotifPermBtn();
       if(Notification.permission === 'granted'){
         new Notification('تم تفعيل التنبيهات ✅', { body: 'هتوصلك رسالة سطح مكتب مع كل أوردر جديد طول ما المتصفح شغال.' });
+      } else if(Notification.permission === 'denied'){
+        toast('تم رفض الإذن — تقدر تفعّله لاحقًا من إعدادات المتصفح');
       }
-    } else if(Notification.permission === 'denied'){
-      toast('التنبيهات محظورة من إعدادات المتصفح — لازم تفعّلها يدويًا من هناك');
-    } else {
-      updateNotifPermBtn();
-    }
-  });
+    });
+  } else if(mode === 'blocked'){
+    overlay.innerHTML = `
+      <div class="modal" style="text-align:center; max-width:420px;">
+        <h3>⛔ الإشعارات محظورة</h3>
+        <div class="orders-empty" style="padding:0 0 12px;">المتصفح ما بيسمحش بإعادة السؤال تلقائيًا بعد الحظر، لازم تفعّلها يدويًا بخطوات بسيطة:</div>
+        <div class="orders-empty" style="text-align:right; padding:0 0 16px; line-height:1.9;">
+          1️⃣ اضغط على أيقونة القفل 🔒 (أو ⓘ) بجانب رابط الموقع فوق في المتصفح<br>
+          2️⃣ دوّر على "Notifications" وحوّلها لـ "Allow"<br>
+          3️⃣ ارجع للصفحة واعمل تحديث (Reload)
+        </div>
+        <div class="modal-actions">
+          <button class="btn-cancel" id="notifModalCloseBtn">تمام</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', (e)=>{ if(e.target===overlay) overlay.remove(); });
+    overlay.querySelector('#notifModalCloseBtn').addEventListener('click', ()=> overlay.remove());
+  } else if(mode === 'granted'){
+    overlay.innerHTML = `
+      <div class="modal" style="text-align:center; max-width:420px;">
+        <h3>✅ التنبيهات مفعّلة بالفعل</h3>
+        <div class="orders-empty" style="text-align:right; padding:0 0 16px; line-height:1.9;">
+          🔸 تأكد إن وضع "Focus Assist / التركيز" في Windows مقفول<br>
+          🔸 من Windows Settings ← System ← Notifications، تأكد إن Chrome مسموحله يبعت إشعارات<br>
+          🔸 جرّب تصغّر نافذة Chrome بدل ما تقفلها
+        </div>
+        <div class="modal-actions">
+          <button class="btn-cancel" id="notifModalCloseBtn">تمام</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', (e)=>{ if(e.target===overlay) overlay.remove(); });
+    overlay.querySelector('#notifModalCloseBtn').addEventListener('click', ()=> overlay.remove());
+    try{
+      new Notification('تجربة الإشعار 🔔', { body: 'لو شفت الرسالة دي، التنبيهات شغالة تمام.' });
+    }catch(e){ console.error('Notification test failed:', e); }
+    startOrderAlertLoop();
+  }
 }
 
 function showDesktopOrderNotification(orderRow){
@@ -1424,24 +1510,39 @@ function showDesktopOrderNotification(orderRow){
       renotify: true
     });
     n.onclick = ()=>{ window.focus(); n.close(); };
-  }catch(e){}
+  }catch(e){ console.error('showDesktopOrderNotification failed:', e); }
 }
 
 function playNewOrderSound(){
   try{
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    [0, 0.18].forEach(delay=>{
+    // صفارة إنذار من نغمتين متبادلين، صوت أعلى ونوع موجة "square" أقرب لصوت جرس/إنذار مزعج
+    [0, 0.15, 0.3, 0.45].forEach((delay, i)=>{
       const o = ctx.createOscillator();
       const g = ctx.createGain();
       o.connect(g); g.connect(ctx.destination);
-      o.frequency.value = 880;
+      o.type = 'square';
+      o.frequency.value = i % 2 === 0 ? 1050 : 700;
       g.gain.setValueAtTime(0.0001, ctx.currentTime + delay);
-      g.gain.exponentialRampToValueAtTime(0.2, ctx.currentTime + delay + 0.02);
-      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + delay + 0.35);
+      g.gain.exponentialRampToValueAtTime(0.5, ctx.currentTime + delay + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + delay + 0.14);
       o.start(ctx.currentTime + delay);
-      o.stop(ctx.currentTime + delay + 0.4);
+      o.stop(ctx.currentTime + delay + 0.15);
     });
   }catch(e){}
+}
+
+function startOrderAlertLoop(){
+  if(orderAlertLoopId) return; // شغالة بالفعل، ملحقاش نبدأ لوب تاني
+  playNewOrderSound();
+  orderAlertLoopId = setInterval(playNewOrderSound, 2000);
+}
+
+function stopOrderAlertLoop(){
+  if(orderAlertLoopId){
+    clearInterval(orderAlertLoopId);
+    orderAlertLoopId = null;
+  }
 }
 
 function subscribeToNewOrders(){
@@ -1455,7 +1556,7 @@ function subscribeToNewOrders(){
     }, (payload)=>{
       newOrdersCount++;
       updateNewOrdersBadge();
-      playNewOrderSound();
+      startOrderAlertLoop();
       showDesktopOrderNotification(payload.new);
       toast(`طلب جديد من ${payload.new && payload.new.customer_name ? payload.new.customer_name : 'عميل'}! 🔔`);
     })
@@ -1771,6 +1872,7 @@ document.getElementById('customersBtn').addEventListener('click', async ()=>{
 });
 
 document.getElementById('viewOrdersBtn').addEventListener('click', async ()=>{
+  stopOrderAlertLoop();
   const overlay = document.createElement('div');
   overlay.className = 'overlay';
   overlay.innerHTML = `
@@ -2202,17 +2304,19 @@ async function openAdminPanel(){
     return `<div style="font-size:11px; margin-top:3px; color:${expired ? '#e08a78' : 'var(--stone-light)'};">${expired ? '⚠️ الاشتراك منتهي منذ' : 'الاشتراك ينتهي في'} ${endStr}</div>`;
   }
 
-  function rowHtml(r){
+  function rowHtml(r, idx){
     const created = new Date(r.created_at).toLocaleDateString('ar-EG', { day:'numeric', month:'short', year:'numeric' });
     const ownerEmail = emailByOwner[r.owner_id] || '—';
     const isMainAdminAccount = ownerEmail.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase();
     return `
       <div class="admin-restaurant-row" data-id="${r.id}">
+        <div class="admin-r-num">#${idx + 1}</div>
         <div>
           <div class="admin-r-name">${escapeHtml(r.name)} <span style="opacity:.5; font-size:11px;">(${r.business_type === 'store' ? 'متجر' : 'مطعم'})</span></div>
           <div class="admin-r-meta">/${escapeHtml(r.slug)} · انضم ${created}</div>
           <div class="admin-r-meta" style="direction:ltr; text-align:right; margin-top:2px;">✉️ ${escapeHtml(ownerEmail)}</div>
           ${ownerEmail !== '—' ? `<button type="button" class="link-btn admin-reset-pw-btn" data-email="${escapeHtml(ownerEmail)}" style="font-size:11px; padding:3px 8px; margin-top:4px;">🔑 إرسال رابط تغيير كلمة المرور</button>` : ''}
+          <a href="${location.origin}${location.pathname}?r=${encodeURIComponent(r.slug)}" target="_blank" rel="noopener" class="link-btn admin-menu-link-btn" style="display:inline-block; font-size:11px; padding:3px 8px; margin-top:4px; text-decoration:none;">🔗 فتح المنيو</a>
         </div>
         <label class="admin-toggle-group" style="flex-direction:column; align-items:flex-start; gap:4px; width:100%;">
           <span style="font-weight:700;">نوع الباقة</span>
@@ -2257,7 +2361,7 @@ async function openAdminPanel(){
       </div>`;
   }
 
-  wrap.innerHTML = allRestaurants.map(rowHtml).join('');
+  wrap.innerHTML = allRestaurants.map((r, idx)=>rowHtml(r, idx)).join('');
 
   wrap.querySelectorAll('.admin-reset-pw-btn').forEach(btn=>{
     btn.addEventListener('click', async ()=>{

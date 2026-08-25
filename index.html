@@ -410,13 +410,24 @@ body.pub-menu-only .add-to-cart-btn{ display:none !important; }
 .trial-cta{ display:inline-flex; align-items:center; gap:8px; background:#25D366; color:#0a0c0f; font-weight:800; font-size:14px; padding:12px 22px; border-radius:999px; }
 .trial-close-btn{ position:absolute; top:10px; left:10px; width:30px; height:30px; border-radius:50%; background:rgba(255,255,255,.08); color:#fff; border:none; font-size:16px; cursor:pointer; display:none; align-items:center; justify-content:center; }
 .trial-close-btn.show{ display:flex; }
-.admin-table-wrap{ max-height:65vh; overflow:auto; }
-.admin-restaurant-row{ display:flex; flex-wrap:wrap; align-items:center; gap:14px; padding:14px 14px 14px 18px; border:1px solid rgba(255,255,255,.14); border-right:4px solid var(--ember); border-radius:12px; margin-bottom:16px; background:rgba(255,255,255,.02); }
-.admin-restaurant-row:nth-child(even){ background:rgba(255,255,255,.055); }
-.admin-restaurant-row + .admin-restaurant-row{ margin-top:2px; }
+.admin-table-wrap{ max-height:70vh; overflow:auto; }
+.admin-restaurant-row{ display:flex; flex-direction:column; gap:12px; padding:16px 20px; border:1px solid rgba(255,255,255,.14); border-right:4px solid var(--ember); border-radius:14px; margin-bottom:18px; background:rgba(255,255,255,.02); }
+.admin-restaurant-row:nth-child(even){ background:rgba(255,255,255,.045); }
 .admin-r-num{ font-weight:800; font-size:13px; color:var(--ember); background:rgba(184,57,14,.15); border-radius:999px; padding:3px 10px; align-self:flex-start; flex-shrink:0; }
-.admin-r-name{ font-weight:800; font-size:15px; min-width:160px; }
-.admin-r-meta{ font-size:12px; color:var(--stone); min-width:110px; }
+.admin-r-name{ font-weight:800; font-size:15px; }
+.admin-r-meta{ font-size:12px; color:var(--stone); }
+.admin-card-header{ display:flex; flex-wrap:wrap; align-items:flex-start; justify-content:space-between; gap:14px; }
+.admin-restaurant-row:not(.collapsed) .admin-card-header{ padding-bottom:12px; border-bottom:1px solid rgba(255,255,255,.1); }
+.admin-card-body{ display:flex; flex-direction:column; gap:12px; }
+.admin-restaurant-row.collapsed .admin-card-body{ display:none; }
+.admin-collapse-arrow{ display:inline-block; transition:transform .15s; opacity:.6; font-size:11px; }
+.admin-restaurant-row.collapsed .admin-collapse-arrow{ transform:rotate(-90deg); }
+.admin-section-title-row{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px; flex-wrap:wrap; }
+.admin-card-id{ display:flex; align-items:flex-start; gap:10px; }
+.admin-card-actions{ display:flex; flex-wrap:wrap; gap:6px; align-self:flex-start; }
+.admin-section{ border:1px solid rgba(255,255,255,.1); border-radius:10px; padding:12px 14px; background:rgba(255,255,255,.015); }
+.admin-section-title{ font-weight:800; font-size:12px; opacity:.7; margin-bottom:10px; letter-spacing:.2px; }
+.admin-plan-row{ display:flex; flex-wrap:wrap; gap:22px; align-items:flex-start; }
 .admin-toggle-group{ display:flex; align-items:center; gap:6px; font-size:12.5px; }
 .admin-plan-select option{ color:#000; background:#fff; }
 .admin-switch{ position:relative; width:38px; height:21px; flex-shrink:0; }
@@ -426,7 +437,12 @@ body.pub-menu-only .add-to-cart-btn{ display:none !important; }
 .admin-switch input:checked + .admin-switch-slider{ background:#8a4fd1; }
 .admin-switch input:checked + .admin-switch-slider:before{ transform:translateX(17px); }
 .admin-max-input{ width:52px; padding:3px 6px; border-radius:6px; border:1px solid var(--line); background:var(--paper); color:var(--ink); font-size:12px; text-align:center; }
+.admin-perm-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:8px 14px; }
+.admin-perm-item{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 12px; border-radius:8px; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); font-size:12.5px; transition:background .15s; }
+.admin-perm-item:has(input:checked){ background:rgba(138,79,209,.15); border-color:rgba(138,79,209,.35); }
+.admin-perm-item .lbl{ display:flex; align-items:center; gap:7px; }
 .modal{ background:#fff; width:min(420px,92vw); border-radius:14px; padding:22px; max-height:88vh; overflow-y:auto; }
+.modal.modal-wide{ width:min(1180px,95vw); }
 .modal h3{ font-family:var(--display); font-size:20px; margin:0 0 16px; color:var(--ink); }
 .img-drop{ border:2px dashed var(--stone-light); border-radius:10px; padding:16px; text-align:center; cursor:pointer; color:var(--stone); font-size:13px; }
 .img-drop img{max-width:100%; max-height:120px; border-radius:8px; margin-bottom:8px;}
@@ -748,7 +764,7 @@ body.pub-design-dark .pub-more-menu{ background:#2A2825; border-color:#3A352D; }
 <script>
 /* ================= Supabase config ================= */
 const SUPABASE_URL = 'https://vinpjtrxwqlmwppggbqy.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZpbnBqdHJ4d3FsbXdwcGdnYnF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNjkxMjksImV4cCI6MjA5OTk0NTEyOX0._NSrcUwhZQKOp_DTZkVJdz-Rjo-0QkhCyeAjR-XXB9w';
+const SUPABASE_ANON_KEY = 'sb_publishable_V9nPBwlDN28N3ImfS4NnGg_M4VbvJa4';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let currentUser = null;
@@ -1235,6 +1251,25 @@ function applyFeaturePlanUI(){
   });
 }
 
+/* صلاحيات دقيقة يتحكم فيها الأدمن لكل عميل على حدة (لوحة تحكم m@g) */
+function applyGranularRestrictionsUI(){
+  const restrictions = {
+    viewOrdersBtn: restaurant.restriction_orders_disabled,
+    viewStatsBtn: restaurant.restriction_stats_disabled,
+    publicLinkSplitBtn: restaurant.restriction_share_disabled,
+    showQrBtn: restaurant.restriction_share_disabled,
+    shareMenuBtn: restaurant.restriction_share_disabled,
+    deliveryZonesBtn: restaurant.restriction_delivery_zones_disabled,
+    customersBtn: restaurant.restriction_customers_disabled,
+    restaurantSettingsBtn: restaurant.restriction_settings_disabled,
+  };
+  Object.entries(restrictions).forEach(([id, restricted])=>{
+    if(!restricted) return; // بنخفي بس، مبنظهرش عشان منتعارضش مع applyFeaturePlanUI
+    const el = document.getElementById(id);
+    if(el) el.classList.add('hidden');
+  });
+}
+
 async function openDashboard(){
   show('loadingScreen');
   document.getElementById('dashRestaurantName').textContent = restaurant.name;
@@ -1252,6 +1287,7 @@ async function openDashboard(){
   if(restaurant.restriction_banner_enabled) showTrialExpiredBanner();
   applyExcelRestrictionUI();
   applyFeaturePlanUI();
+  applyGranularRestrictionsUI();
 }
 
 function applyExcelRestrictionUI(){
@@ -1974,7 +2010,7 @@ document.getElementById('viewOrdersBtn').addEventListener('click', async ()=>{
         <div class="o-contact-row">
           <span class="o-phone">${escapeHtml(o.customer_phone)}</span>${o.secondary_phone ? ` / <span class="o-phone">${escapeHtml(o.secondary_phone)}</span>` : ''}
           <button type="button" class="o-wa-btn" data-action="sendMenuWa" data-phone="${escapeHtml(o.customer_phone)}" data-name="${escapeHtml(o.customer_name)}" title="إرسال رابط المنيو للعميل عبر واتساب">📲 إرسال المنيو</button>
-          <button type="button" class="o-print-btn" data-action="printReceipt" data-order-id="${o.id}" title="طباعة الطلب / Print Order">🖨️ طباعة الطلب <span style="opacity:.75;">| Print Order</span></button>
+          ${restaurant.restriction_print_disabled ? '' : `<button type="button" class="o-print-btn" data-action="printReceipt" data-order-id="${o.id}" title="طباعة الطلب / Print Order">🖨️ طباعة الطلب <span style="opacity:.75;">| Print Order</span></button>`}
         </div>
         <div class="o-time">📍 ${escapeHtml(o.city || '')}${o.area ? ' — ' + escapeHtml(o.area) : ''}${o.delivery_fee != null ? ` <span class="o-fee">(رسوم التوصيل: ${Number(o.delivery_fee).toFixed(2)} EGP)</span>` : ''}</div>
         ${o.address ? `<div class="o-time">${escapeHtml(o.address)}</div>` : ''}
@@ -2153,6 +2189,7 @@ function buildReceiptHtml(order, lines, widthMm){
 }
 
 function openReceiptPreviewModal(order, lines){
+  if(restaurant.restriction_print_disabled){ toast('طباعة الطلبات غير متاحة في نسختك الحالية'); return; }
   const overlay = document.createElement('div');
   overlay.className = 'overlay';
   let widthMm = getSavedReceiptWidth();
@@ -2253,7 +2290,7 @@ async function openAdminPanel(){
   const overlay = document.createElement('div');
   overlay.className = 'overlay';
   overlay.innerHTML = `
-    <div class="modal" style="max-width:820px;">
+    <div class="modal modal-wide">
       <h3>🛠️ لوحة تحكم m@g <span style="opacity:.7; font-size:13px;">التحكم في مميزات كل عميل</span></h3>
       <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
         <input type="text" id="adminSearchInput" placeholder="بحث بالاسم أو الإيميل أو الرابط..." style="flex:1; min-width:200px; padding:8px 12px; border-radius:8px; border:1px solid rgba(255,255,255,.15); background:rgba(255,255,255,.04); color:inherit; font-family:var(--body); font-size:13px;">
@@ -2317,56 +2354,97 @@ async function openAdminPanel(){
     const created = new Date(r.created_at).toLocaleDateString('ar-EG', { day:'numeric', month:'short', year:'numeric' });
     const ownerEmail = emailByOwner[r.owner_id] || '—';
     const isMainAdminAccount = ownerEmail.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase();
+    const perm = (field, icon, label) => `
+        <label class="admin-perm-item">
+          <span class="lbl">${icon} ${label}</span>
+          <span class="admin-switch"><input type="checkbox" data-field="${field}" ${r[field] ? 'checked' : ''}><span class="admin-switch-slider"></span></span>
+        </label>`;
     return `
-      <div class="admin-restaurant-row" data-id="${r.id}">
-        <div class="admin-r-num">#${idx + 1}</div>
-        <div>
-          <div class="admin-r-name">${escapeHtml(r.name)} <span style="opacity:.5; font-size:11px;">(${r.business_type === 'store' ? 'متجر' : 'مطعم'})</span></div>
-          <div class="admin-r-meta">/${escapeHtml(r.slug)} · انضم ${created}</div>
-          <div class="admin-r-meta" style="direction:ltr; text-align:right; margin-top:2px;">✉️ ${escapeHtml(ownerEmail)}</div>
-          ${ownerEmail !== '—' ? `<button type="button" class="link-btn admin-reset-pw-btn" data-email="${escapeHtml(ownerEmail)}" style="font-size:11px; padding:3px 8px; margin-top:4px;">🔑 إرسال رابط تغيير كلمة المرور</button>` : ''}
-          <a href="${location.origin}${location.pathname}?r=${encodeURIComponent(r.slug)}" target="_blank" rel="noopener" class="link-btn admin-menu-link-btn" style="display:inline-block; font-size:11px; padding:3px 8px; margin-top:4px; text-decoration:none;">🔗 فتح المنيو</a>
+      <div class="admin-restaurant-row collapsed" data-id="${r.id}">
+        <div class="admin-card-header" data-action="toggleCollapse" style="cursor:pointer;">
+          <div class="admin-card-id">
+            <div class="admin-r-num">#${idx + 1}</div>
+            <div>
+              <div class="admin-r-name">${escapeHtml(r.name)} <span style="opacity:.5; font-size:11px;">(${r.business_type === 'store' ? 'متجر' : 'مطعم'})</span> <span class="admin-collapse-arrow">▾</span></div>
+              <div class="admin-r-meta">/${escapeHtml(r.slug)} · انضم ${created}</div>
+              <div class="admin-r-meta" style="direction:ltr; text-align:right; margin-top:2px;">✉️ ${escapeHtml(ownerEmail)}</div>
+            </div>
+          </div>
+          <div class="admin-card-actions">
+            ${ownerEmail !== '—' ? `<button type="button" class="link-btn admin-reset-pw-btn" data-email="${escapeHtml(ownerEmail)}" style="font-size:11px; padding:4px 9px;">🔑 تغيير كلمة المرور</button>` : ''}
+            <a href="${location.origin}${location.pathname}?r=${encodeURIComponent(r.slug)}" target="_blank" rel="noopener" class="link-btn admin-menu-link-btn" style="display:inline-block; font-size:11px; padding:4px 9px; text-decoration:none;">🔗 فتح المنيو</a>
+          </div>
         </div>
-        <label class="admin-toggle-group" style="flex-direction:column; align-items:flex-start; gap:4px; width:100%;">
-          <span style="font-weight:700;">نوع الباقة</span>
-          <select class="admin-plan-select" data-field="feature_plan" style="width:100%; padding:5px 8px; border-radius:6px; border:1px solid var(--line); background:var(--paper); color:var(--ink); font-size:12.5px; font-family:var(--body);">
-            <option value="full" ${(!r.feature_plan || r.feature_plan==='full') ? 'selected' : ''}>منيو + استلام الطلبات</option>
-            <option value="menu_only" ${r.feature_plan==='menu_only' ? 'selected' : ''}>منيو فقط (بدون طلبات)</option>
-          </select>
-        </label>
-        <label class="admin-toggle-group" style="flex-direction:column; align-items:flex-start; gap:4px;">
-          <span style="font-weight:700;">مدة الـ Demo (أيام)</span>
-          <input type="number" min="0" class="admin-max-input" data-field="demo_days" value="${r.demo_days ?? ''}" placeholder="بدون حد" style="width:70px;">
-          ${demoStatusHtml(r)}
-        </label>
-        ${isMainAdminAccount ? '' : `
-        <label class="admin-toggle-group" style="flex-direction:column; align-items:flex-start; gap:4px; background:rgba(24,88,201,.1); padding:6px 8px; border-radius:6px; border:1px solid rgba(24,88,201,.3);">
-          <span style="font-weight:700;">📅 تاريخ انتهاء الاشتراك</span>
-          <input type="date" class="admin-max-input" data-field="subscription_end_date" value="${r.subscription_end_date || ''}" style="width:150px; direction:ltr; text-align:center;">
-          <small style="opacity:.75;">عند انتهاء التاريخ يتم تعليق الحساب بالكامل تلقائيًا</small>
-          ${subExpiryStatusHtml(r)}
-        </label>
-        <label class="admin-toggle-group" style="background:rgba(166,57,43,.12); padding:6px 8px; border-radius:6px; border:1px solid rgba(166,57,43,.3);">
-          <span class="admin-switch"><input type="checkbox" data-field="account_suspended" ${r.account_suspended ? 'checked' : ''}><span class="admin-switch-slider"></span></span>
-          🚫 تعليق الحساب بالكامل
-        </label>`}
-        <label class="admin-toggle-group">
-          <span class="admin-switch"><input type="checkbox" data-field="restriction_banner_enabled" ${r.restriction_banner_enabled ? 'checked' : ''}><span class="admin-switch-slider"></span></span>
-          البانر الحاجب
-        </label>
-        <label class="admin-toggle-group">
-          <span class="admin-switch"><input type="checkbox" data-field="restriction_excel_disabled" ${r.restriction_excel_disabled ? 'checked' : ''}><span class="admin-switch-slider"></span></span>
-          تعطيل Excel
-        </label>
-        <label class="admin-toggle-group">
-          <span class="admin-switch"><input type="checkbox" data-field="restriction_watermark_enabled" ${r.restriction_watermark_enabled ? 'checked' : ''}><span class="admin-switch-slider"></span></span>
-          Watermark بالمنيو العام
-        </label>
-        <label class="admin-toggle-group">
-          <span class="admin-switch"><input type="checkbox" data-field="restriction_max_items_enabled" ${r.restriction_max_items_enabled ? 'checked' : ''}><span class="admin-switch-slider"></span></span>
-          حد أقصى للأصناف
-          <input type="number" min="1" class="admin-max-input" data-field="restriction_max_items_value" value="${r.restriction_max_items_value ?? 10}">
-        </label>
+
+        <div class="admin-card-body">
+        <div class="admin-section">
+          <div class="admin-section-title">📦 الباقة والاشتراك</div>
+          <div class="admin-plan-row">
+            <label class="admin-toggle-group" style="flex-direction:column; align-items:flex-start; gap:4px;">
+              <span style="font-weight:700;">نوع الباقة</span>
+              <select class="admin-plan-select" data-field="feature_plan" style="padding:5px 8px; border-radius:6px; border:1px solid var(--line); background:var(--paper); color:var(--ink); font-size:12.5px; font-family:var(--body);">
+                <option value="full" ${(!r.feature_plan || r.feature_plan==='full') ? 'selected' : ''}>منيو + استلام الطلبات</option>
+                <option value="menu_only" ${r.feature_plan==='menu_only' ? 'selected' : ''}>منيو فقط (بدون طلبات)</option>
+              </select>
+            </label>
+            <label class="admin-toggle-group" style="flex-direction:column; align-items:flex-start; gap:4px;">
+              <span style="font-weight:700;">مدة الـ Demo (أيام)</span>
+              <input type="number" min="0" class="admin-max-input" data-field="demo_days" value="${r.demo_days ?? ''}" placeholder="بدون حد" style="width:70px;">
+              ${demoStatusHtml(r)}
+            </label>
+            ${isMainAdminAccount ? '' : `
+            <label class="admin-toggle-group" style="flex-direction:column; align-items:flex-start; gap:4px; background:rgba(24,88,201,.1); padding:6px 8px; border-radius:6px; border:1px solid rgba(24,88,201,.3);">
+              <span style="font-weight:700;">📅 تاريخ انتهاء الاشتراك</span>
+              <input type="date" class="admin-max-input" data-field="subscription_end_date" value="${r.subscription_end_date || ''}" style="width:150px; direction:ltr; text-align:center;">
+              <small style="opacity:.75;">عند انتهاء التاريخ يتم تعليق الحساب تلقائيًا</small>
+              ${subExpiryStatusHtml(r)}
+            </label>
+            <label class="admin-toggle-group" style="background:rgba(166,57,43,.12); padding:6px 8px; border-radius:6px; border:1px solid rgba(166,57,43,.3); align-self:center;">
+              <span class="admin-switch"><input type="checkbox" data-field="account_suspended" ${r.account_suspended ? 'checked' : ''}><span class="admin-switch-slider"></span></span>
+              🚫 تعليق الحساب بالكامل
+            </label>`}
+          </div>
+        </div>
+
+        <div class="admin-section">
+          <div class="admin-section-title">⚙️ قيود عامة على النسخة</div>
+          <div class="admin-perm-grid">
+            ${perm('restriction_banner_enabled', '🚧', 'البانر الحاجب')}
+            ${perm('restriction_excel_disabled', '📄', 'تعطيل Excel')}
+            ${perm('restriction_watermark_enabled', '💧', 'Watermark بالمنيو العام')}
+            <label class="admin-perm-item">
+              <span class="lbl">🔢 حد أقصى للأصناف</span>
+              <span style="display:flex; align-items:center; gap:6px;">
+                <input type="number" min="1" class="admin-max-input" data-field="restriction_max_items_value" value="${r.restriction_max_items_value ?? 10}">
+                <span class="admin-switch"><input type="checkbox" data-field="restriction_max_items_enabled" ${r.restriction_max_items_enabled ? 'checked' : ''}><span class="admin-switch-slider"></span></span>
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <div class="admin-section">
+          <div class="admin-section-title-row">
+            <div class="admin-section-title" style="margin-bottom:0;">🔐 صلاحيات لوحة تحكم العميل</div>
+            <div style="display:flex; gap:6px;">
+              <button type="button" class="link-btn admin-lock-all-btn" style="font-size:11px; padding:3px 8px;">🔒 تقييد الكل</button>
+              <button type="button" class="link-btn admin-unlock-all-btn" style="font-size:11px; padding:3px 8px;">🔓 فتح الكل</button>
+            </div>
+          </div>
+          <div class="admin-perm-grid">
+            ${perm('restriction_prices_disabled', '💰', 'منع تعديل الأسعار')}
+            ${perm('restriction_images_disabled', '🖼️', 'منع تغيير صور الأصناف')}
+            ${perm('restriction_orders_disabled', '🧾', 'منع فتح شاشة الطلبات')}
+            ${perm('restriction_print_disabled', '🖨️', 'منع الطباعة')}
+            ${perm('restriction_stats_disabled', '📊', 'منع الاطلاع على الإحصائيات')}
+            ${perm('restriction_share_disabled', '🔗', 'منع نسخ الرابط / QR / المشاركة')}
+            ${perm('restriction_delivery_zones_disabled', '🚚', 'منع مناطق التوصيل')}
+            ${perm('restriction_customers_disabled', '👥', 'منع شاشة العملاء')}
+            ${perm('restriction_settings_disabled', '⚙️', 'منع الوصول لإعدادات المطعم بالكامل')}
+            ${perm('restriction_notif_settings_disabled', '📵', 'منع تعديل رقم واتساب التنبيهات')}
+            ${perm('restriction_delete_disabled', '🗑️', 'منع حذف الأصناف أو الفئات')}
+          </div>
+        </div>
+        </div>
       </div>`;
   }
 
@@ -2374,7 +2452,8 @@ async function openAdminPanel(){
 
   function bindRowEvents(){
   wrap.querySelectorAll('.admin-reset-pw-btn').forEach(btn=>{
-    btn.addEventListener('click', async ()=>{
+    btn.addEventListener('click', async (e)=>{
+      e.stopPropagation();
       const email = btn.dataset.email;
       if(!confirm(`إرسال رابط إعادة تعيين كلمة المرور إلى ${email}؟`)) return;
       btn.disabled = true;
@@ -2386,6 +2465,36 @@ async function openAdminPanel(){
       btn.textContent = originalText;
       if(rpErr){ toast('تعذر إرسال الرابط'); return; }
       toast('تم إرسال رابط تغيير كلمة المرور إلى بريد العميل');
+    });
+  });
+
+  wrap.querySelectorAll('.admin-menu-link-btn').forEach(a=>{
+    a.addEventListener('click', (e)=> e.stopPropagation());
+  });
+
+  wrap.querySelectorAll('[data-action="toggleCollapse"]').forEach(header=>{
+    header.addEventListener('click', ()=>{
+      header.closest('.admin-restaurant-row').classList.toggle('collapsed');
+    });
+  });
+
+  const CLIENT_PERM_FIELDS = ['restriction_prices_disabled','restriction_images_disabled','restriction_orders_disabled','restriction_print_disabled','restriction_stats_disabled','restriction_share_disabled','restriction_delivery_zones_disabled','restriction_customers_disabled','restriction_settings_disabled','restriction_notif_settings_disabled','restriction_delete_disabled'];
+
+  wrap.querySelectorAll('.admin-lock-all-btn, .admin-unlock-all-btn').forEach(btn=>{
+    btn.addEventListener('click', async (e)=>{
+      e.stopPropagation();
+      const row = btn.closest('.admin-restaurant-row');
+      const rId = row.dataset.id;
+      const lock = btn.classList.contains('admin-lock-all-btn');
+      const updatePayload = {};
+      CLIENT_PERM_FIELDS.forEach(f=> updatePayload[f] = lock);
+      const { error: updErr } = await sb.from('restaurants').update(updatePayload).eq('id', rId);
+      if(updErr){ toast('تعذر الحفظ'); return; }
+      CLIENT_PERM_FIELDS.forEach(f=>{
+        const cb = row.querySelector(`input[type="checkbox"][data-field="${f}"]`);
+        if(cb) cb.checked = lock;
+      });
+      toast(lock ? 'تم تقييد كل الصلاحيات' : 'تم فتح كل الصلاحيات');
     });
   });
 
@@ -2979,6 +3088,7 @@ document.getElementById('changePasswordLink').addEventListener('click', ()=>{
 });
 
 document.getElementById('restaurantSettingsBtn').addEventListener('click', ()=>{
+  if(restaurant.restriction_settings_disabled){ toast('إعدادات المطعم غير متاحة في نسختك الحالية'); return; }
   let pendingLogo = restaurant.logo_url || null;
   const originalLogoUrl = restaurant.logo_url || null;
   let pendingBizType = restaurant.business_type === 'store' ? 'store' : 'restaurant';
@@ -3041,8 +3151,9 @@ document.getElementById('restaurantSettingsBtn').addEventListener('click', ()=>{
       <div class="field">
         <label>إشعار واتساب بالطلبات الجديدة (اختياري)</label>
         <small>لتفعيل الإشعار: احفظ رقم <span dir="ltr" style="font-family:var(--mono);">+34 684 74 26 79</span> في هاتفك، وابعتله على واتساب رسالة نصها بالإنجليزية بالظبط: <span dir="ltr" style="font-family:var(--mono);">I allow callmebot to send me messages</span>، وهيردلك برسالة فيها الرمز الخاص بيك (apikey). اكتب رقمك ورمزك تحت.</small>
-        <input type="text" id="notifPhoneInput" value="${restaurant.notification_phone ? escapeHtml(restaurant.notification_phone) : ''}" placeholder="رقم واتساب بصيغة دولية: 201154361888" style="margin-top:8px; direction:ltr;">
-        <input type="text" id="notifApikeyInput" value="${restaurant.notification_apikey ? escapeHtml(restaurant.notification_apikey) : ''}" placeholder="الرمز (apikey) اللي وصلك من البوت" style="margin-top:8px; direction:ltr;">
+        <input type="text" id="notifPhoneInput" value="${restaurant.notification_phone ? escapeHtml(restaurant.notification_phone) : ''}" placeholder="رقم واتساب بصيغة دولية: 201154361888" style="margin-top:8px; direction:ltr;" ${restaurant.restriction_notif_settings_disabled ? 'disabled title="تعديل رقم التنبيهات غير متاح في نسختك الحالية"' : ''}>
+        <input type="text" id="notifApikeyInput" value="${restaurant.notification_apikey ? escapeHtml(restaurant.notification_apikey) : ''}" placeholder="الرمز (apikey) اللي وصلك من البوت" style="margin-top:8px; direction:ltr;" ${restaurant.restriction_notif_settings_disabled ? 'disabled title="تعديل رقم التنبيهات غير متاح في نسختك الحالية"' : ''}>
+        ${restaurant.restriction_notif_settings_disabled ? `<small style="color:var(--stone); margin-top:4px; display:block;">🔒 رقم استلام إشعارات الطلبات مقفول من الإدارة.</small>` : ''}
       </div>
       <div class="field">
         <label>الصيانة</label>
@@ -3733,7 +3844,7 @@ function renderCategories(){
         <span class="count">${count}</span>
         <span style="display:flex;">
           <button class="icon-btn" data-action="rename" title="تعديل الاسم">✎</button>
-          <button class="icon-btn danger" data-action="delete" title="حذف">🗑</button>
+          ${restaurant.restriction_delete_disabled ? '' : `<button class="icon-btn danger" data-action="delete" title="حذف">🗑</button>`}
         </span>
       </span>`;
     div.addEventListener('click', (e)=>{
@@ -3742,7 +3853,8 @@ function renderCategories(){
       renderDashboard();
     });
     div.querySelector('[data-action="rename"]').addEventListener('click', (e)=>{ e.stopPropagation(); openCategoryModal(cat); });
-    div.querySelector('[data-action="delete"]').addEventListener('click', (e)=>{ e.stopPropagation(); deleteCategory(cat.id); });
+    const catDeleteBtn = div.querySelector('[data-action="delete"]');
+    if(catDeleteBtn) catDeleteBtn.addEventListener('click', (e)=>{ e.stopPropagation(); deleteCategory(cat.id); });
     wrap.appendChild(div);
   });
   initCategorySortable();
@@ -3862,11 +3974,12 @@ function buildItemCard(item){
       <div class="item-tools">
         <button data-action="edit">تعديل</button>
         <button data-action="toggleAvailability">${isAvailable ? 'إخفاء مؤقتًا (نفذت الكمية)' : 'إظهار مرة أخرى'}</button>
-        <button data-action="delete" class="danger">حذف</button>
+        ${restaurant.restriction_delete_disabled ? '' : `<button data-action="delete" class="danger">حذف</button>`}
       </div>
     </div>`;
   div.querySelector('[data-action="edit"]').addEventListener('click', ()=> openItemModal(item));
-  div.querySelector('[data-action="delete"]').addEventListener('click', ()=> deleteItem(item.id));
+  const itemDeleteBtn = div.querySelector('[data-action="delete"]');
+  if(itemDeleteBtn) itemDeleteBtn.addEventListener('click', ()=> deleteItem(item.id));
   div.querySelector('[data-action="toggleAvailability"]').addEventListener('click', ()=> toggleItemAvailability(item, !isAvailable));
   return div;
 }
@@ -3937,6 +4050,7 @@ function renderTicket(){
 
 /* ================= category CRUD ================= */
 async function deleteCategory(id){
+  if(restaurant.restriction_delete_disabled){ toast('حذف الفئات غير متاح في نسختك الحالية'); return; }
   const cat = categories.find(c=>c.id===id);
   if(!confirm(`حذف فئة "${cat.name}" وكل ${biz(restaurant.business_type,'itemsDef')} بداخلها؟`)) return;
   const catItemImages = items.filter(i=>i.category_id===id && i.image_url).map(i=>i.image_url);
@@ -4189,6 +4303,7 @@ async function migrateLegacyImages(){
 }
 
 async function deleteItem(id){
+  if(restaurant.restriction_delete_disabled){ toast('حذف الأصناف غير متاح في نسختك الحالية'); return; }
   if(!confirm(`حذف هذا ${biz(restaurant.business_type,'itemDef')}؟`)) return;
   const item = items.find(i=>i.id===id);
   const { error } = await sb.from('items').delete().eq('id', id);
@@ -4288,13 +4403,15 @@ function openItemModal(existing){
   const pricingTypeSelect = overlay.querySelector('#itemPricingType');
   const sizesRowsWrap = overlay.querySelector('#sizesRowsWrap');
 
+  const pricesLocked = !!restaurant.restriction_prices_disabled;
+
   function addSizeRow(sizeName, sizeNameEn, price){
     const row = document.createElement('div');
     row.className = 'zone-add-row';
     row.style.marginTop = '8px';
     row.innerHTML = `
       <input type="text" class="size-name-input" placeholder="اسم الحجم (مثال: وسط)" value="${sizeName ? escapeHtml(sizeName) : ''}" style="flex:1;">
-      <input type="number" class="size-price-input" placeholder="السعر" step="0.01" value="${price != null ? price : ''}" style="width:100px;">
+      <input type="number" class="size-price-input" placeholder="السعر" step="0.01" value="${price != null ? price : ''}" style="width:100px;" ${pricesLocked ? 'disabled title="تعديل الأسعار غير متاح في نسختك الحالية"' : ''}>
       <button type="button" data-action="removeSize" style="background:none; border:1px solid var(--line); border-radius:6px; padding:9px 12px; cursor:pointer; color:var(--stone);">حذف</button>
     `;
     row.querySelector('[data-action="removeSize"]').addEventListener('click', ()=> row.remove());
@@ -4327,10 +4444,29 @@ function openItemModal(existing){
   overlay.querySelector('#addSizeRowBtn').addEventListener('click', ()=> addSizeRow('', '', null));
   updatePricingTypeUI();
 
+  if(pricesLocked){
+    const itemPriceEl = overlay.querySelector('#itemPrice');
+    const itemOldPriceEl = overlay.querySelector('#itemOldPrice');
+    [itemPriceEl, itemOldPriceEl].forEach(inp=>{
+      if(!inp) return;
+      inp.disabled = true;
+      inp.title = 'تعديل الأسعار غير متاح في نسختك الحالية';
+    });
+  }
+
+  const imagesLocked = !!restaurant.restriction_images_disabled;
   const imgDrop = overlay.querySelector('#imgDrop');
   const imgInput = overlay.querySelector('#imgInput');
   const removeImgBtn = overlay.querySelector('#removeImgBtn');
-  imgDrop.addEventListener('click', ()=> imgInput.click());
+  if(imagesLocked){
+    imgDrop.style.cursor = 'not-allowed';
+    imgDrop.style.opacity = '.6';
+    removeImgBtn.style.display = 'none';
+  }
+  imgDrop.addEventListener('click', ()=>{
+    if(imagesLocked){ toast('تغيير صور الأصناف غير متاح في نسختك الحالية'); return; }
+    imgInput.click();
+  });
   imgInput.addEventListener('change', async ()=>{
     const file = imgInput.files[0];
     if(!file) return;

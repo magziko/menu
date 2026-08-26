@@ -441,6 +441,14 @@ body.pub-menu-only .add-to-cart-btn{ display:none !important; }
 .admin-perm-item{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 12px; border-radius:8px; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); font-size:12.5px; transition:background .15s; }
 .admin-perm-item:has(input:checked){ background:rgba(138,79,209,.15); border-color:rgba(138,79,209,.35); }
 .admin-perm-item .lbl{ display:flex; align-items:center; gap:7px; }
+.admin-tabs{ display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+.admin-tab-btn{ background:var(--paper-dim); color:var(--stone); border:1.5px solid var(--line); font-family:var(--body); font-weight:700; font-size:13px; padding:8px 16px; border-radius:8px; cursor:pointer; }
+.admin-tab-btn:hover{ color:var(--ink); }
+.admin-tab-btn.active{ background:var(--ember); border-color:var(--ember-dark); color:#fff; }
+.admin-code-form{ display:flex; flex-wrap:wrap; gap:10px; align-items:flex-end; background:var(--paper-dim); border:1px solid var(--line); border-radius:12px; padding:14px; margin-bottom:16px; }
+.admin-list-row{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; padding:12px 14px; border:1px solid var(--line); border-right:4px solid var(--stone-light); border-radius:10px; margin-bottom:10px; }
+.admin-code-val{ font-family:var(--mono); direction:ltr; font-weight:700; font-size:13px; background:var(--paper-dim); padding:3px 8px; border-radius:6px; }
+.admin-status-pill{ font-size:11px; font-weight:800; padding:3px 10px; border-radius:999px; white-space:nowrap; }
 .modal{ background:#fff; width:min(420px,92vw); border-radius:14px; padding:22px; max-height:88vh; overflow-y:auto; }
 .modal.modal-wide{ width:min(1180px,95vw); }
 .modal h3{ font-family:var(--display); font-size:20px; margin:0 0 16px; color:var(--ink); }
@@ -755,6 +763,7 @@ body.pub-design-dark .pub-more-menu{ background:#2A2825; border-color:#3A352D; }
     <div id="trackStatusWrap"></div>
     <div id="trackItemsWrap" style="text-align:right; margin-top:22px;"></div>
     <div id="trackTotalWrap" style="margin-top:12px; font-weight:700; color:var(--ink); text-align:left;"></div>
+    <div id="trackContactWrap" style="margin-top:16px; display:flex; gap:8px; justify-content:center; flex-wrap:wrap;"></div>
     <div style="margin-top:18px; font-size:11px; color:var(--stone);">آخر تحديث: <span id="trackUpdatedAt"></span></div>
   </div>
 </div>
@@ -2292,16 +2301,48 @@ async function openAdminPanel(){
   overlay.innerHTML = `
     <div class="modal modal-wide">
       <h3>🛠️ لوحة تحكم m@g <span style="opacity:.7; font-size:13px;">التحكم في مميزات كل عميل</span></h3>
-      <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
-        <input type="text" id="adminSearchInput" placeholder="بحث بالاسم أو الإيميل أو الرابط..." style="flex:1; min-width:200px; padding:8px 12px; border-radius:8px; border:1px solid rgba(255,255,255,.15); background:rgba(255,255,255,.04); color:inherit; font-family:var(--body); font-size:13px;">
-        <select id="adminSortSelect" style="padding:8px 10px; border-radius:8px; border:1px solid rgba(255,255,255,.15); background:rgba(255,255,255,.04); color:inherit; font-family:var(--body); font-size:13px;">
-          <option value="created_desc">الأحدث انضمامًا</option>
-          <option value="sub_expiry_asc">الأقرب لانتهاء الاشتراك</option>
-          <option value="name_asc">الاسم (أ-ي)</option>
-        </select>
-        <button type="button" class="btn-export-sm" id="adminExportExcelBtn">📥 تصدير Excel</button>
+      <div class="admin-tabs">
+        <button type="button" class="admin-tab-btn active" data-tab="restaurants">🏬 المطاعم</button>
+        <button type="button" class="admin-tab-btn" data-tab="codes">🎫 أكواد التسجيل</button>
+        <button type="button" class="admin-tab-btn" data-tab="users">👥 المستخدمون</button>
       </div>
-      <div class="admin-table-wrap" id="adminTableWrap"><div class="orders-empty">جارِ التحميل...</div></div>
+
+      <div id="adminPanelRestaurants" class="admin-tab-panel">
+        <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+          <input type="text" id="adminSearchInput" placeholder="بحث بالاسم أو الإيميل أو الرابط..." style="flex:1; min-width:200px; padding:8px 12px; border-radius:8px; border:1px solid rgba(255,255,255,.15); background:rgba(255,255,255,.04); color:inherit; font-family:var(--body); font-size:13px;">
+          <select id="adminSortSelect" style="padding:8px 10px; border-radius:8px; border:1px solid rgba(255,255,255,.15); background:rgba(255,255,255,.04); color:inherit; font-family:var(--body); font-size:13px;">
+            <option value="created_desc">الأحدث انضمامًا</option>
+            <option value="sub_expiry_asc">الأقرب لانتهاء الاشتراك</option>
+            <option value="name_asc">الاسم (أ-ي)</option>
+          </select>
+          <button type="button" class="btn-export-sm" id="adminExportExcelBtn">📥 تصدير Excel</button>
+        </div>
+        <div class="admin-table-wrap" id="adminTableWrap"><div class="orders-empty">جارِ التحميل...</div></div>
+      </div>
+
+      <div id="adminPanelCodes" class="admin-tab-panel hidden">
+        <div class="admin-code-form">
+          <div class="field" style="flex:1; min-width:200px; margin-bottom:0;">
+            <label>البريد الإلكتروني</label>
+            <input type="email" id="codeEmailInput" placeholder="name@example.com">
+          </div>
+          <div class="field" style="flex:1; min-width:160px; margin-bottom:0;">
+            <label>الكود (اختياري)</label>
+            <input type="text" id="codeValueInput" placeholder="يُنشأ تلقائيًا لو تُرك فارغًا">
+          </div>
+          <div class="field" style="min-width:160px; margin-bottom:0;">
+            <label>تاريخ الانتهاء (اختياري)</label>
+            <input type="date" id="codeExpiryInput">
+          </div>
+          <button type="button" class="save-btn" id="codeCreateBtn" style="white-space:nowrap;">+ إنشاء كود</button>
+        </div>
+        <div class="admin-table-wrap" id="codesTableWrap"><div class="orders-empty">جارِ التحميل...</div></div>
+      </div>
+
+      <div id="adminPanelUsers" class="admin-tab-panel hidden">
+        <div class="admin-table-wrap" id="usersTableWrap"><div class="orders-empty">جارِ التحميل...</div></div>
+      </div>
+
       <div class="modal-actions">
         <button class="btn-cancel" id="adminCloseBtn">إغلاق</button>
       </div>
@@ -2310,6 +2351,29 @@ async function openAdminPanel(){
   overlay.querySelector('#adminCloseBtn').addEventListener('click', ()=> overlay.remove());
   overlay.addEventListener('click', (e)=>{ if(e.target===overlay) overlay.remove(); });
 
+  /* ---------------- تبديل التبويبات ---------------- */
+  const tabPanels = {
+    restaurants: overlay.querySelector('#adminPanelRestaurants'),
+    codes: overlay.querySelector('#adminPanelCodes'),
+    users: overlay.querySelector('#adminPanelUsers'),
+  };
+  const tabLoaded = { restaurants:false, codes:false, users:false };
+  function activateAdminTab(tab){
+    overlay.querySelectorAll('.admin-tab-btn').forEach(b=> b.classList.toggle('active', b.dataset.tab===tab));
+    Object.keys(tabPanels).forEach(k=> tabPanels[k].classList.toggle('hidden', k!==tab));
+    if(!tabLoaded[tab]){
+      tabLoaded[tab] = true;
+      if(tab==='restaurants') loadRestaurantsTab();
+      if(tab==='codes') loadCodesTab();
+      if(tab==='users') loadUsersTab();
+    }
+  }
+  overlay.querySelectorAll('.admin-tab-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=> activateAdminTab(btn.dataset.tab));
+  });
+
+  /* ================ تبويب المطاعم (نفس المنطق الحالي) ================ */
+  async function loadRestaurantsTab(){
   const wrap = overlay.querySelector('#adminTableWrap');
   const { data: allRestaurants, error } = await sb.from('restaurants').select('*').order('created_at', { ascending:false });
   if(error){ wrap.innerHTML = `<div class="orders-empty">تعذر تحميل بيانات العملاء (تأكد من صلاحية الأدمن في Supabase)</div>`; return; }
@@ -2365,7 +2429,7 @@ async function openAdminPanel(){
           <div class="admin-card-id">
             <div class="admin-r-num">#${idx + 1}</div>
             <div>
-              <div class="admin-r-name">${escapeHtml(r.name)} <span style="opacity:.5; font-size:11px;">(${r.business_type === 'store' ? 'متجر' : 'مطعم'})</span> <span class="admin-collapse-arrow">▾</span></div>
+              <div class="admin-r-name">${escapeHtml(r.name)} <span style="opacity:.5; font-size:11px;">(${r.business_type === 'store' ? 'متجر' : 'مطعم'})</span> ${r.account_suspended ? '<span class="admin-status-pill" style="background:rgba(166,57,43,.15); color:var(--danger);">معطّل</span>' : '<span class="admin-status-pill" style="background:rgba(63,98,71,.15); color:var(--basil);">نشط</span>'} <span class="admin-collapse-arrow">▾</span></div>
               <div class="admin-r-meta">/${escapeHtml(r.slug)} · انضم ${created}</div>
               <div class="admin-r-meta" style="direction:ltr; text-align:right; margin-top:2px;">✉️ ${escapeHtml(ownerEmail)}</div>
             </div>
@@ -2622,6 +2686,136 @@ async function openAdminPanel(){
     const dateTag = new Date().toISOString().slice(0,10);
     XLSX.writeFile(wb, `mag-عملاء-${dateTag}.xlsx`);
   });
+  } // end loadRestaurantsTab
+
+  /* ================ تبويب أكواد التسجيل ================ */
+  async function loadCodesTab(){
+    const wrap = overlay.querySelector('#codesTableWrap');
+    const { data: initialCodes, error } = await sb.rpc('admin_list_signup_codes');
+    if(error){ wrap.innerHTML = `<div class="orders-empty">تعذر تحميل الأكواد (${escapeHtml(error.message || '')})</div>`; return; }
+    let codesList = initialCodes || [];
+
+    function codeStatus(c){
+      const expires = c.expires_at ? new Date(c.expires_at) : null;
+      const isExpired = expires && Date.now() > expires.getTime();
+      if(c.used) return { label:'مستخدم', color:'var(--stone)' };
+      if(!c.is_active) return { label:'معطّل', color:'var(--danger)' };
+      if(isExpired) return { label:'منتهي', color:'var(--danger)' };
+      return { label:'نشط', color:'var(--basil)' };
+    }
+
+    function codeRowHtml(c){
+      const created = new Date(c.created_at).toLocaleDateString('ar-EG', { day:'numeric', month:'short', year:'numeric' });
+      const expires = c.expires_at ? new Date(c.expires_at).toLocaleDateString('ar-EG', { day:'numeric', month:'short', year:'numeric' }) : null;
+      const st = codeStatus(c);
+      return `
+        <div class="admin-list-row" data-id="${c.id}" style="border-right-color:${st.color};">
+          <div style="flex:1; min-width:180px;">
+            <div style="font-weight:800; font-size:14px; direction:ltr; text-align:right;">${escapeHtml(c.email)}</div>
+            <div class="admin-r-meta">أُنشئ ${created}${expires ? ' · ينتهي ' + expires : ''}</div>
+          </div>
+          <span class="admin-code-val">${escapeHtml(c.code)}</span>
+          <button type="button" class="link-btn admin-code-copy-btn" data-code="${escapeHtml(c.code)}" style="font-size:11px; padding:4px 9px;">📋 نسخ</button>
+          <span class="admin-status-pill" style="background:${st.color}22; color:${st.color};">${st.label}</span>
+          <label class="admin-toggle-group" style="gap:6px;">
+            <span class="admin-switch"><input type="checkbox" class="admin-code-active-toggle" data-id="${c.id}" ${c.is_active ? 'checked' : ''} ${c.used ? 'disabled' : ''}><span class="admin-switch-slider"></span></span>
+            <span style="font-size:11.5px;">مفعّل</span>
+          </label>
+        </div>`;
+    }
+
+    function renderCodes(){
+      if(!codesList.length){ wrap.innerHTML = `<div class="orders-empty">لا توجد أكواد بعد</div>`; return; }
+      wrap.innerHTML = codesList.map(codeRowHtml).join('');
+      wrap.querySelectorAll('.admin-code-copy-btn').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          const code = btn.dataset.code;
+          if(navigator.clipboard && navigator.clipboard.writeText){
+            navigator.clipboard.writeText(code).then(()=> toast('تم نسخ الكود')).catch(()=> toast(code));
+          } else { toast(code); }
+        });
+      });
+      wrap.querySelectorAll('.admin-code-active-toggle').forEach(cb=>{
+        cb.addEventListener('change', async ()=>{
+          const id = cb.dataset.id;
+          const { error: toggleErr } = await sb.rpc('admin_set_signup_code_active', { p_id: id, p_active: cb.checked });
+          if(toggleErr){ toast('تعذر الحفظ'); cb.checked = !cb.checked; return; }
+          const item = codesList.find(c=> c.id === id);
+          if(item) item.is_active = cb.checked;
+          toast(cb.checked ? 'تم تفعيل الكود' : 'تم تعطيل الكود');
+          renderCodes();
+        });
+      });
+    }
+    renderCodes();
+
+    overlay.querySelector('#codeCreateBtn').addEventListener('click', async ()=>{
+      const emailInput = overlay.querySelector('#codeEmailInput');
+      const codeInput = overlay.querySelector('#codeValueInput');
+      const expiryInput = overlay.querySelector('#codeExpiryInput');
+      const email = emailInput.value.trim();
+      if(!email){ toast('يرجى إدخال البريد الإلكتروني'); return; }
+      const btn = overlay.querySelector('#codeCreateBtn');
+      btn.disabled = true;
+      const { error: createErr } = await sb.rpc('admin_create_signup_code', {
+        p_email: email,
+        p_code: codeInput.value.trim() || null,
+        p_expires_at: expiryInput.value ? new Date(expiryInput.value + 'T23:59:59').toISOString() : null,
+      });
+      btn.disabled = false;
+      if(createErr){ toast('تعذر إنشاء الكود: ' + (createErr.message || '')); return; }
+      toast('تم إنشاء الكود');
+      emailInput.value = ''; codeInput.value = ''; expiryInput.value = '';
+      const { data: refreshed, error: refreshErr } = await sb.rpc('admin_list_signup_codes');
+      if(!refreshErr){ codesList = refreshed || []; renderCodes(); }
+    });
+  }
+
+  /* ================ تبويب المستخدمين ================ */
+  async function loadUsersTab(){
+    const wrap = overlay.querySelector('#usersTableWrap');
+    const { data: users, error } = await sb.rpc('admin_list_users');
+    if(error){ wrap.innerHTML = `<div class="orders-empty">تعذر تحميل المستخدمين (${escapeHtml(error.message || '')})</div>`; return; }
+    if(!users || !users.length){ wrap.innerHTML = `<div class="orders-empty">لا يوجد مستخدمون بعد</div>`; return; }
+
+    function userRowHtml(u){
+      const joined = new Date(u.created_at).toLocaleDateString('ar-EG', { day:'numeric', month:'short', year:'numeric' });
+      const lastSeen = u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleDateString('ar-EG', { day:'numeric', month:'short', year:'numeric' }) : '—';
+      const isAdmin = u.role === 'admin';
+      const isSelf = u.user_id === currentUser.id;
+      return `
+        <div class="admin-list-row" data-id="${u.user_id}" style="border-right-color:${isAdmin ? 'var(--ember)' : 'var(--stone-light)'};">
+          <div style="flex:1; min-width:180px;">
+            <div style="font-weight:800; font-size:14px; direction:ltr; text-align:right;">${escapeHtml(u.email || '—')}</div>
+            <div class="admin-r-meta">انضم ${joined} · آخر دخول ${lastSeen}${u.restaurant_name ? ' · مطعم: ' + escapeHtml(u.restaurant_name) : ''}</div>
+          </div>
+          <span class="admin-status-pill" style="background:${isAdmin ? 'rgba(184,57,14,.15)' : 'rgba(138,79,209,.12)'}; color:${isAdmin ? 'var(--ember)' : '#8a4fd1'};">${isAdmin ? 'أدمن' : 'مستخدم'}</span>
+          <select class="admin-role-select" data-id="${u.user_id}" ${isSelf ? 'disabled title="لا يمكنك تعديل دور حسابك الحالي"' : ''} style="padding:6px 10px; border-radius:8px; border:1px solid var(--line); background:var(--paper); color:var(--ink); font-family:var(--body); font-size:12.5px;">
+            <option value="user" ${!isAdmin ? 'selected' : ''}>مستخدم عادي</option>
+            <option value="admin" ${isAdmin ? 'selected' : ''}>أدمن</option>
+          </select>
+        </div>`;
+    }
+
+    wrap.innerHTML = users.map(userRowHtml).join('');
+    wrap.querySelectorAll('.admin-role-select').forEach(sel=>{
+      const prevValue = sel.value;
+      sel.addEventListener('change', async ()=>{
+        const id = sel.dataset.id;
+        const newRole = sel.value;
+        const other = newRole === 'admin' ? 'user' : 'admin';
+        const confirmMsg = newRole === 'admin' ? 'منح صلاحية الأدمن الكاملة لهذا الحساب؟' : 'سحب صلاحية الأدمن من هذا الحساب؟';
+        if(!confirm(confirmMsg)){ sel.value = other; return; }
+        sel.disabled = true;
+        const { error: roleErr } = await sb.rpc('admin_set_user_role', { p_user_id: id, p_role: newRole });
+        sel.disabled = false;
+        if(roleErr){ toast('تعذر الحفظ: ' + (roleErr.message || '')); sel.value = other; return; }
+        toast('تم تحديث الدور');
+      });
+    });
+  }
+
+  activateAdminTab('restaurants');
 }
 
 document.getElementById('viewStatsBtn').addEventListener('click', async ()=>{
@@ -3130,12 +3324,18 @@ document.getElementById('restaurantSettingsBtn').addEventListener('click', ()=>{
       <div class="field">
         <label>يوزر ${t().entityDef} على ماسنجر (اختياري — لإرسال الطلب عبر ماسنجر)</label>
         <small>يوزرنيم صفحة الفيسبوك، من غير رابط كامل. مثال: لو رابط صفحتك facebook.com/mypage اكتب mypage بس.</small>
-        <input type="text" id="restMessengerInput" value="${restaurant.messenger_username ? escapeHtml(restaurant.messenger_username) : ''}" placeholder="مثال: mypage" style="margin-top:8px; direction:ltr;">
+        <div style="display:flex; gap:8px; align-items:center; margin-top:8px;">
+          <input type="text" id="restMessengerInput" value="${restaurant.messenger_username ? escapeHtml(restaurant.messenger_username) : ''}" placeholder="مثال: mypage" style="flex:1; min-width:0; direction:ltr;">
+          <button type="button" id="testMessengerBtn" style="width:auto; flex:none; margin:0; white-space:nowrap; padding:10px 16px; background:transparent; border:1.5px dashed var(--stone); color:var(--stone-light); font-family:var(--body); font-weight:700; font-size:14px; border-radius:8px; cursor:pointer;">تجربة</button>
+        </div>
       </div>
       <div class="field">
         <label>يوزر ${t().entityDef} على تليجرام (اختياري — لإرسال الطلب عبر تليجرام)</label>
         <small>يوزرنيم حسابك أو قناتك في تليجرام من غير @. مثال: mystore</small>
-        <input type="text" id="restTelegramInput" value="${restaurant.telegram_username ? escapeHtml(restaurant.telegram_username) : ''}" placeholder="مثال: mystore" style="margin-top:8px; direction:ltr;">
+        <div style="display:flex; gap:8px; align-items:center; margin-top:8px;">
+          <input type="text" id="restTelegramInput" value="${restaurant.telegram_username ? escapeHtml(restaurant.telegram_username) : ''}" placeholder="مثال: mystore" style="flex:1; min-width:0; direction:ltr;">
+          <button type="button" id="testTelegramBtn" style="width:auto; flex:none; margin:0; white-space:nowrap; padding:10px 16px; background:transparent; border:1.5px dashed var(--stone); color:var(--stone-light); font-family:var(--body); font-weight:700; font-size:14px; border-radius:8px; cursor:pointer;">تجربة</button>
+        </div>
       </div>
       <div class="field">
         <label id="rsAddressLabel">عنوان ${t().entityDef} (اختياري)</label>
@@ -3233,6 +3433,18 @@ document.getElementById('restaurantSettingsBtn').addEventListener('click', ()=>{
     pendingLogo = null;
     logoDrop.innerHTML = `<span id="logoDropText">انقر لرفع الشعار</span><br><span id="logoSizeNote"></span>`;
     removeLogoBtn.style.display = 'none';
+  });
+  overlay.querySelector('#testMessengerBtn').addEventListener('click', ()=>{
+    const raw = overlay.querySelector('#restMessengerInput').value.trim().replace(/^@/, '').replace(/^https?:\/\/(www\.|m\.)?(facebook\.com|fb\.com|m\.me)\//i, '').replace(/\/+$/, '');
+    if(!raw){ toast('اكتب اليوزرنيم الأول'); return; }
+    const text = encodeURIComponent(`رسالة تجربة من ${overlay.querySelector('#restNameInput').value.trim() || t().entityDef} — للتأكد من صحة يوزر الماسنجر ✅`);
+    window.open(`https://m.me/${raw}?text=${text}`, '_blank');
+  });
+  overlay.querySelector('#testTelegramBtn').addEventListener('click', ()=>{
+    const raw = overlay.querySelector('#restTelegramInput').value.trim().replace(/^@/, '').replace(/^https?:\/\/(www\.)?t\.me\//i, '').replace(/\/+$/, '');
+    if(!raw){ toast('اكتب اليوزرنيم الأول'); return; }
+    const text = encodeURIComponent(`رسالة تجربة من ${overlay.querySelector('#restNameInput').value.trim() || t().entityDef} — للتأكد من صحة يوزر التليجرام ✅`);
+    window.open(`https://t.me/${raw}?text=${text}`, '_blank');
   });
   overlay.querySelector('#rsCancel').addEventListener('click', ()=> overlay.remove());
   overlay.addEventListener('click', (e)=>{ if(e.target===overlay) overlay.remove(); });
@@ -4606,6 +4818,7 @@ async function refreshTrackingData(orderId){
     document.getElementById('trackStatusWrap').innerHTML = '';
     document.getElementById('trackItemsWrap').innerHTML = '';
     document.getElementById('trackTotalWrap').innerHTML = '';
+    document.getElementById('trackContactWrap').innerHTML = '';
     if(trackingInterval){ clearInterval(trackingInterval); trackingInterval = null; }
     return;
   }
@@ -4620,7 +4833,53 @@ async function refreshTrackingData(orderId){
       <span>× ${it.quantity}</span>
     </div>`).join('');
   document.getElementById('trackTotalWrap').textContent = row.total != null ? `الإجمالي: ${Number(row.total).toFixed(2)} EGP` : '';
+  document.getElementById('trackContactWrap').innerHTML = renderTrackingContactButtons(row);
   document.getElementById('trackUpdatedAt').textContent = new Date().toLocaleTimeString('ar-EG');
+}
+
+// بيبني نص الطلب كامل (زي رسالة الطلب الأصلية) عشان يتبعت من شاشة التتبع لو العميل حاب يتواصل بخصوص طلبه
+function buildTrackingOrderMessage(row){
+  const typeLabel = row.order_type === 'delivery' ? 'توصيل' : 'استلام';
+  const dateTimeStr = new Date(row.created_at).toLocaleString('ar-EG', {
+    timeZone: 'Africa/Cairo', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+    hour: '2-digit', minute: '2-digit', hour12: true
+  });
+  const items = row.items || [];
+  const lines = items.map(it=>{
+    const name = it.item_name + (it.variant_label ? ` (${it.variant_label})` : '');
+    return `- ${name} × ${it.quantity}`;
+  }).join('\n');
+  let msg = `طلب جديد — ${row.restaurant_name || ''}\nالتاريخ والوقت: ${dateTimeStr}\n\n${lines}`;
+  if(row.subtotal != null) msg += `\n\nالمجموع الفرعي: ${Number(row.subtotal).toFixed(2)} جنيه`;
+  if(row.order_type === 'delivery' && row.delivery_fee != null) msg += `\nرسوم التوصيل${row.area ? ' ('+row.area+')' : ''}: ${Number(row.delivery_fee).toFixed(2)} جنيه`;
+  if(row.total != null) msg += `\nالإجمالي: ${Number(row.total).toFixed(2)} جنيه`;
+  msg += `\n\nنوع الطلب: ${typeLabel}`;
+  if(row.customer_name) msg += `\nالاسم: ${row.customer_name}`;
+  if(row.customer_phone) msg += `\nالتليفون: ${row.customer_phone}`;
+  if(row.secondary_phone) msg += `\nتليفون إضافي: ${row.secondary_phone}`;
+  if(row.order_type === 'delivery'){
+    if(row.city) msg += `\nالمدينة: ${row.city}`;
+    if(row.address) msg += `\nالعنوان: ${row.address}`;
+  }
+  if(row.notes) msg += `\nملاحظات: ${row.notes}`;
+  return msg;
+}
+
+// أزرار تواصل اختيارية في شاشة تتبع الطلب — بتظهر بس للوسائل اللي المطعم فعّلها
+function renderTrackingContactButtons(row){
+  const msg = encodeURIComponent(buildTrackingOrderMessage(row));
+  const btns = [];
+  if(row.restaurant_phone){
+    const digits = String(row.restaurant_phone).replace(/[^\d]/g,'');
+    btns.push(`<a href="https://wa.me/${digits}?text=${msg}" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:6px; background:#25D366; color:#fff; font-weight:700; font-size:12px; padding:8px 14px; border-radius:999px; text-decoration:none;">📲 واتساب</a>`);
+  }
+  if(row.restaurant_messenger_username){
+    btns.push(`<a href="https://m.me/${row.restaurant_messenger_username}?text=${msg}" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:6px; background:#0084FF; color:#fff; font-weight:700; font-size:12px; padding:8px 14px; border-radius:999px; text-decoration:none;">💬 ماسنجر</a>`);
+  }
+  if(row.restaurant_telegram_username){
+    btns.push(`<a href="https://t.me/${row.restaurant_telegram_username}?text=${msg}" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:6px; background:#26A5E4; color:#fff; font-weight:700; font-size:12px; padding:8px 14px; border-radius:999px; text-decoration:none;">✈️ تليجرام</a>`);
+  }
+  return btns.join('');
 }
 
 function renderTrackingStatus(status){

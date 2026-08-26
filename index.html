@@ -3128,6 +3128,16 @@ document.getElementById('restaurantSettingsBtn').addEventListener('click', ()=>{
         <input type="text" id="restPhoneInput" value="${restaurant.phone ? escapeHtml(restaurant.phone) : ''}" placeholder="رقم بصيغة دولية: 201154361888" style="direction:ltr;">
       </div>
       <div class="field">
+        <label>يوزر ${t().entityDef} على ماسنجر (اختياري — لإرسال الطلب عبر ماسنجر)</label>
+        <small>يوزرنيم صفحة الفيسبوك، من غير رابط كامل. مثال: لو رابط صفحتك facebook.com/mypage اكتب mypage بس.</small>
+        <input type="text" id="restMessengerInput" value="${restaurant.messenger_username ? escapeHtml(restaurant.messenger_username) : ''}" placeholder="مثال: mypage" style="margin-top:8px; direction:ltr;">
+      </div>
+      <div class="field">
+        <label>يوزر ${t().entityDef} على تليجرام (اختياري — لإرسال الطلب عبر تليجرام)</label>
+        <small>يوزرنيم حسابك أو قناتك في تليجرام من غير @. مثال: mystore</small>
+        <input type="text" id="restTelegramInput" value="${restaurant.telegram_username ? escapeHtml(restaurant.telegram_username) : ''}" placeholder="مثال: mystore" style="margin-top:8px; direction:ltr;">
+      </div>
+      <div class="field">
         <label id="rsAddressLabel">عنوان ${t().entityDef} (اختياري)</label>
         <input type="text" id="restAddressInput" value="${restaurant.address ? escapeHtml(restaurant.address) : ''}" placeholder="مثال: شارع الجمهورية، أمام محطة المترو">
       </div>
@@ -3231,6 +3241,8 @@ document.getElementById('restaurantSettingsBtn').addEventListener('click', ()=>{
     if(!name){ toast(`اسم ${t().entityDef} مطلوب`); return; }
     const name_en = overlay.querySelector('#restNameEnInput').value.trim() || null;
     const phone = overlay.querySelector('#restPhoneInput').value.trim() || null;
+    const messenger_username = overlay.querySelector('#restMessengerInput').value.trim().replace(/^@/, '').replace(/^https?:\/\/(www\.|m\.)?(facebook\.com|fb\.com|m\.me)\//i, '').replace(/\/+$/, '') || null;
+    const telegram_username = overlay.querySelector('#restTelegramInput').value.trim().replace(/^@/, '').replace(/^https?:\/\/(www\.)?t\.me\//i, '').replace(/\/+$/, '') || null;
     const address = overlay.querySelector('#restAddressInput').value.trim() || null;
     const opening_time = overlay.querySelector('#restOpenTimeInput').value || null;
     const closing_time = overlay.querySelector('#restCloseTimeInput').value || null;
@@ -3240,7 +3252,7 @@ document.getElementById('restaurantSettingsBtn').addEventListener('click', ()=>{
     const notification_apikey = overlay.querySelector('#notifApikeyInput').value.trim() || null;
     const btn = overlay.querySelector('#rsConfirm');
     btn.disabled = true;
-    const { data, error } = await sb.from('restaurants').update({ logo_url: pendingLogo, name, name_en, phone, address, opening_time, closing_time, min_delivery_order, notification_phone, notification_apikey, business_type: pendingBizType }).eq('id', restaurant.id).select().single();
+    const { data, error } = await sb.from('restaurants').update({ logo_url: pendingLogo, name, name_en, phone, messenger_username, telegram_username, address, opening_time, closing_time, min_delivery_order, notification_phone, notification_apikey, business_type: pendingBizType }).eq('id', restaurant.id).select().single();
     if(error){ toast('تعذر الحفظ'); btn.disabled=false; return; }
     restaurant = data;
     if(originalLogoUrl && originalLogoUrl !== pendingLogo){
@@ -5558,7 +5570,28 @@ async function loadPublic(slug){
     const zoneSelect = overlay.querySelector('#ordZoneSelect');
     if(zoneSelect) zoneSelect.addEventListener('change', renderSummary);
 
-    function buildWhatsAppMessage({customer_name, customer_phone, secondary_phone, orderType, city, area, address, notes, fee, total}){
+    // بيرجع قائمة وسائل التواصل المفعّلة عند المطعم/المتجر لإرسال رسالة الطلب عليها
+    function getOrderChannels(){
+      const channels = [];
+      if(rest.phone) channels.push({ id:'whatsapp', icon:'📲', label: lang==='en' ? 'WhatsApp' : 'واتساب' });
+      if(rest.messenger_username) channels.push({ id:'messenger', icon:'💬', label: lang==='en' ? 'Messenger' : 'ماسنجر' });
+      if(rest.telegram_username) channels.push({ id:'telegram', icon:'✈️', label: lang==='en' ? 'Telegram' : 'تليجرام' });
+      return channels;
+    }
+    // بيفتح رسالة الطلب جاهزة في وسيلة التواصل المطلوبة
+    function openOrderChannel(channelId, msgText){
+      const text = encodeURIComponent(msgText);
+      if(channelId === 'whatsapp' && rest.phone){
+        const digits = rest.phone.replace(/[^\d]/g,'');
+        window.open(`https://wa.me/${digits}?text=${text}`, '_blank');
+      } else if(channelId === 'messenger' && rest.messenger_username){
+        window.open(`https://m.me/${rest.messenger_username}?text=${text}`, '_blank');
+      } else if(channelId === 'telegram' && rest.telegram_username){
+        window.open(`https://t.me/${rest.telegram_username}?text=${text}`, '_blank');
+      }
+    }
+
+    function buildOrderMessage({customer_name, customer_phone, secondary_phone, orderType, city, area, address, notes, fee, total}){
       const typeLabel = orderType==='delivery' ? (lang==='en' ? 'Delivery' : 'توصيل') : (lang==='en' ? 'Pickup' : 'استلام');
       const now = new Date();
       const dateTimeStr = now.toLocaleString(lang==='en' ? 'en-GB' : 'ar-EG', {
@@ -5690,41 +5723,53 @@ async function loadPublic(slug){
         await sb.from('order_items').insert(cartLines);
       }
 
-      // لازم نجهّز رسالة الواتساب قبل ما نفضي السلة، لأن الدالة بتقرأ الأصناف من نفس متغيّر cart
-      let waText = null;
-      if(rest.phone){
-        waText = buildWhatsAppMessage({customer_name, customer_phone, secondary_phone, orderType, city, area, address, notes, fee, total});
+      // لازم نجهّز رسالة الطلب قبل ما نفضي السلة، لأن الدالة بتقرأ الأصناف من نفس متغيّر cart
+      const orderChannels = getOrderChannels();
+      let orderMsgText = null;
+      if(orderChannels.length){
+        orderMsgText = buildOrderMessage({customer_name, customer_phone, secondary_phone, orderType, city, area, address, notes, fee, total});
       }
 
       cart = {};
       renderPublicBody();
       overlay.remove();
 
-      // الطلب اتحفظ فعليًا في قاعدة البيانات وهيظهر في شاشة الطلبات — دلوقتي نبعت رسالة واتساب
-      if(rest.phone && waText){
-        const digits = rest.phone.replace(/[^\d]/g,'');
-        window.open(`https://wa.me/${digits}?text=${encodeURIComponent(waText)}`, '_blank');
+      // الطلب اتحفظ فعليًا في قاعدة البيانات وهيظهر في شاشة الطلبات — لو وسيلة تواصل واحدة بس مفعّلة نفتحها أوتوماتيك،
+      // لو أكتر من وسيلة، نسيب العميل يختار من شاشة نجاح الطلب (عشان المتصفح ممكن يمنع فتح أكتر من تاب في نفس الوقت)
+      if(orderChannels.length === 1 && orderMsgText){
+        openOrderChannel(orderChannels[0].id, orderMsgText);
       }
-      showOrderSuccessModal(orderRow, !!rest.phone);
+      showOrderSuccessModal(orderRow, orderChannels, orderMsgText);
     });
   }
 
-  function showOrderSuccessModal(orderRow, hasWhatsapp){
+  function showOrderSuccessModal(orderRow, channels, orderMsgText){
     const orderId = orderRow.id;
     const orderNumberHtml = orderRow.order_number != null
       ? `<div class="orders-empty" style="padding:0 0 10px; font-size:20px; font-weight:800; color:var(--ember); font-family:var(--mono); direction:ltr;">#${orderRow.order_number}</div>`
       : '';
     const trackLink = `${location.origin}${location.pathname}?t=${orderId}`;
+    let statusMsg;
+    if(channels.length === 0){
+      statusMsg = lang==='en' ? `Order saved (${biz(rest.business_type,'entityEn').toLowerCase()} has no contact channel set).` : `تم حفظ طلبك (لم يضف ${biz(rest.business_type,'entityDef')} وسيلة تواصل).`;
+    } else if(channels.length === 1){
+      statusMsg = lang==='en' ? `Your order was sent to the ${biz(rest.business_type,'entityEn').toLowerCase()} via ${channels[0].label}.` : `تم إرسال طلبك لـ${biz(rest.business_type,'entityDef')} عبر ${channels[0].label}.`;
+    } else {
+      statusMsg = lang==='en' ? `Choose how you'd like to send your order:` : `اختر وسيلة إرسال طلبك:`;
+    }
+    const channelsHtml = channels.length ? `
+        <div class="modal-actions" style="flex-wrap:wrap;" id="successChannelsWrap">
+          ${channels.map(c=>`<button type="button" class="btn-confirm" data-channel="${c.id}" style="flex:1; min-width:110px;">${c.icon} ${escapeHtml(c.label)}</button>`).join('')}
+        </div>` : '';
     const successOverlay = document.createElement('div');
     successOverlay.className = 'overlay';
     successOverlay.innerHTML = `
       <div class="modal" style="text-align:center;">
         <h3>${lang==='en' ? 'Order sent! ✅' : 'تم إرسال طلبك بنجاح! ✅'}</h3>
         ${orderNumberHtml}
-        <div class="orders-empty" style="padding:0 0 14px;">${hasWhatsapp
-          ? (lang==='en' ? `Your order was sent to the ${biz(rest.business_type,'entityEn').toLowerCase()}.` : `تم إرسال طلبك لـ${biz(rest.business_type,'entityDef')}.`)
-          : (lang==='en' ? `Order saved (${biz(rest.business_type,'entityEn').toLowerCase()} has no WhatsApp number set).` : `تم حفظ طلبك (لم يضف ${biz(rest.business_type,'entityDef')} رقم واتساب).`)}</div>
-        <div class="orders-empty" style="padding:0 0 8px; font-weight:700; color:var(--ink);">${lang==='en' ? 'Track your order status here:' : 'تابع حالة طلبك من هنا:'}</div>
+        <div class="orders-empty" style="padding:0 0 14px;">${statusMsg}</div>
+        ${channelsHtml}
+        <div class="orders-empty" style="padding:14px 0 8px; font-weight:700; color:var(--ink);">${lang==='en' ? 'Track your order status here:' : 'تابع حالة طلبك من هنا:'}</div>
         <div class="orders-empty" style="padding:0 0 14px; font-size:12px; word-break:break-all;">${escapeHtml(trackLink)}</div>
         <div class="modal-actions">
           <button class="btn-cancel" id="successCloseBtn">${lang==='en' ? 'Close' : 'إغلاق'}</button>
@@ -5743,6 +5788,11 @@ async function loadPublic(slug){
     successOverlay.querySelector('#successTrackBtn').addEventListener('click', ()=>{
       window.open(trackLink, '_blank');
     });
+    if(orderMsgText){
+      successOverlay.querySelectorAll('[data-channel]').forEach(btn=>{
+        btn.addEventListener('click', ()=> openOrderChannel(btn.dataset.channel, orderMsgText));
+      });
+    }
   }
 
   function openCartModal(){

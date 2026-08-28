@@ -104,6 +104,13 @@ body{margin:0; font-family:var(--body); background:var(--ink); color:var(--ink);
 .rail{ background:#2A2825; padding:20px 16px; border-left:1px solid #3a3733; }
 .rail h2{ font-family:var(--display); color:var(--paper); font-size:20px; margin:0 0 14px; }
 .add-btn{ width:100%; background:transparent; border:1.5px dashed var(--stone); color:var(--stone-light); font-family:var(--body); font-weight:700; font-size:14px; padding:10px; border-radius:8px; cursor:pointer; margin-bottom:14px; }
+.chip-btn{ background:var(--paper-dim); border:1px solid var(--line); color:var(--stone); font-family:var(--body); font-weight:700; font-size:11px; padding:5px 10px; border-radius:999px; cursor:pointer; }
+.chip-btn.active{ background:var(--ember); border-color:var(--ember); color:#fff; }
+.insight-card{ display:flex; gap:10px; align-items:flex-start; padding:10px 12px; border-radius:10px; margin-bottom:8px; font-size:12.5px; line-height:1.6; }
+.insight-card.positive{ background:rgba(22,101,52,.08); border:1px solid rgba(22,101,52,.25); color:#14532d; }
+.insight-card.warning{ background:rgba(166,57,43,.08); border:1px solid rgba(166,57,43,.25); color:#7c2d12; }
+.insight-card.info{ background:var(--paper-dim); border:1px solid var(--line); color:var(--ink); }
+.insight-card .insight-icon{ font-size:16px; line-height:1; }
 .btn-export-sm{ width:auto; flex-shrink:0; background:var(--basil); color:#fff; border:none; font-family:var(--body); font-weight:700; font-size:12.5px; padding:6px 14px; border-radius:20px; cursor:pointer; white-space:nowrap; }
 .btn-export-sm:hover{ background:var(--basil-dark); }
 .add-btn:hover{border-color:var(--ember); color:var(--paper); background:rgba(184,57,14,.08);}
@@ -347,6 +354,7 @@ body.pub-menu-only .add-to-cart-btn{ display:none !important; }
 .receipt-width-btn.active{ background:var(--ember); border-color:var(--ember); color:#fff; }
 .receipt-preview-wrap{ background:#fff; border:1px solid var(--line); border-radius:10px; padding:14px; max-height:50vh; overflow-y:auto; }
 #receiptPrintArea{ display:none; }
+#reportPrintArea{ display:none; }
 .receipt{ font-family:var(--mono),'Tajawal',monospace; width:100%; color:#000; direction:rtl; font-size:12px; line-height:1.5; }
 .receipt-center{ text-align:center; }
 .receipt hr{ border:none; border-top:1px dashed #000; margin:6px 0; }
@@ -363,9 +371,25 @@ body.pub-menu-only .add-to-cart-btn{ display:none !important; }
 .receipt-total-row{ display:flex; justify-content:space-between; font-weight:800; font-size:13.5px; margin-top:4px; }
 .receipt-footer{ text-align:center; font-size:11px; margin-top:8px; }
 .receipt-demo-note{ text-align:center; font-size:10px; margin-top:6px; padding-top:6px; border-top:1px dashed #999; color:#555; line-height:1.5; }
+.report-doc{ font-family:var(--body),'Tajawal',sans-serif; direction:rtl; color:#111; width:100%; }
+.report-doc h1{ font-size:20px; margin:0 0 2px; }
+.report-doc .report-sub{ font-size:12px; color:#555; margin:0 0 16px; }
+.report-doc h2{ font-size:14px; margin:18px 0 8px; padding-bottom:4px; border-bottom:1.5px solid #111; }
+.report-doc table{ width:100%; border-collapse:collapse; font-size:12px; margin-bottom:6px; }
+.report-doc th{ text-align:right; font-size:11px; color:#555; padding:4px 6px; border-bottom:1px solid #ccc; }
+.report-doc td{ padding:5px 6px; border-bottom:1px solid #eee; }
+.report-doc td.num{ direction:ltr; text-align:left; white-space:nowrap; }
+.report-kpi-row{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:6px; }
+.report-kpi{ flex:1; min-width:120px; border:1px solid #ddd; border-radius:8px; padding:8px 10px; }
+.report-kpi .kpi-label{ font-size:10.5px; color:#666; }
+.report-kpi .kpi-value{ font-size:16px; font-weight:800; margin-top:2px; }
+.report-kpi .kpi-delta{ font-size:10.5px; margin-top:2px; }
+.report-kpi .kpi-delta.up{ color:#166534; }
+.report-kpi .kpi-delta.down{ color:#a6392b; }
 @media print{
-  body > *:not(#receiptPrintArea){ display:none !important; }
+  body > *:not(#receiptPrintArea):not(#reportPrintArea){ display:none !important; }
   #receiptPrintArea{ display:block !important; margin:0; padding:0; }
+  #reportPrintArea{ display:block !important; margin:0; padding:0; }
 }
 @page{ margin:2mm; }
 .receipt-page-58{ width:58mm; }
@@ -660,6 +684,7 @@ body.pub-design-dark .pub-more-menu{ background:#2A2825; border-color:#3A352D; }
     <div class="topbar-actions">
       <button class="link-btn" id="viewOrdersBtn">الطلبات <span id="newOrdersBadge" class="new-orders-badge hidden">0</span></button>
       <button class="link-btn" id="viewStatsBtn">الإحصائيات</button>
+      <button class="link-btn" id="reportsBtn">التقارير</button>
       <span class="link-btn-split" id="publicLinkSplitBtn">
         <button class="link-btn split-copy" id="copyPublicLinkBtn">نسخ رابط القائمة العام</button><button class="link-btn split-open" id="openPublicLinkBtn" title="فتح المنيو مباشرة">🔗</button>
       </span>
@@ -667,6 +692,7 @@ body.pub-design-dark .pub-more-menu{ background:#2A2825; border-color:#3A352D; }
       <button class="link-btn" id="shareMenuBtn">📤 مشاركة القائمة</button>
       <button class="link-btn" id="deliveryZonesBtn">مناطق التوصيل</button>
       <button class="link-btn" id="customersBtn">العملاء</button>
+      <button class="link-btn" id="driversBtn">🚴 السائقين</button>
       <button class="link-btn" id="importExcelBtn">استيراد من إكسيل</button>
       <button class="link-btn" id="exportExcelBtn">تصدير إلى إكسيل</button>
       <button class="link-btn" id="notifPermBtn">🔔 تفعيل تنبيهات المتصفح</button>
@@ -1024,6 +1050,23 @@ function sendMenuLinkWhatsApp(phone, name){
   const templates = cleanName ? MENU_WA_TEMPLATES : MENU_WA_TEMPLATES.filter(t=> !t.withName);
   openWaTemplatePicker(templates, cleanName, link, digits);
 }
+
+// بيبعت تفاصيل طلب توصيل للسائق المعيّن عبر واتساب (اسم العميل، العنوان، الأصناف، الإجمالي)
+function sendOrderToDriverWhatsApp(order, lines, driver){
+  const digits = toEgyptWaDigits(driver.phone);
+  if(!digits){ toast('لا يوجد رقم تليفون صالح لهذا السائق'); return; }
+  const itemsLines = (lines || []).map(l=> `- ${l.item_name} × ${l.quantity}`).join('\n');
+  let msg = `🚴 طلب توصيل جديد${order.order_number != null ? ` #${order.order_number}` : ''}\n\n`;
+  msg += `العميل: ${order.customer_name || ''}\n`;
+  msg += `التليفون: ${order.customer_phone || ''}${order.secondary_phone ? ` / ${order.secondary_phone}` : ''}\n`;
+  if(order.city || order.area) msg += `المنطقة: ${[order.city, order.area].filter(Boolean).join(' — ')}\n`;
+  if(order.address) msg += `العنوان: ${order.address}\n`;
+  if(itemsLines) msg += `\nالأصناف:\n${itemsLines}\n`;
+  if(order.total != null) msg += `\nالإجمالي: ${Number(order.total).toFixed(2)} EGP`;
+  if(order.notes) msg += `\nملاحظات: ${order.notes}`;
+  window.open(`https://wa.me/${digits}?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
 function show(id){
   ['loadingScreen','authScreen','onboardScreen','dashboardScreen','publicScreen','trackingScreen'].forEach(s=>{
     document.getElementById(s).classList.toggle('hidden', s!==id);
@@ -1265,10 +1308,12 @@ function applyGranularRestrictionsUI(){
   const restrictions = {
     viewOrdersBtn: restaurant.restriction_orders_disabled,
     viewStatsBtn: restaurant.restriction_stats_disabled,
+    reportsBtn: restaurant.restriction_stats_disabled,
     publicLinkSplitBtn: restaurant.restriction_share_disabled,
     showQrBtn: restaurant.restriction_share_disabled,
     shareMenuBtn: restaurant.restriction_share_disabled,
     deliveryZonesBtn: restaurant.restriction_delivery_zones_disabled,
+    driversBtn: restaurant.restriction_delivery_zones_disabled,
     customersBtn: restaurant.restriction_customers_disabled,
     restaurantSettingsBtn: restaurant.restriction_settings_disabled,
   };
@@ -1286,6 +1331,7 @@ async function openDashboard(){
   refreshAllBizLabels();
   await refreshData();
   subscribeToNewOrders();
+  startOverdueCheckLoop();
   refreshNewOrdersCount();
   setupNotificationPermission();
   show('dashboardScreen');
@@ -1543,6 +1589,65 @@ function showNotifPermModal(mode){
   }
 }
 
+// مكتبة نغمات التنبيه — كل نغمة بنمط صوتي مختلف يتم توليده بـWeb Audio API (من غير ملفات صوت خارجية)
+const ALERT_TONES = {
+  siren: { label: '🚨 صفارة (افتراضي)', play: (ctx)=>{
+    [0, 0.15, 0.3, 0.45].forEach((delay, i)=>{
+      const o = ctx.createOscillator(); const g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.type = 'square';
+      o.frequency.value = i % 2 === 0 ? 1050 : 700;
+      g.gain.setValueAtTime(0.0001, ctx.currentTime + delay);
+      g.gain.exponentialRampToValueAtTime(0.5, ctx.currentTime + delay + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + delay + 0.14);
+      o.start(ctx.currentTime + delay); o.stop(ctx.currentTime + delay + 0.15);
+    });
+  }},
+  bell: { label: '🔔 جرس', play: (ctx)=>{
+    const o = ctx.createOscillator(); const g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.type = 'sine'; o.frequency.value = 1400;
+    g.gain.setValueAtTime(0.0001, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.6, ctx.currentTime + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.9);
+    o.start(ctx.currentTime); o.stop(ctx.currentTime + 0.9);
+  }},
+  chime: { label: '🎐 نغمة هادئة', play: (ctx)=>{
+    [0, 0.18, 0.36].forEach((delay, i)=>{
+      const o = ctx.createOscillator(); const g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.type = 'sine';
+      o.frequency.value = [880, 1100, 1320][i];
+      g.gain.setValueAtTime(0.0001, ctx.currentTime + delay);
+      g.gain.exponentialRampToValueAtTime(0.4, ctx.currentTime + delay + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + delay + 0.3);
+      o.start(ctx.currentTime + delay); o.stop(ctx.currentTime + delay + 0.3);
+    });
+  }},
+  beep: { label: '📟 نبضة سريعة', play: (ctx)=>{
+    [0, 0.1, 0.2, 0.3, 0.4].forEach(delay=>{
+      const o = ctx.createOscillator(); const g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.type = 'triangle'; o.frequency.value = 1600;
+      g.gain.setValueAtTime(0.0001, ctx.currentTime + delay);
+      g.gain.exponentialRampToValueAtTime(0.45, ctx.currentTime + delay + 0.015);
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + delay + 0.08);
+      o.start(ctx.currentTime + delay); o.stop(ctx.currentTime + delay + 0.08);
+    });
+  }}
+};
+
+function alertToneStorageKey(){ return `mag_alerttone_${restaurant.id}`; }
+function getSelectedAlertTone(){ return localStorage.getItem(alertToneStorageKey()) || 'siren'; }
+function setSelectedAlertTone(key){ localStorage.setItem(alertToneStorageKey(), key); }
+
+function playToneByKey(key){
+  try{
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    (ALERT_TONES[key] || ALERT_TONES.siren).play(ctx);
+  }catch(e){}
+}
+
 function showDesktopOrderNotification(orderRow){
   if(!('Notification' in window) || Notification.permission !== 'granted') return;
   try{
@@ -1559,22 +1664,7 @@ function showDesktopOrderNotification(orderRow){
 }
 
 function playNewOrderSound(){
-  try{
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    // صفارة إنذار من نغمتين متبادلين، صوت أعلى ونوع موجة "square" أقرب لصوت جرس/إنذار مزعج
-    [0, 0.15, 0.3, 0.45].forEach((delay, i)=>{
-      const o = ctx.createOscillator();
-      const g = ctx.createGain();
-      o.connect(g); g.connect(ctx.destination);
-      o.type = 'square';
-      o.frequency.value = i % 2 === 0 ? 1050 : 700;
-      g.gain.setValueAtTime(0.0001, ctx.currentTime + delay);
-      g.gain.exponentialRampToValueAtTime(0.5, ctx.currentTime + delay + 0.02);
-      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + delay + 0.14);
-      o.start(ctx.currentTime + delay);
-      o.stop(ctx.currentTime + delay + 0.15);
-    });
-  }catch(e){}
+  playToneByKey(getSelectedAlertTone());
 }
 
 function startOrderAlertLoop(){
@@ -1588,6 +1678,83 @@ function stopOrderAlertLoop(){
     clearInterval(orderAlertLoopId);
     orderAlertLoopId = null;
   }
+}
+
+// تنبيه تأخير منفصل — نغمة مختلفة عن نغمة الطلب الجديد، بتتشغل لما طلب نشط يتجاوز وقت جاهزيته المتوقع
+function playDelayAlertSound(){
+  try{
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [0, 0.4].forEach(delay=>{
+      const o = ctx.createOscillator(); const g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.type = 'sawtooth'; o.frequency.value = 420;
+      g.gain.setValueAtTime(0.0001, ctx.currentTime + delay);
+      g.gain.exponentialRampToValueAtTime(0.45, ctx.currentTime + delay + 0.03);
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + delay + 0.35);
+      o.start(ctx.currentTime + delay); o.stop(ctx.currentTime + delay + 0.35);
+    });
+  }catch(e){}
+}
+
+let overdueAlertedIds = new Set();
+let overdueCheckIntervalId = null;
+
+async function checkOverdueOrders(){
+  if(!restaurant) return;
+  const nowIso = new Date().toISOString();
+  const { data, error } = await sb.from('orders').select('id,order_number,customer_name,estimated_ready_at')
+    .eq('restaurant_id', restaurant.id).in('status', ['pending','preparing']).lt('estimated_ready_at', nowIso);
+  if(error || !data) return;
+  const stillActiveIds = new Set(data.map(o=> o.id));
+  // ننضّف قايمة اللي اتنبهنا عليهم لو الطلب بقى مش نشط (اتسلم/اتلغى) عشان لو رجع يتأخر تاني في المستقبل يتنبه عليه
+  overdueAlertedIds.forEach(id=>{ if(!stillActiveIds.has(id)) overdueAlertedIds.delete(id); });
+  data.forEach(o=>{
+    if(!overdueAlertedIds.has(o.id)){
+      overdueAlertedIds.add(o.id);
+      playDelayAlertSound();
+      toast(`⏱️ الطلب ${o.order_number != null ? '#'+o.order_number+' ' : ''}${o.customer_name ? 'لـ'+o.customer_name+' ' : ''}اتأخر عن الموعد المتوقع!`);
+    }
+  });
+}
+
+function startOverdueCheckLoop(){
+  if(overdueCheckIntervalId) return;
+  checkOverdueOrders();
+  overdueCheckIntervalId = setInterval(checkOverdueOrders, 60000);
+}
+
+// الطباعة التلقائية للمطبخ — إعداد خاص بكل جهاز/شاشة (متصفح) مش بكل المطعم، عشان تقدر تفعّلها في شاشة المطبخ بس
+function autoPrintStorageKey(){ return `mag_autoprint_${restaurant.id}`; }
+function isAutoPrintEnabled(){ return localStorage.getItem(autoPrintStorageKey()) === '1'; }
+function setAutoPrintEnabled(val){ localStorage.setItem(autoPrintStorageKey(), val ? '1' : '0'); }
+
+// بيطبع فاتورة المطبخ فورًا من غير معاينة ومن غير ما يغيّر حالة الطلب (بعكس الطباعة اليدوية اللي بتأكد التسليم)
+async function autoPrintNewOrder(orderId){
+  try{
+    const { data: order, error } = await sb.from('orders').select('*').eq('id', orderId).maybeSingle();
+    if(error || !order) return;
+    const { data: lines } = await sb.from('order_items').select('*').eq('order_id', orderId);
+    const widthMm = getSavedReceiptWidth();
+    let printArea = document.getElementById('receiptPrintArea');
+    if(!printArea){
+      printArea = document.createElement('div');
+      printArea.id = 'receiptPrintArea';
+      document.body.appendChild(printArea);
+    }
+    printArea.innerHTML = buildReceiptHtml(order, lines || [], widthMm);
+    let pageStyle = document.getElementById('receiptPageStyle');
+    if(!pageStyle){
+      pageStyle = document.createElement('style');
+      pageStyle.id = 'receiptPageStyle';
+      document.head.appendChild(pageStyle);
+    }
+    pageStyle.textContent = `@page{ size:${widthMm}mm auto; margin:2mm; }`;
+    const prevTitle = document.title;
+    document.title = order.order_number != null ? `طباعة الطلب Print Order #${order.order_number}` : 'طباعة الطلب Print Order';
+    const restoreTitle = ()=>{ document.title = prevTitle; window.removeEventListener('afterprint', restoreTitle); };
+    window.addEventListener('afterprint', restoreTitle);
+    window.print();
+  }catch(e){}
 }
 
 function subscribeToNewOrders(){
@@ -1604,6 +1771,9 @@ function subscribeToNewOrders(){
       startOrderAlertLoop();
       showDesktopOrderNotification(payload.new);
       toast(`طلب جديد من ${payload.new && payload.new.customer_name ? payload.new.customer_name : 'عميل'}! 🔔`);
+      if(isAutoPrintEnabled() && payload.new && payload.new.id){
+        setTimeout(()=> autoPrintNewOrder(payload.new.id), 600); // تأخير بسيط لضمان اكتمال إدخال order_items
+      }
     })
     .on('postgres_changes', {
       event: 'UPDATE',
@@ -1709,6 +1879,117 @@ document.getElementById('deliveryZonesBtn').addEventListener('click', async ()=>
   });
 });
 
+document.getElementById('driversBtn').addEventListener('click', async ()=>{
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.innerHTML = `
+    <div class="modal">
+      <h3>السائقين</h3>
+      <div class="zone-add-row" style="flex-wrap:wrap;">
+        <input type="text" id="newDriverName" placeholder="اسم السائق" style="flex:1; min-width:120px;">
+        <input type="text" id="newDriverPhone" placeholder="01xxxxxxxxx" style="width:130px; direction:ltr;">
+        <button type="button" class="btn-confirm" id="driverAddBtn" style="white-space:nowrap;">إضافة سائق</button>
+      </div>
+      <div id="driversListWrap" style="margin-top:12px;"><div class="orders-empty">جارِ التحميل...</div></div>
+      <div class="modal-actions">
+        <button class="btn-cancel" id="driversCloseBtn">إغلاق</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.querySelector('#driversCloseBtn').addEventListener('click', ()=> overlay.remove());
+  overlay.addEventListener('click', (e)=>{ if(e.target===overlay) overlay.remove(); });
+  wireEnterToConfirm(overlay.querySelector('.zone-add-row'), overlay.querySelector('#driverAddBtn'));
+
+  async function renderDrivers(){
+    const wrap = overlay.querySelector('#driversListWrap');
+    const { data: drivers, error } = await sb.from('drivers').select('*').eq('restaurant_id', restaurant.id).order('is_active', { ascending:false }).order('created_at', { ascending:false });
+    if(error){ wrap.innerHTML = `<div class="orders-empty">تعذر تحميل السائقين — تأكد من إضافة جدول drivers في قاعدة البيانات</div>`; return; }
+    if(!drivers || drivers.length === 0){ wrap.innerHTML = `<div class="orders-empty">لا يوجد سائقين مضافين بعد</div>`; return; }
+
+    // عدد الطلبات النشطة (قيد الانتظار أو التجهيز) المعيّنة لكل سائق دلوقتي
+    const { data: activeAssigned } = await sb.from('orders').select('driver_id').eq('restaurant_id', restaurant.id).in('status', ['pending','preparing']).not('driver_id', 'is', null);
+    const activeCounts = {};
+    (activeAssigned || []).forEach(o=>{ activeCounts[o.driver_id] = (activeCounts[o.driver_id]||0) + 1; });
+
+    wrap.innerHTML = drivers.map(d=> `
+      <div class="zone-row" data-id="${d.id}" data-name="${escapeHtml(d.name)}" data-phone="${escapeHtml(d.phone)}" style="${d.is_active ? '' : 'opacity:.55;'}">
+        <div style="flex:1; min-width:120px;">
+          <span class="zone-name" style="display:block;">${escapeHtml(d.name)} ${!d.is_active ? `<span style="font-size:10px; color:var(--stone); font-weight:400;">(غير نشط)</span>` : ''}</span>
+          ${activeCounts[d.id] ? `<span style="display:block; font-size:11.5px; color:var(--ember); margin-top:2px;">🚴 ${activeCounts[d.id]} طلب معلّق عليه دلوقتي</span>` : ''}
+        </div>
+        <span class="zone-fee" style="direction:ltr;">${escapeHtml(d.phone)}</span>
+        <button type="button" data-action="toggleActive">${d.is_active ? 'إيقاف' : 'تفعيل'}</button>
+        <button type="button" data-action="edit">تعديل</button>
+        <button type="button" data-action="delete">حذف</button>
+      </div>`).join('');
+
+    wrap.querySelectorAll('[data-action="toggleActive"]').forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        const row = btn.closest('.zone-row');
+        const id = row.dataset.id;
+        const driver = drivers.find(d=> d.id === id);
+        const { error: updErr } = await sb.from('drivers').update({ is_active: !driver.is_active }).eq('id', id);
+        if(updErr){ toast('تعذر التحديث'); return; }
+        await renderDrivers();
+      });
+    });
+    wrap.querySelectorAll('[data-action="delete"]').forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        const row = btn.closest('.zone-row');
+        const id = row.dataset.id;
+        if(!confirm('حذف هذا السائق؟ الطلبات اللي كانت معيّنة له هتفضل مسجّلة بس من غير سائق.')) return;
+        const { error: delErr } = await sb.from('drivers').delete().eq('id', id);
+        if(delErr){ toast('تعذر الحذف'); return; }
+        await renderDrivers();
+      });
+    });
+    wrap.querySelectorAll('[data-action="edit"]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const row = btn.closest('.zone-row');
+        const id = row.dataset.id;
+        const curName = row.dataset.name;
+        const curPhone = row.dataset.phone;
+        row.innerHTML = `
+          <input type="text" class="driver-edit-name" value="${escapeHtml(curName)}" style="flex:1; min-width:100px; border:1.5px solid var(--line); border-radius:8px; padding:7px 9px; font-family:var(--body); font-size:13px; background:var(--paper); color:var(--ink);">
+          <input type="text" class="driver-edit-phone" value="${escapeHtml(curPhone)}" style="width:130px; direction:ltr; border:1.5px solid var(--line); border-radius:8px; padding:7px 9px; font-family:var(--mono); background:var(--paper); color:var(--ink);">
+          <button data-action="saveEdit" style="border-color:var(--basil); color:var(--basil);">حفظ</button>
+          <button data-action="cancelEdit">إلغاء</button>`;
+        row.querySelector('[data-action="cancelEdit"]').addEventListener('click', renderDrivers);
+        row.querySelector('[data-action="saveEdit"]').addEventListener('click', async ()=>{
+          const newName = row.querySelector('.driver-edit-name').value.trim();
+          const newPhone = row.querySelector('.driver-edit-phone').value.replace(/[^\d]/g,'');
+          if(!newName || newPhone.length < 8){ toast('تأكد من الاسم ورقم التليفون'); return; }
+          const saveBtn = row.querySelector('[data-action="saveEdit"]');
+          saveBtn.disabled = true;
+          const { error: updErr } = await sb.from('drivers').update({ name:newName, phone:newPhone }).eq('id', id);
+          if(updErr){ toast('تعذر الحفظ — تأكد أن الرقم غير مستخدم لسائق آخر'); saveBtn.disabled = false; return; }
+          toast('تم تحديث بيانات السائق');
+          await renderDrivers();
+        });
+        wireEnterToConfirm(row, row.querySelector('[data-action="saveEdit"]'));
+      });
+    });
+  }
+  await renderDrivers();
+
+  overlay.querySelector('#driverAddBtn').addEventListener('click', async ()=>{
+    const nameInput = overlay.querySelector('#newDriverName');
+    const phoneInput = overlay.querySelector('#newDriverPhone');
+    const name = nameInput.value.trim();
+    const phone = phoneInput.value.replace(/[^\d]/g,'');
+    if(!name){ nameInput.focus(); return; }
+    if(phone.length < 8){ toast('اكتب رقم تليفون صحيح'); phoneInput.focus(); return; }
+    const btn = overlay.querySelector('#driverAddBtn');
+    btn.disabled = true;
+    const { error } = await sb.from('drivers').insert({ restaurant_id: restaurant.id, name, phone });
+    btn.disabled = false;
+    if(error){ toast('تعذر إضافة السائق — تأكد أن الرقم غير مسجل من قبل'); return; }
+    nameInput.value = ''; phoneInput.value = '';
+    toast('تمت إضافة السائق');
+    await renderDrivers();
+  });
+});
+
 document.getElementById('customersBtn').addEventListener('click', async ()=>{
   const overlay = document.createElement('div');
   overlay.className = 'overlay';
@@ -1716,10 +1997,20 @@ document.getElementById('customersBtn').addEventListener('click', async ()=>{
     <div class="modal">
       <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:16px;">
         <h3 style="margin:0;">عملاء ${escapeHtml(restaurant.name)}</h3>
-        <button type="button" class="btn-export-sm" id="customersExportBtn">📥 تصدير Excel</button>
+        <span style="display:flex; gap:6px;">
+          <button type="button" class="chip-btn" id="mergeCustomersBtn">🔀 دمج عملاء</button>
+          <button type="button" class="btn-export-sm" id="customersExportBtn">📥 تصدير Excel</button>
+        </span>
       </div>
       <div class="orders-empty" style="text-align:right; padding:0 0 10px; font-size:12px;">
         سجّل عملاءك يدويًا أو استورد ملف إكسيل بعمودين بالترتيب: <b>Customer name</b> ثم <b>Customer phone</b>، وابعتلهم رسالة ترحيبية ورابط المنيو على واتساب بضغطة واحدة.
+      </div>
+      <div id="pendingCustomersSection" style="display:none;">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px;">
+          <h3 style="margin:0;">عملاء جدد من الطلبات (في انتظار المراجعة) <span id="pendingCustomersCount" style="font-weight:400; font-size:12px; color:var(--stone);"></span></h3>
+          <button type="button" class="btn-export-sm" id="pendingAddAllBtn">✅ إضافة الكل</button>
+        </div>
+        <div id="pendingCustomersWrap"></div>
       </div>
       <div class="zone-add-row" style="flex-wrap:wrap;">
         <input type="text" id="newCustomerName" placeholder="اسم العميل" style="flex:1; min-width:120px;">
@@ -1742,11 +2033,291 @@ document.getElementById('customersBtn').addEventListener('click', async ()=>{
 
   let allCustomers = [];
 
+  // بيتأكد إن العنوان (لو موجود) متسجل كصف "افتراضي" في جدول العناوين، بس لو العميل لسه مالوش عناوين
+  async function ensureDefaultAddress(customerId, address){
+    if(!address || !customerId) return;
+    const { count } = await sb.from('customer_addresses').select('id', { count:'exact', head:true }).eq('customer_id', customerId);
+    if(count && count > 0) return;
+    await sb.from('customer_addresses').insert({ customer_id: customerId, label:'الرئيسي', address, is_default:true });
+  }
+
+  // بيتأكد إن الرقم (لو موجود) متسجل كصف "افتراضي" في جدول الأرقام، بس لو العميل لسه مالوش أرقام
+  async function ensureDefaultPhone(customerId, phone){
+    if(!phone || !customerId) return;
+    const { count } = await sb.from('customer_phones').select('id', { count:'exact', head:true }).eq('customer_id', customerId);
+    if(count && count > 0) return;
+    await sb.from('customer_phones').insert({ customer_id: customerId, label:'الرئيسي', phone, is_default:true });
+  }
+
   async function loadCustomers(){
     const { data, error } = await sb.from('customers').select('*').eq('restaurant_id', restaurant.id).order('created_at', { ascending:false });
     if(error){ allCustomers = []; return false; }
     allCustomers = data || [];
+    if(allCustomers.length > 0){
+      const [{ data: addrRows }, { data: phoneRows }] = await Promise.all([
+        sb.from('customer_addresses').select('customer_id').in('customer_id', allCustomers.map(c=>c.id)),
+        sb.from('customer_phones').select('customer_id').in('customer_id', allCustomers.map(c=>c.id))
+      ]);
+      const addrCounts = {}; (addrRows||[]).forEach(a=>{ addrCounts[a.customer_id] = (addrCounts[a.customer_id]||0) + 1; });
+      const phoneCounts = {}; (phoneRows||[]).forEach(p=>{ phoneCounts[p.customer_id] = (phoneCounts[p.customer_id]||0) + 1; });
+      allCustomers.forEach(c=>{ c._addressCount = addrCounts[c.id] || 0; c._phoneCount = phoneCounts[c.id] || 0; });
+    }
     return true;
+  }
+
+  // إدارة عناوين العميل (أكتر من عنوان لكل عميل، مع تحديد عنوان افتراضي)
+  async function openCustomerAddressesModal(customerId, customerName){
+    const addrOverlay = document.createElement('div');
+    addrOverlay.className = 'overlay';
+    addrOverlay.innerHTML = `
+      <div class="modal">
+        <h3>عناوين ${escapeHtml(customerName || 'العميل')}</h3>
+        <div id="custAddrListWrap"><div class="orders-empty">جارِ التحميل...</div></div>
+        <div class="zone-add-row" style="flex-wrap:wrap; margin-top:12px;">
+          <input type="text" id="newAddrLabel" placeholder="التسمية (مثال: المنزل، الشغل)" style="width:150px;">
+          <input type="text" id="newAddrText" placeholder="العنوان بالتفصيل" style="flex:1; min-width:160px;">
+          <button type="button" class="btn-confirm" id="addrAddBtn" style="white-space:nowrap;">إضافة عنوان</button>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-cancel" id="addrCloseBtn">إغلاق</button>
+        </div>
+      </div>`;
+    document.body.appendChild(addrOverlay);
+    const closeAndRefresh = async ()=>{
+      addrOverlay.remove();
+      await loadCustomers();
+      renderCustomers();
+    };
+    addrOverlay.querySelector('#addrCloseBtn').addEventListener('click', closeAndRefresh);
+    addrOverlay.addEventListener('click', (e)=>{ if(e.target===addrOverlay) closeAndRefresh(); });
+    wireEnterToConfirm(addrOverlay.querySelector('.zone-add-row'), addrOverlay.querySelector('#addrAddBtn'));
+
+    async function loadAddresses(){
+      const listWrap = addrOverlay.querySelector('#custAddrListWrap');
+      const { data: addrs, error } = await sb.from('customer_addresses').select('*').eq('customer_id', customerId).order('is_default', { ascending:false }).order('created_at', { ascending:true });
+      if(error){ listWrap.innerHTML = `<div class="orders-empty">تعذر تحميل العناوين</div>`; return; }
+      if(!addrs || addrs.length === 0){ listWrap.innerHTML = `<div class="orders-empty">لا توجد عناوين مسجلة لهذا العميل بعد</div>`; return; }
+      listWrap.innerHTML = addrs.map(a=> `
+        <div class="zone-row" data-id="${a.id}">
+          <div style="flex:1; min-width:120px;">
+            ${a.label ? `<span class="zone-name" style="display:block;">${escapeHtml(a.label)} ${a.is_default ? `<span style="font-size:10px; color:var(--basil); font-weight:700;">(افتراضي)</span>` : ''}</span>` : (a.is_default ? `<span style="font-size:10px; color:var(--basil); font-weight:700;">(افتراضي)</span>` : '')}
+            <span style="display:block; font-size:12px; color:var(--ink); margin-top:2px;">📍 ${escapeHtml(a.address)}</span>
+          </div>
+          ${!a.is_default ? `<button type="button" data-action="setDefault">تعيين كافتراضي</button>` : ''}
+          <button type="button" data-action="deleteAddr">حذف</button>
+        </div>`).join('');
+
+      listWrap.querySelectorAll('[data-action="setDefault"]').forEach(btn=>{
+        btn.addEventListener('click', async ()=>{
+          const id = btn.closest('.zone-row').dataset.id;
+          btn.disabled = true;
+          await sb.from('customer_addresses').update({ is_default:false }).eq('customer_id', customerId);
+          const { data: updated, error: updErr } = await sb.from('customer_addresses').update({ is_default:true }).eq('id', id).select('address').maybeSingle();
+          if(!updErr && updated){ await sb.from('customers').update({ address: updated.address }).eq('id', customerId); }
+          await loadAddresses();
+        });
+      });
+      listWrap.querySelectorAll('[data-action="deleteAddr"]').forEach(btn=>{
+        btn.addEventListener('click', async ()=>{
+          if(!confirm('حذف هذا العنوان؟')) return;
+          const row = btn.closest('.zone-row');
+          const id = row.dataset.id;
+          const wasDefault = addrs.find(a=> a.id === id)?.is_default;
+          btn.disabled = true;
+          const { error: delErr } = await sb.from('customer_addresses').delete().eq('id', id);
+          if(delErr){ toast('تعذر حذف العنوان'); return; }
+          if(wasDefault){
+            const { data: remaining } = await sb.from('customer_addresses').select('id,address').eq('customer_id', customerId).order('created_at', { ascending:true }).limit(1);
+            if(remaining && remaining.length > 0){
+              await sb.from('customer_addresses').update({ is_default:true }).eq('id', remaining[0].id);
+              await sb.from('customers').update({ address: remaining[0].address }).eq('id', customerId);
+            } else {
+              await sb.from('customers').update({ address: null }).eq('id', customerId);
+            }
+          }
+          await loadAddresses();
+        });
+      });
+    }
+    await loadAddresses();
+
+    addrOverlay.querySelector('#addrAddBtn').addEventListener('click', async ()=>{
+      const labelInput = addrOverlay.querySelector('#newAddrLabel');
+      const textInput = addrOverlay.querySelector('#newAddrText');
+      const label = labelInput.value.trim();
+      const address = textInput.value.trim();
+      if(!address){ textInput.focus(); return; }
+      const btn = addrOverlay.querySelector('#addrAddBtn');
+      btn.disabled = true;
+      const { count } = await sb.from('customer_addresses').select('id', { count:'exact', head:true }).eq('customer_id', customerId);
+      const isFirst = !count || count === 0;
+      const { error: insErr } = await sb.from('customer_addresses').insert({ customer_id: customerId, label: label || null, address, is_default: isFirst });
+      btn.disabled = false;
+      if(insErr){ toast('تعذر إضافة العنوان'); return; }
+      if(isFirst){ await sb.from('customers').update({ address }).eq('id', customerId); }
+      labelInput.value = ''; textInput.value = '';
+      toast('تمت إضافة العنوان');
+      await loadAddresses();
+    });
+  }
+
+  // إدارة أرقام تليفون العميل (أكتر من رقم لكل عميل، مع تحديد رقم افتراضي هو اللي بيتربط بالطلبات والواتساب)
+  async function openCustomerPhonesModal(customerId, customerName){
+    const phOverlay = document.createElement('div');
+    phOverlay.className = 'overlay';
+    phOverlay.innerHTML = `
+      <div class="modal">
+        <h3>أرقام تليفون ${escapeHtml(customerName || 'العميل')}</h3>
+        <div class="orders-empty" style="text-align:right; padding:0 0 10px; font-size:12px;">
+          الرقم "الافتراضي" هو اللي بيتربط بيه واتساب والطلبات الجديدة. باقي الأرقام للتواصل بس.
+        </div>
+        <div id="custPhoneListWrap"><div class="orders-empty">جارِ التحميل...</div></div>
+        <div class="zone-add-row" style="flex-wrap:wrap; margin-top:12px;">
+          <input type="text" id="newPhoneLabel" placeholder="التسمية (مثال: واتساب، الشغل)" style="width:150px;">
+          <input type="text" id="newPhoneText" placeholder="01xxxxxxxxx" style="width:140px; direction:ltr;">
+          <button type="button" class="btn-confirm" id="phoneAddBtn" style="white-space:nowrap;">إضافة رقم</button>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-cancel" id="phoneCloseBtn">إغلاق</button>
+        </div>
+      </div>`;
+    document.body.appendChild(phOverlay);
+    const closeAndRefresh = async ()=>{
+      phOverlay.remove();
+      await loadCustomers();
+      renderCustomers();
+    };
+    phOverlay.querySelector('#phoneCloseBtn').addEventListener('click', closeAndRefresh);
+    phOverlay.addEventListener('click', (e)=>{ if(e.target===phOverlay) closeAndRefresh(); });
+    wireEnterToConfirm(phOverlay.querySelector('.zone-add-row'), phOverlay.querySelector('#phoneAddBtn'));
+
+    // بيتأكد إن الرقم مش رقم أساسي لعميل تاني في نفس المطعم
+    async function isPhoneTakenByAnotherCustomer(phone){
+      const { data } = await sb.from('customers').select('id').eq('restaurant_id', restaurant.id).eq('phone', phone).neq('id', customerId).maybeSingle();
+      return !!data;
+    }
+
+    async function loadPhones(){
+      const listWrap = phOverlay.querySelector('#custPhoneListWrap');
+      const { data: phones, error } = await sb.from('customer_phones').select('*').eq('customer_id', customerId).order('is_default', { ascending:false }).order('created_at', { ascending:true });
+      if(error){ listWrap.innerHTML = `<div class="orders-empty">تعذر تحميل الأرقام</div>`; return; }
+      if(!phones || phones.length === 0){ listWrap.innerHTML = `<div class="orders-empty">لا توجد أرقام مسجلة لهذا العميل بعد</div>`; return; }
+      listWrap.innerHTML = phones.map(p=> `
+        <div class="zone-row" data-id="${p.id}">
+          <div style="flex:1; min-width:120px;">
+            ${p.label ? `<span class="zone-name" style="display:block;">${escapeHtml(p.label)} ${p.is_default ? `<span style="font-size:10px; color:var(--basil); font-weight:700;">(افتراضي)</span>` : ''}</span>` : (p.is_default ? `<span style="font-size:10px; color:var(--basil); font-weight:700;">(افتراضي)</span>` : '')}
+          </div>
+          <span class="zone-fee" style="direction:ltr;">${escapeHtml(p.phone)}</span>
+          ${!p.is_default ? `<button type="button" data-action="setDefaultPhone">تعيين كافتراضي</button>` : ''}
+          <button type="button" data-action="deletePhone">حذف</button>
+        </div>`).join('');
+
+      listWrap.querySelectorAll('[data-action="setDefaultPhone"]').forEach(btn=>{
+        btn.addEventListener('click', async ()=>{
+          const id = btn.closest('.zone-row').dataset.id;
+          const row = phones.find(p=> p.id === id);
+          btn.disabled = true;
+          if(await isPhoneTakenByAnotherCustomer(row.phone)){
+            toast('الرقم ده مسجل بالفعل كرقم أساسي لعميل تاني');
+            btn.disabled = false;
+            return;
+          }
+          const { error: custErr } = await sb.from('customers').update({ phone: row.phone }).eq('id', customerId);
+          if(custErr){ toast('تعذر تعيين الرقم كافتراضي — تأكد أنه غير مستخدم لعميل آخر'); btn.disabled = false; return; }
+          await sb.from('customer_phones').update({ is_default:false }).eq('customer_id', customerId);
+          await sb.from('customer_phones').update({ is_default:true }).eq('id', id);
+          await loadPhones();
+        });
+      });
+      listWrap.querySelectorAll('[data-action="deletePhone"]').forEach(btn=>{
+        btn.addEventListener('click', async ()=>{
+          if(!confirm('حذف هذا الرقم؟')) return;
+          const row = btn.closest('.zone-row');
+          const id = row.dataset.id;
+          const target = phones.find(p=> p.id === id);
+          if(target.is_default){ toast('مينفعش تحذف الرقم الافتراضي — عيّن رقم تاني افتراضي الأول'); return; }
+          btn.disabled = true;
+          const { error: delErr } = await sb.from('customer_phones').delete().eq('id', id);
+          if(delErr){ toast('تعذر حذف الرقم'); return; }
+          await loadPhones();
+        });
+      });
+    }
+    await loadPhones();
+
+    phOverlay.querySelector('#phoneAddBtn').addEventListener('click', async ()=>{
+      const labelInput = phOverlay.querySelector('#newPhoneLabel');
+      const phoneInput = phOverlay.querySelector('#newPhoneText');
+      const label = labelInput.value.trim();
+      const phone = phoneInput.value.replace(/[^\d]/g,'');
+      if(phone.length < 8){ phoneInput.focus(); return; }
+      const btn = phOverlay.querySelector('#phoneAddBtn');
+      btn.disabled = true;
+      if(await isPhoneTakenByAnotherCustomer(phone)){
+        toast('الرقم ده مسجل بالفعل لعميل تاني');
+        btn.disabled = false;
+        return;
+      }
+      const { count } = await sb.from('customer_phones').select('id', { count:'exact', head:true }).eq('customer_id', customerId);
+      const isFirst = !count || count === 0;
+      const { error: insErr } = await sb.from('customer_phones').insert({ customer_id: customerId, label: label || null, phone, is_default: isFirst });
+      btn.disabled = false;
+      if(insErr){ toast('تعذر إضافة الرقم — تأكد أنه مش مكرر لنفس العميل'); return; }
+      if(isFirst){ await sb.from('customers').update({ phone }).eq('id', customerId); }
+      labelInput.value = ''; phoneInput.value = '';
+      toast('تمت إضافة الرقم');
+      await loadPhones();
+    });
+  }
+
+  // دمج عميلين لهما نفس الهوية الفعلية في سجل واحد — الأرقام والعناوين تتوحّد تلقائيًا
+  function openMergeCustomersModal(){
+    if(allCustomers.length < 2){ toast('محتاج عميلين على الأقل عشان تدمج'); return; }
+    const mergeOverlay = document.createElement('div');
+    mergeOverlay.className = 'overlay';
+    const optionsHtml = allCustomers.map(c=> `<option value="${c.id}">${escapeHtml(c.name)} — ${escapeHtml(c.phone)}</option>`).join('');
+    mergeOverlay.innerHTML = `
+      <div class="modal">
+        <h3>دمج عملاء مكررين</h3>
+        <div class="orders-empty" style="text-align:right; padding:0 0 12px; font-size:12px;">
+          اختار العميلين اللي هما فعليًا نفس الشخص. كل أرقامه وعناوينه هتتجمع في سجل واحد، والعميل التاني هيتحذف نهائيًا.
+        </div>
+        <div style="display:flex; flex-direction:column; gap:3px; margin-bottom:10px;">
+          <label style="font-size:12px; color:var(--stone);">العميل اللي هيفضل (الأساسي)</label>
+          <select id="mergeKeepSelect" style="padding:8px; border-radius:8px; border:1px solid var(--line); background:var(--paper-dim); color:var(--ink);">${optionsHtml}</select>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:3px; margin-bottom:6px;">
+          <label style="font-size:12px; color:var(--stone);">العميل اللي هيتم دمجه وحذفه</label>
+          <select id="mergeAwaySelect" style="padding:8px; border-radius:8px; border:1px solid var(--line); background:var(--paper-dim); color:var(--ink);">${optionsHtml}</select>
+        </div>
+        <div class="orders-empty" style="text-align:right; padding:8px 0 0; font-size:11.5px;">
+          ⚠️ ملحوظة: إحصائيات المبيعات والطلبات القديمة بتتبع رقم التليفون اللي اتسجل بيه الطلب فعليًا، فمش هتندمج رجعيًا مع بعض — الدمج ده بيوحّد بيانات التواصل بس (الاسم/الأرقام/العناوين).
+        </div>
+        <div class="modal-actions">
+          <button class="btn-cancel" id="mergeCancelBtn">إلغاء</button>
+          <button class="btn-confirm" id="mergeConfirmBtn">دمج العملاء</button>
+        </div>
+      </div>`;
+    document.body.appendChild(mergeOverlay);
+    if(allCustomers.length > 1) mergeOverlay.querySelector('#mergeAwaySelect').selectedIndex = 1;
+    mergeOverlay.querySelector('#mergeCancelBtn').addEventListener('click', ()=> mergeOverlay.remove());
+    mergeOverlay.addEventListener('click', (e)=>{ if(e.target===mergeOverlay) mergeOverlay.remove(); });
+    mergeOverlay.querySelector('#mergeConfirmBtn').addEventListener('click', async ()=>{
+      const keepId = mergeOverlay.querySelector('#mergeKeepSelect').value;
+      const awayId = mergeOverlay.querySelector('#mergeAwaySelect').value;
+      if(keepId === awayId){ toast('اختار عميلين مختلفين'); return; }
+      const keepC = allCustomers.find(c=> c.id === keepId);
+      const awayC = allCustomers.find(c=> c.id === awayId);
+      if(!confirm(`هيتم دمج "${awayC.name} — ${awayC.phone}" جوّا "${keepC.name} — ${keepC.phone}" وحذفه نهائيًا. متابعة؟`)) return;
+      const btn = mergeOverlay.querySelector('#mergeConfirmBtn');
+      btn.disabled = true;
+      const { error } = await sb.rpc('merge_customers', { p_keep_id: keepId, p_merge_id: awayId });
+      if(error){ toast('تعذر تنفيذ الدمج'); btn.disabled = false; return; }
+      toast('تم دمج العملاء بنجاح');
+      mergeOverlay.remove();
+      await loadCustomers();
+      renderCustomers();
+    });
   }
 
   function renderCustomers(){
@@ -1761,15 +2332,29 @@ document.getElementById('customersBtn').addEventListener('click', async ()=>{
       <div class="zone-row" data-id="${c.id}" data-name="${escapeHtml(c.name||'')}" data-phone="${escapeHtml(c.phone||'')}" data-address="${escapeHtml(c.address||'')}">
         <div style="flex:1; min-width:120px;">
           <span class="zone-name" style="display:block;">${escapeHtml(c.name)}</span>
-          ${c.address ? `<span style="display:block; font-size:11.5px; color:var(--stone); margin-top:2px;">📍 ${escapeHtml(c.address)}</span>` : ''}
+          ${c.address ? `<span style="display:block; font-size:11.5px; color:var(--stone); margin-top:2px;">📍 ${escapeHtml(c.address)}${c._addressCount > 1 ? ` <span style="color:var(--ember);">(+${c._addressCount - 1} عنوان تاني)</span>` : ''}</span>` : ''}
         </div>
-        <span class="zone-fee" style="direction:ltr;">${escapeHtml(c.phone)}</span>
+        <span class="zone-fee" style="direction:ltr;">${escapeHtml(c.phone)}${c._phoneCount > 1 ? ` <span style="color:var(--ember); direction:rtl; display:inline-block;">(+${c._phoneCount - 1})</span>` : ''}</span>
+        <button type="button" data-action="addresses">📍 العناوين</button>
+        <button type="button" data-action="phones">📞 الأرقام</button>
         <button type="button" class="o-wa-btn" data-action="send" data-phone="${escapeHtml(c.phone)}" data-name="${escapeHtml(c.name)}">📲 واتساب</button>
         <button type="button" data-action="edit">تعديل</button>
         <button type="button" data-action="delete">حذف</button>
       </div>`).join('');
     wrap.querySelectorAll('[data-action="send"]').forEach(btn=>{
       btn.addEventListener('click', ()=> sendMenuLinkWhatsApp(btn.dataset.phone, btn.dataset.name));
+    });
+    wrap.querySelectorAll('[data-action="addresses"]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const row = btn.closest('.zone-row');
+        openCustomerAddressesModal(row.dataset.id, row.dataset.name);
+      });
+    });
+    wrap.querySelectorAll('[data-action="phones"]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const row = btn.closest('.zone-row');
+        openCustomerPhonesModal(row.dataset.id, row.dataset.name);
+      });
     });
     wrap.querySelectorAll('[data-action="delete"]').forEach(btn=>{
       btn.addEventListener('click', async ()=>{
@@ -1809,6 +2394,13 @@ document.getElementById('customersBtn').addEventListener('click', async ()=>{
           saveBtn.disabled = true;
           const { error: updErr } = await sb.from('customers').update({ name: newName, phone: newPhone, address: newAddress || null }).eq('id', id);
           if(updErr){ toast('تعذر حفظ التعديل — تأكد أن رقم التليفون غير مستخدم لعميل آخر'); saveBtn.disabled = false; return; }
+          // نزامن الرقم والعنوان الافتراضيين في جداول الأرقام/العناوين المتعددة لو موجودين
+          const { data: defPhone } = await sb.from('customer_phones').select('id').eq('customer_id', id).eq('is_default', true).maybeSingle();
+          if(defPhone) await sb.from('customer_phones').update({ phone: newPhone }).eq('id', defPhone.id);
+          else await ensureDefaultPhone(id, newPhone);
+          const { data: defAddr } = await sb.from('customer_addresses').select('id').eq('customer_id', id).eq('is_default', true).maybeSingle();
+          if(defAddr){ if(newAddress) await sb.from('customer_addresses').update({ address: newAddress }).eq('id', defAddr.id); }
+          else if(newAddress) await ensureDefaultAddress(id, newAddress);
           toast('تم تحديث بيانات العميل');
           await loadCustomers();
           renderCustomers();
@@ -1821,6 +2413,90 @@ document.getElementById('customersBtn').addEventListener('click', async ()=>{
   const ok = await loadCustomers();
   if(!ok){ overlay.querySelector('#customersListWrap').innerHTML = `<div class="orders-empty">تعذر تحميل العملاء، تأكد من إضافة جدول customers في قاعدة البيانات (راجع تعليمات الإعداد)</div>`; }
   else renderCustomers();
+
+  // عملاء جدد من الطلبات — مقترحين تلقائيًا من بيانات الطلبات، وميتضافوش إلا بعد موافقة صريحة
+  let currentPending = [];
+  async function loadAndRenderPendingCustomers(){
+    const { data: statRows } = await sb.from('customer_order_stats')
+      .select('customer_phone,customer_name,last_address,orders_count,last_order_at')
+      .eq('restaurant_id', restaurant.id)
+      .eq('suggestion_dismissed', false)
+      .order('last_order_at', { ascending:false });
+    const section = overlay.querySelector('#pendingCustomersSection');
+    const pendingWrap = overlay.querySelector('#pendingCustomersWrap');
+    const countLabel = overlay.querySelector('#pendingCustomersCount');
+    if(!statRows || statRows.length === 0){ section.style.display = 'none'; currentPending = []; return; }
+    const existingPhones = new Set(allCustomers.map(c=> c.phone));
+    currentPending = statRows.filter(s=> !existingPhones.has(s.customer_phone));
+    if(currentPending.length === 0){ section.style.display = 'none'; return; }
+    section.style.display = 'block';
+    countLabel.textContent = `(${currentPending.length})`;
+    pendingWrap.innerHTML = currentPending.map(p=> `
+      <div class="zone-row" data-phone="${escapeHtml(p.customer_phone)}" style="background:var(--paper-dim);">
+        <div style="flex:1; min-width:120px;">
+          <span class="zone-name" style="display:block;">${escapeHtml(p.customer_name || 'بدون اسم')} <span style="font-size:10.5px; font-weight:400; color:var(--stone);">(${p.orders_count} طلب)</span></span>
+          ${p.last_address ? `<span style="display:block; font-size:11.5px; color:var(--stone); margin-top:2px;">📍 ${escapeHtml(p.last_address)}</span>` : ''}
+        </div>
+        <span class="zone-fee" style="direction:ltr;">${escapeHtml(p.customer_phone)}</span>
+        <button type="button" data-action="confirmPending" style="border-color:var(--basil); color:var(--basil);">✅ إضافة</button>
+        <button type="button" data-action="dismissPending">تجاهل</button>
+      </div>`).join('');
+
+    pendingWrap.querySelectorAll('[data-action="confirmPending"]').forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        const row = btn.closest('.zone-row');
+        const phone = row.dataset.phone;
+        const p = currentPending.find(x=> x.customer_phone === phone);
+        btn.disabled = true;
+        const { data: upserted, error } = await sb.from('customers').upsert(
+          { restaurant_id: restaurant.id, name: p.customer_name || 'بدون اسم', phone: p.customer_phone, address: p.last_address || null },
+          { onConflict: 'restaurant_id,phone' }
+        ).select('id').maybeSingle();
+        if(error){ toast('تعذر إضافة العميل'); btn.disabled = false; return; }
+        if(upserted){ await ensureDefaultAddress(upserted.id, p.last_address); await ensureDefaultPhone(upserted.id, p.customer_phone); }
+        toast('تمت إضافة العميل بنجاح');
+        await loadCustomers();
+        renderCustomers();
+        await loadAndRenderPendingCustomers();
+      });
+    });
+    pendingWrap.querySelectorAll('[data-action="dismissPending"]').forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        const row = btn.closest('.zone-row');
+        const phone = row.dataset.phone;
+        btn.disabled = true;
+        const { error } = await sb.from('customer_order_stats').update({ suggestion_dismissed: true }).eq('restaurant_id', restaurant.id).eq('customer_phone', phone);
+        if(error){ toast('تعذر التجاهل'); btn.disabled = false; return; }
+        await loadAndRenderPendingCustomers();
+      });
+    });
+  }
+  if(ok) await loadAndRenderPendingCustomers();
+  overlay.querySelector('#mergeCustomersBtn').addEventListener('click', openMergeCustomersModal);
+
+  overlay.querySelector('#pendingAddAllBtn').addEventListener('click', async ()=>{
+    if(currentPending.length === 0) return;
+    if(!confirm(`سيتم إضافة ${currentPending.length} عميل لجدول العملاء. متابعة؟`)) return;
+    const btn = overlay.querySelector('#pendingAddAllBtn');
+    btn.disabled = true;
+    const payload = currentPending.map(p=> ({
+      restaurant_id: restaurant.id,
+      name: p.customer_name || 'بدون اسم',
+      phone: p.customer_phone,
+      address: p.last_address || null
+    }));
+    const { data: upsertedAll, error } = await sb.from('customers').upsert(payload, { onConflict: 'restaurant_id,phone' }).select('id,phone');
+    btn.disabled = false;
+    if(error){ toast('تعذر إضافة العملاء'); return; }
+    if(upsertedAll){
+      const phoneToAddress = new Map(currentPending.map(p=> [p.customer_phone, p.last_address]));
+      await Promise.all(upsertedAll.map(u=> Promise.all([ensureDefaultAddress(u.id, phoneToAddress.get(u.phone)), ensureDefaultPhone(u.id, u.phone)])));
+    }
+    toast(`تمت إضافة ${payload.length} عميل بنجاح`);
+    await loadCustomers();
+    renderCustomers();
+    await loadAndRenderPendingCustomers();
+  });
 
   overlay.querySelector('#customersSearchInput').addEventListener('input', renderCustomers);
 
@@ -1854,14 +2530,16 @@ document.getElementById('customersBtn').addEventListener('click', async ()=>{
     if(phone.length < 8){ phoneInput.focus(); return; }
     const btn = overlay.querySelector('#customerAddBtn');
     btn.disabled = true;
-    const { error } = await sb.from('customers').upsert({ restaurant_id: restaurant.id, name, phone, address: address || null }, { onConflict: 'restaurant_id,phone' });
+    const { data: upserted, error } = await sb.from('customers').upsert({ restaurant_id: restaurant.id, name, phone, address: address || null }, { onConflict: 'restaurant_id,phone' }).select('id').maybeSingle();
     btn.disabled = false;
     if(error){ toast('تعذر إضافة العميل'); return; }
+    if(upserted){ await ensureDefaultAddress(upserted.id, address); await ensureDefaultPhone(upserted.id, phone); }
     nameInput.value = '';
     phoneInput.value = '';
     addressInput.value = '';
     await loadCustomers();
     renderCustomers();
+    await loadAndRenderPendingCustomers();
   });
 
   overlay.querySelector('#customersImportBtn').addEventListener('click', ()=>{
@@ -1912,6 +2590,7 @@ document.getElementById('customersBtn').addEventListener('click', async ()=>{
     if(error){ toast('حدث خطأ أثناء الاستيراد'); return; }
     await loadCustomers();
     renderCustomers();
+    await loadAndRenderPendingCustomers();
     toast(`تم استيراد ${parsed.length} عميل بنجاح`);
   });
 });
@@ -1922,10 +2601,18 @@ document.getElementById('viewOrdersBtn').addEventListener('click', async ()=>{
   overlay.className = 'overlay';
   overlay.innerHTML = `
     <div class="modal">
-      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:16px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; flex-wrap:wrap;">
         <h3 style="margin:0;">الطلبات الواردة</h3>
-        <button type="button" class="btn-export-sm" id="ordersExportBtn">📥 تصدير Excel</button>
+        <span style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+          <select id="alertToneSelect" style="font-size:11px; padding:4px 8px; border-radius:999px; border:1px solid var(--line); background:var(--paper-dim); color:var(--stone);">
+            ${Object.entries(ALERT_TONES).map(([key,t])=> `<option value="${key}">${t.label}</option>`).join('')}
+          </select>
+          <button type="button" class="chip-btn" id="alertTonePreviewBtn">🔊 تجربة</button>
+          <button type="button" class="chip-btn" id="autoPrintToggleBtn"></button>
+          <button type="button" class="btn-export-sm" id="ordersExportBtn">📥 تصدير Excel</button>
+        </span>
       </div>
+      <div id="autoPrintNote" class="orders-empty" style="display:none; text-align:right; padding:0 0 10px; font-size:11.5px;"></div>
       <div class="order-filters" id="ordersFilters">
         <button type="button" class="order-filter-btn active" data-filter="all">الكل</button>
         <button type="button" class="order-filter-btn" data-filter="new">جديدة</button>
@@ -1944,6 +2631,31 @@ document.getElementById('viewOrdersBtn').addEventListener('click', async ()=>{
   overlay.querySelector('#ordersCloseBtn').addEventListener('click', ()=> overlay.remove());
   overlay.addEventListener('click', (e)=>{ if(e.target===overlay) overlay.remove(); });
 
+  const toneSelect = overlay.querySelector('#alertToneSelect');
+  toneSelect.value = getSelectedAlertTone();
+  toneSelect.addEventListener('change', ()=>{
+    setSelectedAlertTone(toneSelect.value);
+    playToneByKey(toneSelect.value);
+    toast('تم حفظ النغمة على هذا الجهاز');
+  });
+  overlay.querySelector('#alertTonePreviewBtn').addEventListener('click', ()=> playToneByKey(toneSelect.value));
+
+  const autoPrintBtn = overlay.querySelector('#autoPrintToggleBtn');
+  const autoPrintNote = overlay.querySelector('#autoPrintNote');
+  const refreshAutoPrintUI = ()=>{
+    const on = isAutoPrintEnabled();
+    autoPrintBtn.textContent = on ? '🖨️ الطباعة التلقائية: مفعّلة' : '🖨️ الطباعة التلقائية: متوقفة';
+    autoPrintBtn.classList.toggle('active', on);
+    autoPrintNote.style.display = on ? 'block' : 'none';
+    autoPrintNote.innerHTML = `تفعيل الطباعة التلقائية هنا خاص بهذا الجهاز/المتصفح بس (مثلًا شاشة المطبخ). المتصفح هيفتح نافذة الطباعة تلقائيًا مع كل طلب جديد، وهتحتاج تضغط "طباعة" فيها إلا لو ظبطت المتصفح على وضع "kiosk printing" اللي بيطبع مباشرة من غير نافذة — اسأل الدعم الفني لو محتاج تظبيط الجهاز بالطريقة دي.`;
+  };
+  refreshAutoPrintUI();
+  autoPrintBtn.addEventListener('click', ()=>{
+    setAutoPrintEnabled(!isAutoPrintEnabled());
+    refreshAutoPrintUI();
+    toast(isAutoPrintEnabled() ? 'تم تفعيل الطباعة التلقائية على هذا الجهاز' : 'تم إيقاف الطباعة التلقائية على هذا الجهاز');
+  });
+
   const { data: orders, error } = await sb.from('orders').select('*').eq('restaurant_id', restaurant.id).order('created_at', { ascending:false });
   const wrap = overlay.querySelector('#ordersListWrap');
   if(error){ wrap.innerHTML = `<div class="orders-empty">تعذر تحميل الطلبات</div>`; return; }
@@ -1958,6 +2670,10 @@ document.getElementById('viewOrdersBtn').addEventListener('click', async ()=>{
       itemsByOrder[oi.order_id].push(oi);
     });
   }
+
+  const { data: allDriversList } = await sb.from('drivers').select('id,name,phone,is_active').eq('restaurant_id', restaurant.id).order('is_active', { ascending:false }).order('name');
+  const driversById = {};
+  (allDriversList || []).forEach(d=> driversById[d.id] = d);
 
   const STATUS_LABELS = { pending:'قيد الانتظار', preparing:'قيد التجهيز', delivered:'تم التسليم', cancelled:'ملغي' };
 
@@ -2010,6 +2726,23 @@ document.getElementById('viewOrdersBtn').addEventListener('click', async ()=>{
     const rowClasses = ['order-row', fresh ? 'is-new' : '', today ? 'is-today' : ''].filter(Boolean).join(' ');
     const tagsHtml = `${fresh ? '<span class="o-tag new">جديد</span>' : ''}${today ? '<span class="o-tag today">اليوم</span>' : ''}`;
     const numberHtml = o.order_number != null ? `<span class="o-number">#${o.order_number}</span>` : '';
+    const isActive = status === 'pending' || status === 'preparing';
+    let prepHtml = '';
+    if(isActive && o.estimated_ready_at){
+      const readyAt = new Date(o.estimated_ready_at);
+      const now = new Date();
+      const diffMin = Math.round((readyAt - now) / 60000);
+      const timeLabel = readyAt.toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit' });
+      let colorVar = 'var(--basil)', statusLabel = `جاهز الساعة ${timeLabel}`;
+      if(diffMin < 0){ colorVar = 'var(--danger)'; statusLabel = `متأخر ${Math.abs(diffMin)} دقيقة عن الموعد المتوقع (${timeLabel})`; }
+      else if(diffMin <= 5){ colorVar = '#B8872F'; statusLabel = `قرّب الموعد — جاهز الساعة ${timeLabel}`; }
+      prepHtml = `
+        <div class="o-time" style="margin-top:6px; display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+          <span style="color:${colorVar}; font-weight:700;">⏱️ ${statusLabel}</span>
+          <button type="button" data-action="prepMinus" data-order-id="${o.id}" style="width:auto; padding:2px 8px; font-size:11px; border-radius:999px; border:1px solid var(--line); background:var(--paper-dim); color:var(--stone); cursor:pointer;">-5</button>
+          <button type="button" data-action="prepPlus" data-order-id="${o.id}" style="width:auto; padding:2px 8px; font-size:11px; border-radius:999px; border:1px solid var(--line); background:var(--paper-dim); color:var(--stone); cursor:pointer;">+5</button>
+        </div>`;
+    }
     return `
       <div class="${rowClasses}" data-order-id="${o.id}">
         <div class="o-card-top">
@@ -2027,6 +2760,7 @@ document.getElementById('viewOrdersBtn').addEventListener('click', async ()=>{
         ${totalsHtml}
         ${o.notes ? `<div class="o-notes">📝 ${escapeHtml(o.notes)}</div>` : ''}
         <div class="o-time" style="margin-top:6px;">🕒 ${time}</div>
+        ${prepHtml}
         <select class="status-select" data-action="statusSelect" ${(status==='delivered' || status==='cancelled') ? 'disabled title="لا يمكن تغيير حالة الطلب بعد أن أصبح نهائيًا"' : ''}>
           <option value="pending" ${status==='pending' ? 'selected' : ''}>قيد الانتظار</option>
           <option value="preparing" ${status==='preparing' ? 'selected' : ''}>قيد التجهيز</option>
@@ -2034,6 +2768,14 @@ document.getElementById('viewOrdersBtn').addEventListener('click', async ()=>{
           <option value="cancelled" ${status==='cancelled' ? 'selected' : ''}>ملغي</option>
         </select>
         ${(status==='delivered' || status==='cancelled') ? `<div class="o-time" style="margin-top:2px; font-size:11px;">لا يمكن تغيير الحالة بعد أن أصبحت نهائية</div>` : ''}
+        ${o.order_type !== 'pickup' ? `
+        <div style="display:flex; align-items:center; gap:6px; margin-top:8px; flex-wrap:wrap;">
+          <select class="status-select" data-action="driverSelect" style="width:auto; flex:1; min-width:120px;">
+            <option value="">🚴 بدون سائق معيّن</option>
+            ${Object.values(driversById).map(d=> `<option value="${d.id}" ${o.driver_id === d.id ? 'selected' : ''}>${escapeHtml(d.name)}${!d.is_active ? ' (غير نشط)' : ''}</option>`).join('')}
+          </select>
+          ${o.driver_id && driversById[o.driver_id] ? `<button type="button" class="o-wa-btn" data-action="sendDriverWa" data-order-id="${o.id}" title="إرسال تفاصيل الطلب للسائق عبر واتساب">📲 إرسال للسائق</button>` : ''}
+        </div>` : ''}
       </div>`;
   }
 
@@ -2078,6 +2820,60 @@ document.getElementById('viewOrdersBtn').addEventListener('click', async ()=>{
           select.disabled = false;
         }
         toast('تم تحديث حالة الطلب');
+      });
+
+      const driverSelect = row.querySelector('[data-action="driverSelect"]');
+      if(driverSelect){
+        driverSelect.addEventListener('change', async ()=>{
+          const newDriverId = driverSelect.value || null;
+          driverSelect.disabled = true;
+          const { error: updErr } = await sb.from('orders').update({ driver_id: newDriverId, driver_assigned_at: newDriverId ? new Date().toISOString() : null }).eq('id', orderId);
+          driverSelect.disabled = false;
+          if(updErr){ toast('تعذر تعيين السائق'); return; }
+          const orderObj = orders.find(o=> o.id === orderId);
+          if(orderObj) orderObj.driver_id = newDriverId;
+          toast(newDriverId ? 'تم تعيين السائق' : 'تم إلغاء تعيين السائق');
+          let sendBtn = row.querySelector('[data-action="sendDriverWa"]');
+          if(newDriverId && driversById[newDriverId]){
+            if(!sendBtn){
+              sendBtn = document.createElement('button');
+              sendBtn.type = 'button';
+              sendBtn.className = 'o-wa-btn';
+              sendBtn.dataset.action = 'sendDriverWa';
+              sendBtn.dataset.orderId = orderId;
+              sendBtn.title = 'إرسال تفاصيل الطلب للسائق عبر واتساب';
+              sendBtn.textContent = '📲 إرسال للسائق';
+              driverSelect.insertAdjacentElement('afterend', sendBtn);
+              sendBtn.addEventListener('click', ()=> sendOrderToDriverWhatsApp(orderObj, itemsByOrder[orderObj.id] || [], driversById[newDriverId]));
+            }
+          } else if(sendBtn){
+            sendBtn.remove();
+          }
+        });
+      }
+      const sendDriverBtn = row.querySelector('[data-action="sendDriverWa"]');
+      if(sendDriverBtn){
+        sendDriverBtn.addEventListener('click', ()=>{
+          const orderObj = orders.find(o=> o.id === orderId);
+          const d = orderObj && driversById[orderObj.driver_id];
+          if(orderObj && d) sendOrderToDriverWhatsApp(orderObj, itemsByOrder[orderObj.id] || [], d);
+        });
+      }
+      ['prepMinus','prepPlus'].forEach(action=>{
+        const btn = row.querySelector(`[data-action="${action}"]`);
+        if(!btn) return;
+        btn.addEventListener('click', async ()=>{
+          const orderObj = orders.find(o=> o.id === orderId);
+          if(!orderObj || !orderObj.estimated_ready_at) return;
+          const deltaMin = action === 'prepPlus' ? 5 : -5;
+          const newTime = new Date(new Date(orderObj.estimated_ready_at).getTime() + deltaMin*60000).toISOString();
+          btn.disabled = true;
+          const { error: updErr } = await sb.from('orders').update({ estimated_ready_at: newTime }).eq('id', orderId);
+          btn.disabled = false;
+          if(updErr){ toast('تعذر تحديث وقت الجاهزية'); return; }
+          orderObj.estimated_ready_at = newTime;
+          renderList();
+        });
       });
     });
   }
@@ -2818,6 +3614,222 @@ async function openAdminPanel(){
   activateAdminTab('restaurants');
 }
 
+// رسم بياني SVG خفيف لاتجاه المبيعات (آخر N يوم) — من غير أي مكتبة خارجية
+function buildSalesTrendSVG(rows, numDays, metric){
+  const byDay = {};
+  (rows || []).forEach(r=>{ byDay[r.day] = r; });
+  const days = [];
+  for(let i = numDays - 1; i >= 0; i--){
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const key = d.toLocaleDateString('en-CA', { timeZone:'Africa/Cairo' });
+    const r = byDay[key];
+    const value = metric === 'count' ? (r ? Number(r.orders_count || 0) : 0) : (r ? Number(r.orders_total || 0) : 0);
+    days.push({ key, value, dateObj: d });
+  }
+  const max = Math.max(1, ...days.map(d=> d.value));
+  const w = 700, h = 200, padL = 8, padR = 8, padT = 10, padB = 26;
+  const chartW = w - padL - padR, chartH = h - padT - padB;
+  const barGap = 2;
+  const barW = Math.max(2, (chartW / days.length) - barGap);
+  const labelEvery = Math.ceil(days.length / 6);
+  const bars = days.map((d, i)=>{
+    const x = padL + i * (chartW / days.length);
+    const barH = (d.value / max) * chartH;
+    const y = padT + (chartH - barH);
+    const dLabel = d.dateObj.toLocaleDateString('ar-EG', { day:'numeric', month:'short', timeZone:'Africa/Cairo' });
+    const valLabel = metric === 'count' ? `${d.value} طلب` : `${d.value.toFixed(2)} EGP`;
+    const showLabel = (i % labelEvery === 0) || i === days.length - 1;
+    return `
+      <rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(barH,0).toFixed(1)}" rx="2" fill="var(--ember)" opacity="${d.value > 0 ? 1 : 0.15}">
+        <title>${dLabel} — ${valLabel}</title>
+      </rect>
+      ${showLabel ? `<text x="${(x + barW/2).toFixed(1)}" y="${h - 8}" font-size="9" fill="var(--stone)" text-anchor="middle">${dLabel}</text>` : ''}`;
+  }).join('');
+  const totalVal = days.reduce((s,d)=> s + d.value, 0);
+  const emptyNote = totalVal === 0 ? `<div class="orders-empty" style="text-align:center; padding:8px 0 0; font-size:12px;">لا توجد بيانات كافية في الفترة دي بعد</div>` : '';
+  return `<svg viewBox="0 0 ${w} ${h}" style="width:100%; height:auto; display:block;">${bars}</svg>${emptyNote}`;
+}
+
+// رسم بياني لتوزيع الطلبات على مدار 24 ساعة
+function buildHourDistributionSVG(byHour){
+  const max = Math.max(1, ...byHour);
+  const w = 700, h = 170, padL = 8, padR = 8, padT = 10, padB = 24;
+  const chartW = w - padL - padR, chartH = h - padT - padB;
+  const barGap = 3;
+  const barW = (chartW / 24) - barGap;
+  const bars = byHour.map((count, h24)=>{
+    const x = padL + h24 * (chartW / 24);
+    const barH = (count / max) * chartH;
+    const y = padT + (chartH - barH);
+    const showLabel = h24 % 3 === 0;
+    return `
+      <rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(barH,0).toFixed(1)}" rx="2" fill="var(--ember)" opacity="${count > 0 ? 1 : 0.15}">
+        <title>${String(h24).padStart(2,'0')}:00 — ${count} طلب</title>
+      </rect>
+      ${showLabel ? `<text x="${(x + barW/2).toFixed(1)}" y="${h - 6}" font-size="9" fill="var(--stone)" text-anchor="middle">${String(h24).padStart(2,'0')}</text>` : ''}`;
+  }).join('');
+  return `<svg viewBox="0 0 ${w} ${h}" style="width:100%; height:auto; display:block;">${bars}</svg>`;
+}
+
+// رسم بياني لتوزيع الطلبات على أيام الأسبوع
+function buildDowDistributionSVG(byDow, labels){
+  const max = Math.max(1, ...byDow);
+  const w = 700, h = 170, padL = 8, padR = 8, padT = 10, padB = 24;
+  const chartW = w - padL - padR, chartH = h - padT - padB;
+  const barGap = 8;
+  const barW = (chartW / 7) - barGap;
+  const bars = byDow.map((count, i)=>{
+    const x = padL + i * (chartW / 7) + barGap/2;
+    const barH = (count / max) * chartH;
+    const y = padT + (chartH - barH);
+    return `
+      <rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(barH,0).toFixed(1)}" rx="3" fill="var(--ember)" opacity="${count > 0 ? 1 : 0.15}">
+        <title>${labels[i]} — ${count} طلب</title>
+      </rect>
+      <text x="${(x + barW/2).toFixed(1)}" y="${h - 6}" font-size="9" fill="var(--stone)" text-anchor="middle">${labels[i].slice(0,3)}</text>`;
+  }).join('');
+  return `<svg viewBox="0 0 ${w} ${h}" style="width:100%; height:auto; display:block;">${bars}</svg>`;
+}
+
+// ملخص توصيل مقابل استلام من المحل
+function buildDeliveryTypeSummary(typeRows, err){
+  if(err || !typeRows || typeRows.length === 0){
+    return `لا توجد بيانات كافية بعد`;
+  }
+  const delivery = typeRows.find(r=> r.order_type === 'delivery') || { orders_count:0, orders_total:0 };
+  const pickup = typeRows.find(r=> r.order_type === 'pickup') || { orders_count:0, orders_total:0 };
+  const totalCount = Number(delivery.orders_count) + Number(pickup.orders_count);
+  const deliveryPct = totalCount ? Math.round(Number(delivery.orders_count)/totalCount*100) : 0;
+  const pickupPct = totalCount ? 100 - deliveryPct : 0;
+  return `
+    <div class="orders-list">
+      <div class="order-row" style="display:flex; justify-content:space-between; align-items:center;">
+        <span class="o-name" style="font-weight:700;">🚴 توصيل</span>
+        <span class="o-time" style="text-align:left; margin:0;">${delivery.orders_count} طلب (${deliveryPct}%) — ${Number(delivery.orders_total).toFixed(2)} EGP</span>
+      </div>
+      <div class="order-row" style="display:flex; justify-content:space-between; align-items:center;">
+        <span class="o-name" style="font-weight:700;">🏠 استلام من المحل</span>
+        <span class="o-time" style="text-align:left; margin:0;">${pickup.orders_count} طلب (${pickupPct}%) — ${Number(pickup.orders_total).toFixed(2)} EGP</span>
+      </div>
+    </div>`;
+}
+
+// أكتر المناطق طلبًا (توصيل فقط)
+function buildTopAreasList(areaRows, err){
+  if(err || !areaRows || areaRows.length === 0){
+    return `<div class="orders-empty">لا توجد بيانات كافية بعد (محتاج طلبات توصيل بمناطق مسجّلة)</div>`;
+  }
+  const top = [...areaRows].sort((a,b)=> b.orders_count - a.orders_count).slice(0, 8);
+  return `
+    <div class="orders-list">
+      ${top.map((a,i)=> {
+        const avgFee = a.orders_count ? (Number(a.delivery_fee_total)/a.orders_count) : 0;
+        return `
+        <div class="order-row" style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="o-name" style="font-weight:700;">${i+1}. ${escapeHtml(a.area)}</span>
+          <span class="o-time" style="text-align:left; margin:0;">${a.orders_count} طلب — متوسط توصيل ${avgFee.toFixed(2)} EGP — إجمالي ${Number(a.orders_total).toFixed(2)} EGP</span>
+        </div>`;
+      }).join('')}
+    </div>
+    <div class="orders-empty" style="text-align:right; padding:6px 0 0; font-size:12px;">
+      هذه الإحصائية ثابتة ولا تتأثر بحذف الطلبات القديمة.
+    </div>`;
+}
+
+// رؤى تلقائية بسيطة (rule-based) مبنية على البيانات الثابتة المتاحة بالفعل — من غير أي استعلامات إضافية
+function buildInsights({ rows, itemStatsRows, hourlyRows, custRows }){
+  const cards = [];
+  const dayKey = (d)=> d.toLocaleDateString('en-CA', { timeZone:'Africa/Cairo' });
+  const sumRange = (list, field, startDaysAgo, endDaysAgo)=>{
+    const start = new Date(); start.setDate(start.getDate() - startDaysAgo);
+    const end = new Date(); end.setDate(end.getDate() - endDaysAgo);
+    const startKey = dayKey(start), endKey = dayKey(end);
+    return list.filter(r=> r.day >= startKey && r.day <= endKey).reduce((s,r)=> s + Number(r[field]||0), 0);
+  };
+
+  // 1) اتجاه المبيعات: آخر 7 أيام مقابل الـ7 اللي قبلهم
+  const last7Sales = sumRange(rows, 'orders_total', 6, 0);
+  const prev7Sales = sumRange(rows, 'orders_total', 13, 7);
+  if(prev7Sales > 0){
+    const delta = ((last7Sales - prev7Sales) / prev7Sales) * 100;
+    if(delta >= 15){
+      cards.push({ type:'positive', icon:'📈', text:`مبيعاتك في آخر 7 أيام زادت ${delta.toFixed(0)}% عن الأسبوع اللي قبله (${last7Sales.toFixed(0)} مقابل ${prev7Sales.toFixed(0)} جنيه).` });
+    } else if(delta <= -15){
+      cards.push({ type:'warning', icon:'📉', text:`مبيعاتك في آخر 7 أيام قلّت ${Math.abs(delta).toFixed(0)}% عن الأسبوع اللي قبله (${last7Sales.toFixed(0)} مقابل ${prev7Sales.toFixed(0)} جنيه).` });
+    }
+  }
+
+  // 2) عدم وجود طلبات في آخر 3 أيام
+  const last3Count = sumRange(rows, 'orders_count', 2, 0);
+  if(last3Count === 0 && rows.length > 3){
+    cards.push({ type:'warning', icon:'⚠️', text:`مفيش أي طلبات مسجّلة في آخر 3 أيام — يستاهل تتأكد إن المنيو والدفع شغالين تمام.` });
+  }
+
+  // 3) تركّز الطلبات في وقت معيّن
+  if(hourlyRows && hourlyRows.length > 0){
+    const byHour = Array.from({length:24}, ()=>0);
+    let totalHourCount = 0;
+    hourlyRows.forEach(r=>{ byHour[r.hour] += Number(r.orders_count||0); totalHourCount += Number(r.orders_count||0); });
+    let peakHour = 0; byHour.forEach((c,h)=>{ if(c > byHour[peakHour]) peakHour = h; });
+    const peakShare = totalHourCount ? (byHour[peakHour] / totalHourCount * 100) : 0;
+    if(peakShare >= 25){
+      cards.push({ type:'info', icon:'⏰', text:`${peakShare.toFixed(0)}% من طلباتك بتتركّز في ساعة واحدة (${String(peakHour).padStart(2,'0')}:00 – ${String((peakHour+1)%24).padStart(2,'0')}:00) — خلي بالك من التجهيز في الوقت ده.` });
+    }
+  }
+
+  // 4) أصناف في تراجع (مقارنة آخر 14 يوم بالـ14 اللي قبلهم)
+  if(itemStatsRows && itemStatsRows.length > 0){
+    const agg = {};
+    itemStatsRows.forEach(r=>{
+      if(!agg[r.item_name]) agg[r.item_name] = { last14:0, prev14:0 };
+    });
+    const start1 = new Date(); start1.setDate(start1.getDate()-13);
+    const start1Key = dayKey(start1), todayKey = dayKey(new Date());
+    const start2 = new Date(); start2.setDate(start2.getDate()-27);
+    const end2 = new Date(); end2.setDate(end2.getDate()-14);
+    const start2Key = dayKey(start2), end2Key = dayKey(end2);
+    itemStatsRows.forEach(r=>{
+      if(r.day >= start1Key && r.day <= todayKey) agg[r.item_name].last14 += Number(r.quantity||0);
+      if(r.day >= start2Key && r.day <= end2Key) agg[r.item_name].prev14 += Number(r.quantity||0);
+    });
+    let worst = null;
+    Object.entries(agg).forEach(([name,v])=>{
+      if(v.prev14 >= 5){
+        const delta = ((v.last14 - v.prev14) / v.prev14) * 100;
+        if(delta <= -40 && (!worst || delta < worst.delta)) worst = { name, delta, ...v };
+      }
+    });
+    if(worst){
+      cards.push({ type:'warning', icon:'🔻', text:`صنف "${worst.name}" مبيعاته قلّت ${Math.abs(worst.delta).toFixed(0)}% في آخر 14 يوم (${worst.last14} مقابل ${worst.prev14} قطعة) — يستاهل مراجعة.` });
+    }
+    let best = null;
+    Object.entries(agg).forEach(([name,v])=>{
+      if(v.prev14 >= 3){
+        const delta = ((v.last14 - v.prev14) / v.prev14) * 100;
+        if(delta >= 50 && (!best || delta > best.delta)) best = { name, delta, ...v };
+      }
+    });
+    if(best){
+      cards.push({ type:'positive', icon:'🔥', text:`صنف "${best.name}" مبيعاته زادت ${best.delta.toFixed(0)}% في آخر 14 يوم (${best.last14} مقابل ${best.prev14} قطعة) — استغل الترند ده.` });
+    }
+  }
+
+  // 5) نسبة العملاء المتكررين
+  if(custRows && custRows.length >= 5){
+    const repeat = custRows.filter(c=> c.orders_count > 1).length;
+    const pct = Math.round(repeat / custRows.length * 100);
+    if(pct < 20){
+      cards.push({ type:'info', icon:'👥', text:`بس ${pct}% من عملاءك طلبوا أكتر من مرة — ممكن تفكر في عرض أو رسالة متابعة للعملاء اللي طلبوا مرة واحدة بس.` });
+    }
+  }
+
+  if(cards.length === 0){
+    return `<div class="insight-card info"><span class="insight-icon">💡</span><span>لسه مفيش بيانات كفاية لرؤى تلقائية — هتظهر أول ما يتراكم عندك تاريخ طلبات أكتر.</span></div>`;
+  }
+  return cards.slice(0,5).map(c=> `<div class="insight-card ${c.type}"><span class="insight-icon">${c.icon}</span><span>${escapeHtml(c.text)}</span></div>`).join('');
+}
+
 document.getElementById('viewStatsBtn').addEventListener('click', async ()=>{
   const overlay = document.createElement('div');
   overlay.className = 'overlay';
@@ -2889,36 +3901,465 @@ document.getElementById('viewStatsBtn').addEventListener('click', async ()=>{
       ${visitCard('آخر 30 يوم', monthVisits)}
       ${visitCard('الإجمالي منذ البداية', allTimeVisits)}
     </div>
-    <h3 style="margin-top:20px;">${biz(restaurant.business_type,'itemsDef')} الأكثر طلبًا</h3>
-    <div id="topItemsWrap"><div class="orders-empty">جارِ التحميل...</div></div>`;
+    <div class="orders-empty" style="text-align:right; padding:10px 0 0; font-size:12px;">
+      عايز تحليل أعمق (اتجاه المبيعات، أكتر الأصناف، أوقات الذروة، العملاء، المناطق، وتصدير تقرير)؟ جرّب "التقارير" من شريط الأدوات.
+    </div>`;
+});
+
+document.getElementById('reportsBtn').addEventListener('click', async ()=>{
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.innerHTML = `
+    <div class="modal">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:4px;">
+        <h3 style="margin:0;">التقارير والتحليلات</h3>
+        <button type="button" class="btn-export-sm" id="statsExportPdfBtn">📄 تصدير تقرير شهري</button>
+      </div>
+      <div id="statsSummaryWrap"><div class="orders-empty">جارِ التحميل...</div></div>
+      <div class="modal-actions">
+        <button class="btn-cancel" id="statsCloseBtn">إغلاق</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.querySelector('#statsCloseBtn').addEventListener('click', ()=> overlay.remove());
+  overlay.addEventListener('click', (e)=>{ if(e.target===overlay) overlay.remove(); });
+
+  const wrap = overlay.querySelector('#statsSummaryWrap');
+  const { data: rows, error } = await sb.from('order_stats_daily').select('*').eq('restaurant_id', restaurant.id).order('day', { ascending:false });
+  if(error){ wrap.innerHTML = `<div class="orders-empty">تعذر تحميل التقارير</div>`; return; }
+  if(!rows || rows.length === 0){ wrap.innerHTML = `<div class="orders-empty">لا توجد بيانات كافية بعد</div>`; return; }
+
+  wrap.innerHTML = `
+    <div id="insightsWrap"></div>
+    <h3 style="margin-top:0; display:flex; justify-content:space-between; align-items:center;">
+      <span>اتجاه المبيعات</span>
+      <span style="display:flex; gap:6px;">
+        <button type="button" class="chip-btn active" data-metric="total">المبيعات</button>
+        <button type="button" class="chip-btn" data-metric="count">عدد الطلبات</button>
+      </span>
+    </h3>
+    <div id="salesTrendWrap"></div>
+    <h3 style="margin-top:20px;">تقرير المبيعات التفصيلي</h3>
+    <div style="display:flex; gap:8px; align-items:end; flex-wrap:wrap; margin-bottom:10px;">
+      <div style="display:flex; flex-direction:column; gap:3px;">
+        <label style="font-size:11px; color:var(--stone);">من تاريخ</label>
+        <input type="date" id="salesReportFrom" style="font-size:12px; padding:6px 8px; border-radius:8px; border:1px solid var(--line); background:var(--paper-dim); color:var(--ink);">
+      </div>
+      <div style="display:flex; flex-direction:column; gap:3px;">
+        <label style="font-size:11px; color:var(--stone);">إلى تاريخ</label>
+        <input type="date" id="salesReportTo" style="font-size:12px; padding:6px 8px; border-radius:8px; border:1px solid var(--line); background:var(--paper-dim); color:var(--ink);">
+      </div>
+      <button type="button" class="chip-btn active" id="salesReportGoBtn" style="padding:7px 14px;">عرض</button>
+      <button type="button" class="btn-export-sm" id="salesReportExportBtn" style="margin-right:auto;">⬇️ تصدير Excel</button>
+    </div>
+    <div id="salesReportWrap"><div class="orders-empty">اختار فترة واضغط "عرض"</div></div>
+    <h3 style="margin-top:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+      <span>${biz(restaurant.business_type,'itemsDef')} الأكثر طلبًا</span>
+      <span style="display:flex; gap:6px; flex-wrap:wrap;">
+        <select id="topItemsPeriod" style="font-size:11px; padding:4px 8px; border-radius:999px; border:1px solid var(--line); background:var(--paper-dim); color:var(--stone);">
+          <option value="7">آخر 7 أيام</option>
+          <option value="30" selected>آخر 30 يوم</option>
+          <option value="90">آخر 90 يوم</option>
+          <option value="0">كل الوقت</option>
+        </select>
+        <button type="button" class="chip-btn active" data-sort="quantity">الأكثر طلبًا</button>
+        <button type="button" class="chip-btn" data-sort="revenue">الأعلى إيرادًا</button>
+      </span>
+    </h3>
+    <div id="topItemsWrap"><div class="orders-empty">جارِ التحميل...</div></div>
+    <h3 style="margin-top:20px;">أوقات الذروة</h3>
+    <div id="peakSummaryWrap" class="orders-empty">جارِ التحميل...</div>
+    <div class="orders-empty" style="text-align:right; padding:10px 0 4px; font-size:12px; font-weight:700; color:var(--ink);">الطلبات حسب ساعة اليوم</div>
+    <div id="peakHourWrap"></div>
+    <div class="orders-empty" style="text-align:right; padding:10px 0 4px; font-size:12px; font-weight:700; color:var(--ink);">الطلبات حسب يوم الأسبوع</div>
+    <div id="peakDowWrap"></div>
+    <h3 style="margin-top:20px; display:flex; justify-content:space-between; align-items:center;">
+      <span>تقرير العملاء</span>
+      <select id="topCustomersSort" style="font-size:11px; padding:4px 8px; border-radius:999px; border:1px solid var(--line); background:var(--paper-dim); color:var(--stone);">
+        <option value="orders_count" selected>الأكثر طلبًا</option>
+        <option value="orders_total">الأعلى إنفاقًا</option>
+      </select>
+    </h3>
+    <div id="customerSummaryWrap" class="orders-empty">جارِ التحميل...</div>
+    <div class="orders-empty" style="text-align:right; padding:10px 0 4px; font-size:12px; font-weight:700; color:var(--ink);">أكتر العملاء طلبًا</div>
+    <div id="topCustomersWrap"><div class="orders-empty">جارِ التحميل...</div></div>
+    <h3 style="margin-top:20px;">تقرير المناطق والتوصيل</h3>
+    <div id="deliverySummaryWrap" class="orders-empty">جارِ التحميل...</div>
+    <div class="orders-empty" style="text-align:right; padding:10px 0 4px; font-size:12px; font-weight:700; color:var(--ink);">أكتر المناطق طلبًا</div>
+    <div id="topAreasWrap"><div class="orders-empty">جارِ التحميل...</div></div>`;
+
+  const trendWrap = overlay.querySelector('#salesTrendWrap');
+  const renderTrend = (metric)=>{ trendWrap.innerHTML = buildSalesTrendSVG(rows, 30, metric); };
+  renderTrend('total');
+  overlay.querySelectorAll('[data-metric]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      overlay.querySelectorAll('[data-metric]').forEach(b=> b.classList.remove('active'));
+      btn.classList.add('active');
+      renderTrend(btn.dataset.metric);
+    });
+  });
+
+  // تقرير المبيعات التفصيلي — فترة تاريخ مخصصة (من — لحد)
+  const salesReportWrap = overlay.querySelector('#salesReportWrap');
+  const fromInput = overlay.querySelector('#salesReportFrom');
+  const toInput = overlay.querySelector('#salesReportTo');
+  const sortedDays = [...rows].map(r=> r.day).sort();
+  const earliestDay = sortedDays[0];
+  const todayKey = new Date().toLocaleDateString('en-CA', { timeZone:'Africa/Cairo' });
+  const defaultFrom = new Date(); defaultFrom.setDate(defaultFrom.getDate() - 29);
+  fromInput.value = (defaultFrom.toLocaleDateString('en-CA', { timeZone:'Africa/Cairo' }) > earliestDay) ? defaultFrom.toLocaleDateString('en-CA', { timeZone:'Africa/Cairo' }) : earliestDay;
+  toInput.value = todayKey;
+
+  let lastReportRange = null;
+  const runSalesReport = ()=>{
+    const from = fromInput.value, to = toInput.value;
+    if(!from || !to || from > to){ toast('اختار فترة صحيحة (من قبل لحد)'); return; }
+    lastReportRange = { from, to };
+    const filtered = rows.filter(r=> r.day >= from && r.day <= to).sort((a,b)=> a.day < b.day ? 1 : -1);
+    if(filtered.length === 0){
+      salesReportWrap.innerHTML = `<div class="orders-empty">لا توجد مبيعات في الفترة دي</div>`;
+      return;
+    }
+    const totalCount = filtered.reduce((s,r)=> s + Number(r.orders_count||0), 0);
+    const totalSales = filtered.reduce((s,r)=> s + Number(r.orders_total||0), 0);
+    const avgDaily = totalSales / filtered.length;
+    const avgOrderVal = totalCount ? (totalSales/totalCount) : 0;
+    salesReportWrap.innerHTML = `
+      <div class="report-kpi-row" style="margin-bottom:10px;">
+        <div class="report-kpi"><div class="kpi-label">إجمالي المبيعات</div><div class="kpi-value" style="font-size:14px;">${totalSales.toFixed(2)} EGP</div></div>
+        <div class="report-kpi"><div class="kpi-label">عدد الطلبات</div><div class="kpi-value" style="font-size:14px;">${totalCount}</div></div>
+        <div class="report-kpi"><div class="kpi-label">متوسط المبيعات اليومية</div><div class="kpi-value" style="font-size:14px;">${avgDaily.toFixed(2)} EGP</div></div>
+        <div class="report-kpi"><div class="kpi-label">متوسط قيمة الطلب</div><div class="kpi-value" style="font-size:14px;">${avgOrderVal.toFixed(2)} EGP</div></div>
+      </div>
+      <div style="max-height:320px; overflow-y:auto; border:1px solid var(--line); border-radius:8px;">
+        <table style="width:100%; border-collapse:collapse; font-size:12px;">
+          <thead style="position:sticky; top:0; background:var(--paper-dim);">
+            <tr>
+              <th style="text-align:right; padding:6px 8px; border-bottom:1px solid var(--line);">التاريخ</th>
+              <th style="text-align:right; padding:6px 8px; border-bottom:1px solid var(--line);">عدد الطلبات</th>
+              <th style="text-align:right; padding:6px 8px; border-bottom:1px solid var(--line);">إجمالي المبيعات</th>
+              <th style="text-align:right; padding:6px 8px; border-bottom:1px solid var(--line);">متوسط الطلب</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${filtered.map(r=>{
+              const dLabel = new Date(r.day + 'T12:00:00').toLocaleDateString('ar-EG', { weekday:'short', day:'numeric', month:'short' });
+              const avg = r.orders_count ? (Number(r.orders_total)/r.orders_count) : 0;
+              return `<tr>
+                <td style="padding:6px 8px; border-bottom:1px solid var(--line);">${dLabel}</td>
+                <td style="padding:6px 8px; border-bottom:1px solid var(--line);">${r.orders_count}</td>
+                <td style="padding:6px 8px; border-bottom:1px solid var(--line); direction:ltr; text-align:right;">${Number(r.orders_total).toFixed(2)} EGP</td>
+                <td style="padding:6px 8px; border-bottom:1px solid var(--line); direction:ltr; text-align:right;">${avg.toFixed(2)} EGP</td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>`;
+  };
+  runSalesReport();
+  overlay.querySelector('#salesReportGoBtn').addEventListener('click', runSalesReport);
+
+  overlay.querySelector('#salesReportExportBtn').addEventListener('click', ()=>{
+    if(!lastReportRange){ toast('اضغط "عرض" الأول'); return; }
+    const filtered = rows.filter(r=> r.day >= lastReportRange.from && r.day <= lastReportRange.to).sort((a,b)=> a.day < b.day ? -1 : 1);
+    if(filtered.length === 0){ toast('لا توجد بيانات لتصديرها'); return; }
+    const header = ['التاريخ','عدد الطلبات','إجمالي المبيعات (EGP)','متوسط قيمة الطلب (EGP)'];
+    const aoa = [header];
+    filtered.forEach(r=>{
+      const avg = r.orders_count ? (Number(r.orders_total)/r.orders_count) : 0;
+      aoa.push([r.day, r.orders_count, Number(r.orders_total).toFixed(2), avg.toFixed(2)]);
+    });
+    const totalCount = filtered.reduce((s,r)=> s + Number(r.orders_count||0), 0);
+    const totalSales = filtered.reduce((s,r)=> s + Number(r.orders_total||0), 0);
+    aoa.push(['الإجمالي', totalCount, totalSales.toFixed(2), totalCount ? (totalSales/totalCount).toFixed(2) : '0.00']);
+    const ws = XLSX.utils.aoa_to_sheet(aoa);
+    ws['!cols'] = [{ wch:14 },{ wch:14 },{ wch:20 },{ wch:20 }];
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'تقرير المبيعات');
+    XLSX.writeFile(wb, `${restaurant.slug || 'restaurant'}-مبيعات-${lastReportRange.from}_${lastReportRange.to}.xlsx`);
+    toast('تم تصدير التقرير بنجاح');
+  });
 
   const topItemsWrap = overlay.querySelector('#topItemsWrap');
-  const { data: currentOrders } = await sb.from('orders').select('id').eq('restaurant_id', restaurant.id);
-  const currentOrderIds = (currentOrders || []).map(o=>o.id);
-  if(currentOrderIds.length === 0){
-    topItemsWrap.innerHTML = `<div class="orders-empty">لا توجد بيانات كافية بعد</div>`;
-  } else {
-    const { data: allOrderItems, error: oiErr } = await sb.from('order_items').select('item_name,quantity').in('order_id', currentOrderIds);
-    if(oiErr || !allOrderItems || allOrderItems.length === 0){
+  const { data: itemStatsRows, error: itemStatsErr } = await sb.from('item_stats_daily').select('item_name,day,quantity,revenue').eq('restaurant_id', restaurant.id);
+
+  const renderTopItems = (sortBy, periodDays)=>{
+    if(itemStatsErr || !itemStatsRows || itemStatsRows.length === 0){
       topItemsWrap.innerHTML = `<div class="orders-empty">لا توجد بيانات كافية بعد</div>`;
-    } else {
-      const counts = {};
-      allOrderItems.forEach(oi=>{ counts[oi.item_name] = (counts[oi.item_name] || 0) + oi.quantity; });
-      const top = Object.entries(counts).sort((a,b)=> b[1] - a[1]).slice(0, 5);
-      topItemsWrap.innerHTML = `
+      return;
+    }
+    let filtered = itemStatsRows;
+    if(periodDays > 0){
+      const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - periodDays);
+      const cutoffStr = cutoff.toLocaleDateString('en-CA', { timeZone:'Africa/Cairo' });
+      filtered = itemStatsRows.filter(r=> r.day >= cutoffStr);
+    }
+    const agg = {};
+    filtered.forEach(r=>{
+      if(!agg[r.item_name]) agg[r.item_name] = { quantity:0, revenue:0 };
+      agg[r.item_name].quantity += Number(r.quantity || 0);
+      agg[r.item_name].revenue += Number(r.revenue || 0);
+    });
+    const top = Object.entries(agg).sort((a,b)=> b[1][sortBy] - a[1][sortBy]).slice(0, 5);
+    if(top.length === 0){
+      topItemsWrap.innerHTML = `<div class="orders-empty">لا توجد بيانات في الفترة دي</div>`;
+      return;
+    }
+    topItemsWrap.innerHTML = `
+      <div class="orders-list">
+        ${top.map(([name, v], i)=> `
+          <div class="order-row" style="display:flex; justify-content:space-between; align-items:center;">
+            <span class="o-name" style="font-weight:700;">${i+1}. ${escapeHtml(name)}</span>
+            <span class="o-time" style="text-align:left; margin:0;">${v.quantity} قطعة — ${v.revenue.toFixed(2)} EGP</span>
+          </div>`).join('')}
+      </div>
+      <div class="orders-empty" style="text-align:right; padding:6px 0 0; font-size:12px;">
+        هذه الإحصائية ثابتة ولا تتأثر بحذف الطلبات القديمة.
+      </div>`;
+  };
+
+  let topItemsSort = 'quantity';
+  let topItemsPeriod = 30;
+  renderTopItems(topItemsSort, topItemsPeriod);
+  overlay.querySelectorAll('[data-sort]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      overlay.querySelectorAll('[data-sort]').forEach(b=> b.classList.remove('active'));
+      btn.classList.add('active');
+      topItemsSort = btn.dataset.sort;
+      renderTopItems(topItemsSort, topItemsPeriod);
+    });
+  });
+  overlay.querySelector('#topItemsPeriod').addEventListener('change', (e)=>{
+    topItemsPeriod = Number(e.target.value);
+    renderTopItems(topItemsSort, topItemsPeriod);
+  });
+
+  const { data: hourlyRows, error: hourlyErr } = await sb.from('order_hourly_stats').select('day,hour,orders_count,orders_total').eq('restaurant_id', restaurant.id);
+  const peakSummaryWrap = overlay.querySelector('#peakSummaryWrap');
+  const peakHourWrap = overlay.querySelector('#peakHourWrap');
+  const peakDowWrap = overlay.querySelector('#peakDowWrap');
+  if(hourlyErr || !hourlyRows || hourlyRows.length === 0){
+    peakSummaryWrap.textContent = 'لا توجد بيانات كافية بعد';
+  } else {
+    const byHour = Array.from({length:24}, ()=>0);
+    const byDow = Array.from({length:7}, ()=>0);
+    let peakHour = { hour:0, count:0 };
+    let peakDay = { day:'', count:0 };
+    const dayTotals = {};
+    hourlyRows.forEach(r=>{
+      byHour[r.hour] += Number(r.orders_count || 0);
+      const dow = new Date(r.day + 'T12:00:00').getDay();
+      byDow[dow] += Number(r.orders_count || 0);
+      dayTotals[r.day] = (dayTotals[r.day] || 0) + Number(r.orders_count || 0);
+    });
+    byHour.forEach((c,h)=>{ if(c > peakHour.count) peakHour = { hour:h, count:c }; });
+    Object.entries(dayTotals).forEach(([day,c])=>{ if(c > peakDay.count) peakDay = { day, count:c }; });
+    const DOW_LABELS = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+    let peakDowIdx = 0; byDow.forEach((c,i)=>{ if(c > byDow[peakDowIdx]) peakDowIdx = i; });
+    const peakDayLabel = peakDay.day ? new Date(peakDay.day + 'T12:00:00').toLocaleDateString('ar-EG', { day:'numeric', month:'long', year:'numeric' }) : '—';
+    peakSummaryWrap.innerHTML = `
+      <div class="orders-list">
+        <div class="order-row" style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="o-name" style="font-weight:700;">أكتر ساعة زحمة</span>
+          <span class="o-time" style="text-align:left; margin:0;">من ${String(peakHour.hour).padStart(2,'0')}:00 لـ ${String((peakHour.hour+1)%24).padStart(2,'0')}:00 (${peakHour.count} طلب)</span>
+        </div>
+        <div class="order-row" style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="o-name" style="font-weight:700;">أكتر يوم في الأسبوع</span>
+          <span class="o-time" style="text-align:left; margin:0;">${DOW_LABELS[peakDowIdx]} (${byDow[peakDowIdx]} طلب إجمالًا)</span>
+        </div>
+        <div class="order-row" style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="o-name" style="font-weight:700;">أعلى يوم سجّل مبيعات</span>
+          <span class="o-time" style="text-align:left; margin:0;">${peakDayLabel} (${peakDay.count} طلب)</span>
+        </div>
+      </div>`;
+    peakHourWrap.innerHTML = buildHourDistributionSVG(byHour);
+    peakDowWrap.innerHTML = buildDowDistributionSVG(byDow, DOW_LABELS);
+  }
+
+  const { data: custRows, error: custErr } = await sb.from('customer_order_stats').select('customer_phone,customer_name,orders_count,orders_total,first_order_at,last_order_at').eq('restaurant_id', restaurant.id);
+  const customerSummaryWrap = overlay.querySelector('#customerSummaryWrap');
+  const topCustomersWrap = overlay.querySelector('#topCustomersWrap');
+  if(custErr || !custRows || custRows.length === 0){
+    customerSummaryWrap.textContent = 'لا توجد بيانات كافية بعد';
+    topCustomersWrap.innerHTML = `<div class="orders-empty">لا توجد بيانات كافية بعد</div>`;
+  } else {
+    const totalCustomers = custRows.length;
+    const repeatCustomers = custRows.filter(c=> c.orders_count > 1).length;
+    const cutoff30 = new Date(); cutoff30.setDate(cutoff30.getDate() - 30);
+    const activeLast30 = custRows.filter(c=> new Date(c.last_order_at) >= cutoff30);
+    const newLast30 = activeLast30.filter(c=> new Date(c.first_order_at) >= cutoff30).length;
+    const returningLast30 = activeLast30.length - newLast30;
+    const avgOrderValueOverall = custRows.reduce((s,c)=> s + Number(c.orders_total), 0) / custRows.reduce((s,c)=> s + Number(c.orders_count), 0);
+
+    customerSummaryWrap.innerHTML = `
+      <div class="orders-list">
+        <div class="order-row" style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="o-name" style="font-weight:700;">إجمالي عدد العملاء</span>
+          <span class="o-time" style="text-align:left; margin:0;">${totalCustomers} عميل</span>
+        </div>
+        <div class="order-row" style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="o-name" style="font-weight:700;">عملاء طلبوا أكتر من مرة</span>
+          <span class="o-time" style="text-align:left; margin:0;">${repeatCustomers} عميل (${totalCustomers ? Math.round(repeatCustomers/totalCustomers*100) : 0}%)</span>
+        </div>
+        <div class="order-row" style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="o-name" style="font-weight:700;">آخر 30 يوم — جدد مقابل متكررين</span>
+          <span class="o-time" style="text-align:left; margin:0;">${newLast30} جديد / ${returningLast30} متكرر</span>
+        </div>
+        <div class="order-row" style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="o-name" style="font-weight:700;">متوسط قيمة الطلب (كل العملاء)</span>
+          <span class="o-time" style="text-align:left; margin:0;">${isFinite(avgOrderValueOverall) ? avgOrderValueOverall.toFixed(2) : '0.00'} EGP</span>
+        </div>
+      </div>`;
+
+    const renderTopCustomers = (sortBy)=>{
+      const top = [...custRows].sort((a,b)=> Number(b[sortBy]) - Number(a[sortBy])).slice(0, 10);
+      topCustomersWrap.innerHTML = `
         <div class="orders-list">
-          ${top.map(([name, qty], i)=> `
+          ${top.map((c,i)=> `
             <div class="order-row" style="display:flex; justify-content:space-between; align-items:center;">
-              <span class="o-name" style="font-weight:700;">${i+1}. ${escapeHtml(name)}</span>
-              <span class="o-time" style="text-align:left; margin:0;">${qty} قطعة</span>
+              <span class="o-name" style="font-weight:700;">${i+1}. ${escapeHtml(c.customer_name || 'بدون اسم')} <span style="direction:ltr; display:inline-block; font-size:11px; color:var(--stone);">${escapeHtml(c.customer_phone)}</span></span>
+              <span class="o-time" style="text-align:left; margin:0;">${c.orders_count} طلب — ${Number(c.orders_total).toFixed(2)} EGP</span>
             </div>`).join('')}
         </div>
         <div class="orders-empty" style="text-align:right; padding:6px 0 0; font-size:12px;">
-          هذه الإحصائية مبنية على الطلبات الحالية فقط، وتتأثر بحذف الطلبات القديمة (بعكس الأرقام أعلاه).
+          هذه الإحصائية ثابتة ولا تتأثر بحذف الطلبات القديمة.
         </div>`;
-    }
+    };
+    renderTopCustomers('orders_count');
+    overlay.querySelector('#topCustomersSort').addEventListener('change', (e)=> renderTopCustomers(e.target.value));
   }
+
+  const [{ data: typeRows, error: typeErr }, { data: areaRows, error: areaErr }] = await Promise.all([
+    sb.from('order_type_stats').select('order_type,orders_count,orders_total').eq('restaurant_id', restaurant.id),
+    sb.from('area_order_stats').select('area,orders_count,orders_total,delivery_fee_total').eq('restaurant_id', restaurant.id)
+  ]);
+  overlay.querySelector('#deliverySummaryWrap').innerHTML = buildDeliveryTypeSummary(typeRows, typeErr);
+  overlay.querySelector('#topAreasWrap').innerHTML = buildTopAreasList(areaRows, areaErr);
+
+  overlay.querySelector('#insightsWrap').innerHTML = buildInsights({
+    rows, itemStatsRows: itemStatsRows || [], hourlyRows: hourlyRows || [], custRows: custRows || []
+  });
+
+  overlay.querySelector('#statsExportPdfBtn').addEventListener('click', ()=>{
+    const html = buildMonthlyReportHtml({
+      restaurant, dailyRows: rows || [], itemStatsRows: itemStatsRows || [],
+      custRows: custRows || [], areaRows: areaRows || [], typeRows: typeRows || []
+    });
+    let printArea = document.getElementById('reportPrintArea');
+    if(!printArea){
+      printArea = document.createElement('div');
+      printArea.id = 'reportPrintArea';
+      document.body.appendChild(printArea);
+    }
+    printArea.innerHTML = html;
+    let pageStyle = document.getElementById('receiptPageStyle');
+    if(!pageStyle){
+      pageStyle = document.createElement('style');
+      pageStyle.id = 'receiptPageStyle';
+      document.head.appendChild(pageStyle);
+    }
+    pageStyle.textContent = `@page{ size:A4; margin:14mm; }`;
+    const prevTitle = document.title;
+    document.title = `تقرير شهري — ${restaurant.name}`;
+    const restoreTitle = ()=>{ document.title = prevTitle; window.removeEventListener('afterprint', restoreTitle); };
+    window.addEventListener('afterprint', restoreTitle);
+    window.print();
+  });
 });
+
+// بيبني تقرير شهري (الشهر الحالي حتى اليوم) مقارنةً بنفس الفترة من الشهر اللي فات، جاهز للطباعة/الحفظ كـ PDF
+function buildMonthlyReportHtml({ restaurant, dailyRows, itemStatsRows, custRows, areaRows, typeRows }){
+  const now = new Date();
+  const cairoToday = new Date(now.toLocaleString('en-US', { timeZone:'Africa/Cairo' }));
+  const dayOfMonth = cairoToday.getDate();
+  const curMonthStart = new Date(cairoToday.getFullYear(), cairoToday.getMonth(), 1);
+  const prevMonthStart = new Date(cairoToday.getFullYear(), cairoToday.getMonth()-1, 1);
+  const prevMonthSameDay = new Date(cairoToday.getFullYear(), cairoToday.getMonth()-1, dayOfMonth);
+  const toKey = (d)=> d.toLocaleDateString('en-CA');
+  const curStartKey = toKey(curMonthStart), curEndKey = toKey(cairoToday);
+  const prevStartKey = toKey(prevMonthStart), prevEndKey = toKey(prevMonthSameDay);
+
+  const sumRange = (list, field, startKey, endKey)=> list.filter(r=> r.day >= startKey && r.day <= endKey).reduce((s,r)=> s + Number(r[field] || 0), 0);
+  const curSales = sumRange(dailyRows, 'orders_total', curStartKey, curEndKey);
+  const curOrders = sumRange(dailyRows, 'orders_count', curStartKey, curEndKey);
+  const prevSales = sumRange(dailyRows, 'orders_total', prevStartKey, prevEndKey);
+  const prevOrders = sumRange(dailyRows, 'orders_count', prevStartKey, prevEndKey);
+  const pctDelta = (cur, prev)=>{
+    if(prev === 0) return cur === 0 ? 0 : null;
+    return ((cur - prev) / prev) * 100;
+  };
+  const salesDelta = pctDelta(curSales, prevSales);
+  const ordersDelta = pctDelta(curOrders, prevOrders);
+  const deltaHtml = (d)=> d === null ? `<span class="kpi-delta">بيانات غير كافية للمقارنة</span>` : `<span class="kpi-delta ${d>=0?'up':'down'}">${d>=0?'▲':'▼'} ${Math.abs(d).toFixed(0)}% عن نفس الفترة الشهر اللي فات</span>`;
+  const avgOrderValue = curOrders ? (curSales/curOrders) : 0;
+
+  const itemAgg = {};
+  itemStatsRows.filter(r=> r.day >= curStartKey && r.day <= curEndKey).forEach(r=>{
+    if(!itemAgg[r.item_name]) itemAgg[r.item_name] = { quantity:0, revenue:0 };
+    itemAgg[r.item_name].quantity += Number(r.quantity||0);
+    itemAgg[r.item_name].revenue += Number(r.revenue||0);
+  });
+  const topItems = Object.entries(itemAgg).sort((a,b)=> b[1].quantity - a[1].quantity).slice(0,5);
+
+  const topCustomers = [...custRows].sort((a,b)=> b.orders_count - a.orders_count).slice(0,5);
+
+  const delivery = typeRows.find(r=> r.order_type==='delivery') || { orders_count:0, orders_total:0 };
+  const pickup = typeRows.find(r=> r.order_type==='pickup') || { orders_count:0, orders_total:0 };
+  const totalTypeCount = Number(delivery.orders_count) + Number(pickup.orders_count);
+  const deliveryPct = totalTypeCount ? Math.round(Number(delivery.orders_count)/totalTypeCount*100) : 0;
+
+  const topAreas = [...areaRows].sort((a,b)=> b.orders_count - a.orders_count).slice(0,5);
+
+  const dateRangeLabel = `${curMonthStart.toLocaleDateString('ar-EG',{day:'numeric',month:'long',year:'numeric'})} — ${cairoToday.toLocaleDateString('ar-EG',{day:'numeric',month:'long',year:'numeric'})}`;
+
+  return `
+    <div class="report-doc">
+      <h1>تقرير المبيعات الشهري — ${escapeHtml(restaurant.name)}</h1>
+      <div class="report-sub">الفترة: ${dateRangeLabel} · تم إنشاؤه بتاريخ ${new Date().toLocaleDateString('ar-EG',{day:'numeric',month:'long',year:'numeric'})}</div>
+
+      <div class="report-kpi-row">
+        <div class="report-kpi">
+          <div class="kpi-label">إجمالي المبيعات (من بداية الشهر)</div>
+          <div class="kpi-value">${curSales.toFixed(2)} EGP</div>
+          ${deltaHtml(salesDelta)}
+        </div>
+        <div class="report-kpi">
+          <div class="kpi-label">عدد الطلبات</div>
+          <div class="kpi-value">${curOrders}</div>
+          ${deltaHtml(ordersDelta)}
+        </div>
+        <div class="report-kpi">
+          <div class="kpi-label">متوسط قيمة الطلب</div>
+          <div class="kpi-value">${avgOrderValue.toFixed(2)} EGP</div>
+        </div>
+      </div>
+
+      <h2>${biz(restaurant.business_type,'itemsDef')} الأكثر مبيعًا هذا الشهر</h2>
+      <table>
+        <tr><th>الصنف</th><th>الكمية</th><th>الإيراد</th></tr>
+        ${topItems.length ? topItems.map(([name,v])=> `<tr><td>${escapeHtml(name)}</td><td class="num">${v.quantity}</td><td class="num">${v.revenue.toFixed(2)} EGP</td></tr>`).join('') : `<tr><td colspan="3">لا توجد بيانات كافية</td></tr>`}
+      </table>
+
+      <h2>أكتر العملاء طلبًا (كل الوقت)</h2>
+      <table>
+        <tr><th>العميل</th><th>عدد الطلبات</th><th>إجمالي الإنفاق</th></tr>
+        ${topCustomers.length ? topCustomers.map(c=> `<tr><td>${escapeHtml(c.customer_name||'بدون اسم')} — ${escapeHtml(c.customer_phone)}</td><td class="num">${c.orders_count}</td><td class="num">${Number(c.orders_total).toFixed(2)} EGP</td></tr>`).join('') : `<tr><td colspan="3">لا توجد بيانات كافية</td></tr>`}
+      </table>
+
+      <h2>توصيل مقابل استلام من المحل (كل الوقت)</h2>
+      <table>
+        <tr><th>النوع</th><th>عدد الطلبات</th><th>القيمة</th></tr>
+        <tr><td>توصيل</td><td class="num">${delivery.orders_count} (${deliveryPct}%)</td><td class="num">${Number(delivery.orders_total).toFixed(2)} EGP</td></tr>
+        <tr><td>استلام من المحل</td><td class="num">${pickup.orders_count} (${100-deliveryPct}%)</td><td class="num">${Number(pickup.orders_total).toFixed(2)} EGP</td></tr>
+      </table>
+
+      <h2>أكتر المناطق طلبًا (كل الوقت)</h2>
+      <table>
+        <tr><th>المنطقة</th><th>عدد الطلبات</th><th>القيمة</th></tr>
+        ${topAreas.length ? topAreas.map(a=> `<tr><td>${escapeHtml(a.area)}</td><td class="num">${a.orders_count}</td><td class="num">${Number(a.orders_total).toFixed(2)} EGP</td></tr>`).join('') : `<tr><td colspan="3">لا توجد بيانات كافية</td></tr>`}
+      </table>
+    </div>`;
+}
 
 const ORDER_STATUS_LABELS_EXPORT = { pending:'قيد الانتظار', preparing:'قيد التجهيز', delivered:'تم التسليم', cancelled:'ملغي' };
 function exportOrdersToExcel(orderList, itemsByOrderMap, filenameLabel){
@@ -3322,6 +4763,11 @@ document.getElementById('restaurantSettingsBtn').addEventListener('click', ()=>{
         <input type="text" id="restPhoneInput" value="${restaurant.phone ? escapeHtml(restaurant.phone) : ''}" placeholder="رقم بصيغة دولية: 201154361888" style="direction:ltr;">
       </div>
       <div class="field">
+        <label>متوسط وقت تجهيز الطلب (بالدقايق)</label>
+        <small>بيتحسب تلقائيًا وقت الجاهزية المتوقع لكل طلب جديد بناءً على الرقم ده، وتقدر تعدّله لكل طلب لوحده من شاشة الطلبات.</small>
+        <input type="number" id="restPrepMinutesInput" min="1" max="180" value="${restaurant.default_prep_minutes || 20}" style="direction:ltr; margin-top:8px;">
+      </div>
+      <div class="field">
         <label>يوزر ${t().entityDef} على ماسنجر (اختياري — لإرسال الطلب عبر ماسنجر)</label>
         <small>يوزرنيم صفحة الفيسبوك، من غير رابط كامل. مثال: لو رابط صفحتك facebook.com/mypage اكتب mypage بس.</small>
         <div style="display:flex; gap:8px; align-items:center; margin-top:8px;">
@@ -3462,9 +4908,11 @@ document.getElementById('restaurantSettingsBtn').addEventListener('click', ()=>{
     const min_delivery_order = minOrderRaw ? Number(minOrderRaw) : null;
     const notification_phone = overlay.querySelector('#notifPhoneInput').value.trim() || null;
     const notification_apikey = overlay.querySelector('#notifApikeyInput').value.trim() || null;
+    const prepRaw = Number(overlay.querySelector('#restPrepMinutesInput').value);
+    const default_prep_minutes = (prepRaw && prepRaw > 0) ? Math.round(prepRaw) : 20;
     const btn = overlay.querySelector('#rsConfirm');
     btn.disabled = true;
-    const { data, error } = await sb.from('restaurants').update({ logo_url: pendingLogo, name, name_en, phone, messenger_username, telegram_username, address, opening_time, closing_time, min_delivery_order, notification_phone, notification_apikey, business_type: pendingBizType }).eq('id', restaurant.id).select().single();
+    const { data, error } = await sb.from('restaurants').update({ logo_url: pendingLogo, name, name_en, phone, messenger_username, telegram_username, address, opening_time, closing_time, min_delivery_order, notification_phone, notification_apikey, business_type: pendingBizType, default_prep_minutes }).eq('id', restaurant.id).select().single();
     if(error){ toast('تعذر الحفظ'); btn.disabled=false; return; }
     restaurant = data;
     if(originalLogoUrl && originalLogoUrl !== pendingLogo){

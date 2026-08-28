@@ -23,12 +23,15 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" id="appleWebAppTitle" content="منيو m@g">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://vinpjtrxwqlmwppggbqy.supabase.co">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lalezar&family=Tajawal:wght@400;500;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Lalezar&family=Tajawal:wght@400;500;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
-
 :root{
   --ink:#201F1D; --paper:#F6F1E4; --paper-dim:#EDE6D2;
   --ember:#B8390E; --ember-dark:#8F2C0B;
@@ -658,12 +661,16 @@ body.pub-design-dark .pub-more-menu{ background:#2A2825; border-color:#3A352D; }
 
 .toast{ position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--ink); color:var(--paper); padding:12px 22px; border-radius:8px; font-family:var(--body); font-weight:700; font-size:14px; opacity:0; pointer-events:none; transition:all .25s ease; z-index:80; }
 .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
-.loading{ min-height:100vh; display:flex; align-items:center; justify-content:center; color:var(--stone); background:var(--ink); font-family:var(--body); }
+.loading{ min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; color:var(--stone); background:var(--ink); font-family:var(--body); }
+.loading-logo{ width:76px; height:76px; object-fit:contain; border-radius:18px; background:#fff; padding:8px; animation:notifPulse 1.4s ease-in-out infinite; }
 </style>
 </head>
 <body>
 
-<div class="loading" id="loadingScreen">جارِ التحميل...</div>
+<div class="loading" id="loadingScreen">
+  <img id="loadingLogo" class="loading-logo hidden" alt="">
+  <div id="loadingText">جارِ التحميل...</div>
+</div>
 
 <div id="authScreen" class="hidden">
   <div class="auth-brand"><span class="dot"></span> منيو m@g</div>
@@ -1026,6 +1033,63 @@ function biz(type, key){
   return BIZ_TERMS[type === 'store' ? 'store' : 'restaurant'][key];
 }
 
+/* ================= local asset cache (images) — IndexedDB ================= */
+/* localStorage can't hold binary image data efficiently (5MB text-only limit),
+   so images/blobs are cached in IndexedDB; localStorage is used only for the
+   tiny "last known logo URL per store" pointer used by the loading screen. */
+const ASSET_CACHE_DB = 'magMenuAssetCache';
+const ASSET_CACHE_STORE = 'assets';
+const ASSET_CACHE_MAX_AGE = 14 * 24 * 60 * 60 * 1000; // 14 يوم
+let _assetCacheDbPromise = null;
+function openAssetCacheDB(){
+  if(_assetCacheDbPromise) return _assetCacheDbPromise;
+  _assetCacheDbPromise = new Promise((resolve, reject)=>{
+    try{
+      const req = indexedDB.open(ASSET_CACHE_DB, 1);
+      req.onupgradeneeded = ()=>{ if(!req.result.objectStoreNames.contains(ASSET_CACHE_STORE)) req.result.createObjectStore(ASSET_CACHE_STORE); };
+      req.onsuccess = ()=> resolve(req.result);
+      req.onerror = ()=> reject(req.error);
+    }catch(e){ reject(e); }
+  });
+  return _assetCacheDbPromise;
+}
+async function assetCacheGet(url){
+  try{
+    const db = await openAssetCacheDB();
+    return await new Promise(resolve=>{
+      const tx = db.transaction(ASSET_CACHE_STORE, 'readonly');
+      const req = tx.objectStore(ASSET_CACHE_STORE).get(url);
+      req.onsuccess = ()=>{
+        const rec = req.result;
+        resolve((rec && (Date.now() - rec.ts) < ASSET_CACHE_MAX_AGE) ? rec.blob : null);
+      };
+      req.onerror = ()=> resolve(null);
+    });
+  }catch(e){ return null; }
+}
+async function assetCacheSet(url, blob){
+  try{
+    const db = await openAssetCacheDB();
+    const tx = db.transaction(ASSET_CACHE_STORE, 'readwrite');
+    tx.objectStore(ASSET_CACHE_STORE).put({ blob, ts: Date.now() }, url);
+  }catch(e){ /* تجاهل أخطاء المساحة/التخزين */ }
+}
+// يحول أي <img data-cache-src="..."> إلى نسخة مخزّنة محليًا بدل تنزيلها من الإنترنت في كل زيارة.
+// الصورة بتتعرض فورًا من الرابط الأصلي، وبعدين بتستبدل بالنسخة المخزنة (أو تخزنها لأول مرة).
+function hydrateCachedImages(root){
+  if(!root) return;
+  root.querySelectorAll('img[data-cache-src]').forEach(img=>{
+    const url = img.getAttribute('data-cache-src');
+    if(!url) return;
+    assetCacheGet(url).then(cached=>{
+      if(cached){ img.src = URL.createObjectURL(cached); return; }
+      fetch(url).then(r=> r.ok ? r.blob() : null).then(blob=>{
+        if(blob){ assetCacheSet(url, blob); img.src = URL.createObjectURL(blob); }
+      }).catch(()=>{});
+    });
+  });
+}
+
 const CUSTOMER_INFO_KEY = 'menuCustomerInfo';
 function loadSavedCustomerInfo(){
   try{ return JSON.parse(localStorage.getItem(CUSTOMER_INFO_KEY)) || null; }
@@ -1129,6 +1193,26 @@ function show(id){
   ['loadingScreen','authScreen','onboardScreen','dashboardScreen','publicScreen','trackingScreen'].forEach(s=>{
     document.getElementById(s).classList.toggle('hidden', s!==id);
   });
+}
+
+/* شاشة التحميل: تعرض لوجو المتجر (من الكاش لو موجود) بدل كلمة "جارِ التحميل" لما يكون معروف */
+function setLoadingLogo(url){
+  const img = document.getElementById('loadingLogo');
+  const txt = document.getElementById('loadingText');
+  if(!img) return;
+  if(!url){ img.classList.add('hidden'); if(txt) txt.classList.remove('hidden'); return; }
+  img.classList.remove('hidden');
+  if(txt) txt.classList.add('hidden');
+  assetCacheGet(url).then(cached=>{
+    img.src = cached ? URL.createObjectURL(cached) : url;
+  });
+  fetch(url).then(r=> r.ok ? r.blob() : null).then(blob=>{ if(blob) assetCacheSet(url, blob); }).catch(()=>{});
+}
+function resetLoadingLogo(){
+  const img = document.getElementById('loadingLogo');
+  const txt = document.getElementById('loadingText');
+  if(img) img.classList.add('hidden');
+  if(txt) txt.classList.remove('hidden');
 }
 
 /* ================= boot / routing ================= */
@@ -1273,6 +1357,7 @@ document.getElementById('signOutLink').addEventListener('click', async ()=>{
 
 /* ================= onboarding (create restaurant) ================= */
 async function afterLogin(){
+  resetLoadingLogo();
   show('loadingScreen');
   isSuperAdmin = (currentUser.email || '').toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase();
   const { data, error } = await sb.from('restaurants').select('*').eq('owner_id', currentUser.id).maybeSingle();
@@ -1410,6 +1495,7 @@ function applyGranularRestrictionsUI(){
 }
 
 async function openDashboard(){
+  if(restaurant && restaurant.logo_url) setLoadingLogo(restaurant.logo_url); else resetLoadingLogo();
   show('loadingScreen');
   document.getElementById('dashRestaurantName').textContent = restaurant.name;
   document.getElementById('ticketShopName').textContent = restaurant.name;
@@ -1429,6 +1515,7 @@ async function openDashboard(){
   applyExcelRestrictionUI();
   applyFeaturePlanUI();
   applyGranularRestrictionsUI();
+  migrateLegacyImages().catch(()=>{});
 }
 
 function applyExcelRestrictionUI(){
@@ -5518,10 +5605,20 @@ document.getElementById('restaurantSettingsBtn').addEventListener('click', ()=>{
     const default_prep_minutes = (prepRaw && prepRaw > 0) ? Math.round(prepRaw) : 20;
     const btn = overlay.querySelector('#rsConfirm');
     btn.disabled = true;
-    const { data, error } = await sb.from('restaurants').update({ logo_url: pendingLogo, name, name_en, phone, messenger_username, telegram_username, address, opening_time, closing_time, min_delivery_order, notification_phone, notification_apikey, business_type: pendingBizType, default_prep_minutes }).eq('id', restaurant.id).select().single();
+    let finalLogoUrl = pendingLogo;
+    if(pendingLogo && pendingLogo.startsWith('data:')){
+      try{
+        finalLogoUrl = await uploadImageToStorage(pendingLogo, `logos/${restaurant.id}`);
+      }catch(e){
+        toast('تعذر رفع الشعار، حاول مرة أخرى');
+        btn.disabled = false;
+        return;
+      }
+    }
+    const { data, error } = await sb.from('restaurants').update({ logo_url: finalLogoUrl, name, name_en, phone, messenger_username, telegram_username, address, opening_time, closing_time, min_delivery_order, notification_phone, notification_apikey, business_type: pendingBizType, default_prep_minutes }).eq('id', restaurant.id).select().single();
     if(error){ toast('تعذر الحفظ'); btn.disabled=false; return; }
     restaurant = data;
-    if(originalLogoUrl && originalLogoUrl !== pendingLogo){
+    if(originalLogoUrl && originalLogoUrl !== finalLogoUrl){
       await deleteStorageFileFromUrl(originalLogoUrl); // امسح الشعار القديم من التخزين بعد نجاح الحفظ فقط
     }
     document.getElementById('dashRestaurantName').textContent = restaurant.name;
@@ -6825,16 +6922,26 @@ function openItemModal(existing){
 
     const btn = overlay.querySelector('#itemConfirm');
     btn.disabled = true;
+    let finalImageUrl = pendingImage;
+    if(pendingImage && pendingImage.startsWith('data:')){
+      try{
+        finalImageUrl = await uploadImageToStorage(pendingImage, `items/${restaurant.id}`);
+      }catch(e){
+        toast('تعذر رفع الصورة، حاول مرة أخرى');
+        btn.disabled = false;
+        return;
+      }
+    }
     let itemId = existing ? existing.id : null;
     if(existing){
-      const { error } = await sb.from('items').update({ name, name_en, price, old_price, description, image_url: pendingImage, pricing_type, weight_sale_mode, min_weight_grams }).eq('id', existing.id);
+      const { error } = await sb.from('items').update({ name, name_en, price, old_price, description, image_url: finalImageUrl, pricing_type, weight_sale_mode, min_weight_grams }).eq('id', existing.id);
       if(error){ toast('تعذر الحفظ'); btn.disabled=false; return; }
-      if(originalItemImageUrl && originalItemImageUrl !== pendingImage){
+      if(originalItemImageUrl && originalItemImageUrl !== finalImageUrl){
         await deleteStorageFileFromUrl(originalItemImageUrl); // امسح الصورة القديمة بعد نجاح الحفظ فقط
       }
     } else {
       const newPos = items.filter(i=>i.category_id===selectedCategoryId).length;
-      const { data, error } = await sb.from('items').insert({ category_id: selectedCategoryId, name, name_en, price, old_price, description, image_url: pendingImage, pricing_type, weight_sale_mode, min_weight_grams, position: newPos }).select().single();
+      const { data, error } = await sb.from('items').insert({ category_id: selectedCategoryId, name, name_en, price, old_price, description, image_url: finalImageUrl, pricing_type, weight_sale_mode, min_weight_grams, position: newPos }).select().single();
       if(error){ toast('تعذر الإضافة'); btn.disabled=false; return; }
       itemId = data.id;
     }
@@ -6973,15 +7080,23 @@ function getRestaurantOpenStatus(rest){
 
 async function loadPublic(slug){
   show('loadingScreen');
+  const cachedLogoUrl = slug ? localStorage.getItem(`pubLogo_${slug}`) : null;
+  setLoadingLogo(cachedLogoUrl);
   const { data: rest, error: restErr } = await sb.from('restaurants_public').select('*').eq('slug', slug).maybeSingle();
   if(restErr || !rest){
+    resetLoadingLogo();
     show('publicScreen');
     document.getElementById('pubLogoWrap').innerHTML = `<div class="name-fallback">الصفحة غير موجودة</div>`;
     document.getElementById('pubTabs').innerHTML = '';
     document.getElementById('pubBody').innerHTML = `<div class="pub-empty">هذا الرابط غير صحيح.</div>`;
     return;
   }
+  if(rest.logo_url){
+    try{ localStorage.setItem(`pubLogo_${slug}`, rest.logo_url); }catch(e){}
+    if(rest.logo_url !== cachedLogoUrl) setLoadingLogo(rest.logo_url);
+  }
   if(rest.account_suspended){
+    resetLoadingLogo();
     show('publicScreen');
     showAccountSuspendedPublicScreen(rest);
     return;
@@ -7193,9 +7308,11 @@ async function loadPublic(slug){
     document.getElementById('pubLangLabel').textContent = lang==='en' ? 'العربية' : 'English';
     const restName = tName(rest.name, rest.name_en);
     const nameBlockHtml = `<div class="name-fallback">${escapeHtml(restName)}</div>`;
-    document.getElementById('pubLogoWrap').innerHTML = rest.logo_url
-      ? `<img src="${rest.logo_url}" alt="${escapeHtml(restName)}"><div class="pub-rest-name">${escapeHtml(restName)}</div>`
+    const pubLogoWrapEl = document.getElementById('pubLogoWrap');
+    pubLogoWrapEl.innerHTML = rest.logo_url
+      ? `<img src="${rest.logo_url}" data-cache-src="${rest.logo_url}" alt="${escapeHtml(restName)}"><div class="pub-rest-name">${escapeHtml(restName)}</div>`
       : nameBlockHtml;
+    hydrateCachedImages(pubLogoWrapEl);
     document.getElementById('pubSearchInput').placeholder = lang==='en' ? 'Search the menu...' : 'ابحث في القائمة...';
     document.getElementById('pubOrderBtnLabel').textContent = lang==='en' ? 'Cart' : 'السلة';
     document.getElementById('pubOrderBtnIcon').textContent = rest.business_type === 'store' ? '🛒' : '🍽️';
@@ -7406,7 +7523,7 @@ async function loadPublic(slug){
       return `${headerHtml}
       <div class="pub-item" data-id="${i.id}">
         <span class="chevron" data-action="toggle">${i.description ? '▾' : ''}</span>
-        ${i.image_url ? `<img src="${i.image_url}">` : `<div class="no-img">${biz(rest.business_type,'placeholderIcon')}</div>`}
+        ${i.image_url ? `<img src="${i.image_url}" data-cache-src="${i.image_url}" loading="lazy" decoding="async">` : `<div class="no-img">${biz(rest.business_type,'placeholderIcon')}</div>`}
         <div class="info">
           <div class="name-primary">${escapeHtml(tName(i.name, i.name_en))}${topItemIds.has(i.id) ? ` <span title="${lang==='en' ? 'Bestseller' : 'الأكثر طلبًا'}">🔥</span>` : ''}</div>
           ${secondaryName(i.name, i.name_en) ? `<div class="name-secondary">${escapeHtml(secondaryName(i.name, i.name_en))}</div>` : ''}
@@ -7417,6 +7534,7 @@ async function loadPublic(slug){
         <div class="item-control">${controlHtml}</div>
       </div>`;
     }).join('');
+    hydrateCachedImages(body);
 
     const isShowcaseShelf = document.body.classList.contains('pub-design-showcase') && activeCat === 'ALL' && !searchTerm;
     body.classList.toggle('shelf-mode', isShowcaseShelf);

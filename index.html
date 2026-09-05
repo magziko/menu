@@ -31,6 +31,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 <style>
 :root{
   --ink:#201F1D; --paper:#F6F1E4; --paper-dim:#EDE6D2;
@@ -448,6 +449,10 @@ body.pub-menu-only .add-to-cart-btn{ display:none !important; }
 .renew-head .renew-title-ar{ font-size:18px; font-weight:800; color:#fff; margin-bottom:4px; }
 .renew-head .renew-title-en{ font-size:12.5px; font-weight:600; color:#9aa4b2; }
 .plan-grid{ display:flex; flex-direction:column; gap:12px; margin-bottom:18px; }
+.renew-stats-banner{ display:flex; align-items:center; gap:12px; background:rgba(63,98,71,.14); border:1px solid rgba(63,98,71,.35); border-radius:12px; padding:12px 14px; margin-bottom:16px; }
+.renew-stats-icon{ font-size:24px; }
+.renew-stats-title{ font-size:11.5px; color:#a9c9b3; font-weight:700; margin-bottom:2px; }
+.renew-stats-value{ font-size:15px; color:#8fd19e; font-weight:800; }
 .plan-card{ position:relative; display:flex; align-items:center; justify-content:space-between; gap:12px; background:rgba(255,255,255,.03); border:1.5px solid rgba(255,255,255,.1); border-radius:14px; padding:16px 18px; cursor:pointer; transition:border-color .15s ease, background .15s ease; }
 .plan-card:hover{ border-color:rgba(184,57,14,.5); }
 .plan-card.selected{ border-color:var(--ember); background:rgba(184,57,14,.12); }
@@ -481,9 +486,16 @@ body.pub-menu-only .add-to-cart-btn{ display:none !important; }
 .pay-confirm-btn:hover{ filter:brightness(.95); }
 
 .renew-soon-banner{ grid-column:1/-1; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; background:linear-gradient(90deg,#3a2410,#4a2e12); border-bottom:1px solid rgba(255,167,38,.35); color:#ffd9a8; padding:10px 20px; font-size:13px; font-weight:700; }
+.trial-days-badge{ display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:999px; font-size:11.5px; font-weight:800; cursor:pointer; white-space:nowrap; }
+.trial-days-badge.normal{ background:rgba(255,255,255,.08); color:#c7cdd6; border:1px solid rgba(255,255,255,.14); }
+.trial-days-badge.warn{ background:rgba(255,167,38,.15); color:#ffb454; border:1px solid rgba(255,167,38,.35); }
+.trial-days-badge.danger{ background:rgba(166,57,43,.18); color:#e08a78; border:1px solid rgba(166,57,43,.4); }
+.trial-days-badge:hover{ filter:brightness(1.1); }
 .renew-soon-banner.hidden{ display:none; }
 .renew-soon-banner #renewSoonBannerBtn{ background:var(--ember); color:#fff; border:none; font-family:var(--body); font-weight:800; font-size:12.5px; padding:7px 14px; border-radius:8px; cursor:pointer; white-space:nowrap; }
 .renew-soon-banner #renewSoonBannerBtn:hover{ background:var(--ember-dark); }
+.renew-soon-banner #renewSoonBannerWaBtn{ background:#25D366; color:#0a0c0f; border:none; font-family:var(--body); font-weight:800; font-size:12.5px; padding:7px 14px; border-radius:8px; cursor:pointer; white-space:nowrap; }
+.renew-soon-banner #renewSoonBannerWaBtn:hover{ filter:brightness(.95); }
 .renew-soon-banner #renewSoonBannerCloseBtn{ background:none; border:none; color:#ffd9a8; opacity:.7; font-size:15px; cursor:pointer; padding:2px 4px; }
 .renew-soon-banner #renewSoonBannerCloseBtn:hover{ opacity:1; }
 .admin-table-wrap{ max-height:70vh; overflow:auto; }
@@ -708,7 +720,7 @@ body.pub-design-dark .pub-more-menu{ background:#2A2825; border-color:#3A352D; }
 <div id="onboardScreen" class="hidden">
   <div class="onboard-box">
     <h3 id="obHeading">أنشئ حسابك</h3>
-    <p id="obIntro">لم يُربط بهذا الحساب أي نشاط بعد. اختار نوع نشاطك أولًا، ثم اسمه والرابط العام اللي هيظهر لعملائك.</p>
+    <p id="obIntro">لم يُربط بهذا الحساب أي نشاط بعد. اختر نوع نشاطك أولًا، ثم اسمه والرابط العام الذي سيظهر لعملائك.</p>
     <div class="field">
       <label>نوع النشاط</label>
       <div class="ord-type-toggle">
@@ -734,6 +746,7 @@ body.pub-design-dark .pub-more-menu{ background:#2A2825; border-color:#3A352D; }
   <div class="topbar">
     <div class="brand-group">
       <div class="brand"><span class="dot"></span> <span id="dashRestaurantName">—</span></div>
+      <span class="trial-days-badge hidden" id="trialDaysBadge"></span>
       <span class="switch-link" id="changePasswordLink">تغيير كلمة المرور</span>
       <span class="switch-link" id="signOutLink">تسجيل الخروج</span>
     </div>
@@ -763,6 +776,7 @@ body.pub-design-dark .pub-more-menu{ background:#2A2825; border-color:#3A352D; }
     <span id="renewSoonBannerText"></span>
     <div style="display:flex; gap:8px; align-items:center;">
       <button type="button" id="renewSoonBannerBtn">💳 تجديد الآن</button>
+      <button type="button" id="renewSoonBannerWaBtn">📲 تواصل معنا</button>
       <button type="button" id="renewSoonBannerCloseBtn" aria-label="إغلاق">✕</button>
     </div>
   </div>
@@ -852,9 +866,11 @@ body.pub-design-dark .pub-more-menu{ background:#2A2825; border-color:#3A352D; }
     <div id="trackLogoWrap" style="margin-bottom:10px;"></div>
     <h2 id="trackRestName" style="font-family:var(--display); margin:0 0 20px; color:var(--ink); font-size:22px;"></h2>
     <div id="trackStatusWrap"></div>
+    <div id="trackPaymentReminderWrap"></div>
     <div id="trackItemsWrap" style="text-align:right; margin-top:22px;"></div>
     <div id="trackTotalWrap" style="margin-top:12px; font-weight:700; color:var(--ink); text-align:left;"></div>
     <div id="trackContactWrap" style="margin-top:16px; display:flex; gap:8px; justify-content:center; flex-wrap:wrap;"></div>
+    <div id="trackRatingWrap" style="margin-top:16px;"></div>
     <div style="margin-top:18px; font-size:11px; color:var(--stone);">آخر تحديث: <span id="trackUpdatedAt"></span></div>
   </div>
 </div>
@@ -973,7 +989,7 @@ function showInstallInstructionsModal(){
   overlay.innerHTML = `
     <div class="modal info-modal">
       <h3>📲 احفظ المنيو على شاشتك الرئيسية</h3>
-      <p style="margin:0 0 12px; color:var(--stone); font-size:13.5px; line-height:1.7;">بعد الحفظ، هتلاقي أيقونة المنيو زي أي تطبيق عادي على شاشتك، وتقدر تفتحها بضغطة واحدة في أي وقت.</p>
+      <p style="margin:0 0 12px; color:var(--stone); font-size:13.5px; line-height:1.7;">بعد الحفظ، ستجد أيقونة المنيو مثل أي تطبيق عادي على شاشتك، ويمكنك فتحها بضغطة واحدة في أي وقت.</p>
       ${steps.map((s,i)=>`<div class="field-row"><span class="icon">${i+1}️⃣</span><span class="txt">${escapeHtml(s)}</span></div>`).join('')}
       <div class="modal-actions">
         <button class="btn-confirm" id="installInstructionsCloseBtn">تمام، فهمت</button>
@@ -1118,20 +1134,20 @@ function toEgyptWaDigits(phone){
 // نصوص متنوعة لرسالة "شارك المنيو" — التنويع بيقلل احتمالية إن واتساب يعتبر الرسائل المتكررة سبام
 // وبعضها من غير اسم العميل، لأن الاسم المسجل ممكن يكون غلط
 const MENU_WA_TEMPLATES = [
-  { withName:true,  text:(name,link,rest)=> `أهلًا بيك ${name} 🌟\nيسعدنا نرحّب بيك في ${rest}! تقدر تتصفح المنيو وتطلب أونلاين مباشرة من هنا:\n${link}` },
-  { withName:false, text:(name,link,rest)=> `أهلاً بيك 👋\n${rest} دلوقتي أونلاين! تقدر تشوف المنيو وتطلب من هنا:\n${link}` },
-  { withName:true,  text:(name,link,rest)=> `يا هلا ${name} ✨\nمنيو ${rest} بقى متاح أونلاين، تقدر تطلب براحتك من الرابط ده:\n${link}` },
-  { withName:false, text:(name,link,rest)=> `تحية طيبة 🙏\nندعوك تتصفح منيو ${rest} وتطلب أونلاين من خلال الرابط:\n${link}` },
-  { withName:true,  text:(name,link,rest)=> `إزيك ${name}؟ 😊\n${rest} عندها منيو أونلاين دلوقتي، جرّب تطلب من هنا:\n${link}` },
-  { withName:false, text:(name,link,rest)=> `منيو ${rest} أونلاين 🍽️\nاطلب دلوقتي من هنا:\n${link}` },
-  { withName:true,  text:(name,link,rest)=> `يا أهلا ${name} 🎉\nاستمتع بعروضنا وخصوماتنا لما تطلب أونلاين من منيو ${rest}:\n${link}` },
-  { withName:false, text:(name,link,rest)=> `عروض وخصومات تنتظرك 🎁\nاطلب أونلاين من منيو ${rest} واستمتع بأفضل العروض:\n${link}` },
-  { withName:true,  text:(name,link,rest)=> `أخبار حلوة يا ${name} 🔥\nعندنا عروض وخصومات خاصة لو طلبت أونلاين من ${rest}، جرّب المنيو من هنا:\n${link}` },
-  { withName:false, text:(name,link,rest)=> `خصومات مميزة بانتظارك 💥\n${rest} متاح أونلاين دلوقتي، اطلب من المنيو واستفيد بالعروض:\n${link}` },
-  { withName:true,  text:(name,link,rest)=> `${name}، متفوتش الفرصة 😋\nعروض وخصومات على طلبات الأونلاين من ${rest}، شوف المنيو من هنا:\n${link}` },
-  { withName:false, text:(name,link,rest)=> `فرصتك دلوقتي 🛍️\nاطلب أونلاين من منيو ${rest} وخد خصمك على طلبك:\n${link}` },
-  { withName:true,  text:(name,link,rest)=> `طال غيابك يا ${name} 💛\nمنيو ${rest} فيه عروض جديدة تستاهل تجربها، اطلب أونلاين من هنا:\n${link}` },
-  { withName:false, text:(name,link,rest)=> `طال الغياب! 💛\n${rest} عندها عروض جديدة تستاهل تجربها، اطلب أونلاين من هنا:\n${link}` },
+  { withName:true,  text:(name,link,rest)=> `أهلًا بك ${name}\nيسعدنا أن نرحب بك في ${rest}! يمكنك تصفح المنيو والطلب أونلاين مباشرة من هنا:\n${link}` },
+  { withName:false, text:(name,link,rest)=> `أهلًا بك\n${rest} متاح الآن أونلاين! يمكنك تصفح المنيو والطلب من هنا:\n${link}` },
+  { withName:true,  text:(name,link,rest)=> `أهلًا بك ${name}\nأصبح منيو ${rest} متاحًا أونلاين، ويمكنك الطلب براحتك من الرابط التالي:\n${link}` },
+  { withName:false, text:(name,link,rest)=> `تحية طيبة\nندعوك لتصفح منيو ${rest} والطلب أونلاين من خلال الرابط التالي:\n${link}` },
+  { withName:true,  text:(name,link,rest)=> `كيف حالك ${name}؟\nأصبح لدى ${rest} منيو أونلاين الآن، جرّب الطلب من هنا:\n${link}` },
+  { withName:false, text:(name,link,rest)=> `منيو ${rest} متاح أونلاين\nاطلب الآن من هنا:\n${link}` },
+  { withName:true,  text:(name,link,rest)=> `أهلًا بك ${name}\nاستمتع بعروضنا وخصوماتنا عند الطلب أونلاين من منيو ${rest}:\n${link}` },
+  { withName:false, text:(name,link,rest)=> `عروض وخصومات تنتظرك\nاطلب أونلاين من منيو ${rest} واستمتع بأفضل العروض:\n${link}` },
+  { withName:true,  text:(name,link,rest)=> `أخبار سارة يا ${name}\nلدينا عروض وخصومات خاصة عند الطلب أونلاين من ${rest}، جرّب المنيو من هنا:\n${link}` },
+  { withName:false, text:(name,link,rest)=> `خصومات مميزة بانتظارك\n${rest} متاح أونلاين الآن، اطلب من المنيو واستفد من العروض:\n${link}` },
+  { withName:true,  text:(name,link,rest)=> `${name}، لا تفوّت الفرصة\nعروض وخصومات على الطلبات أونلاين من ${rest}، شاهد المنيو من هنا:\n${link}` },
+  { withName:false, text:(name,link,rest)=> `فرصتك الآن\nاطلب أونلاين من منيو ${rest} واحصل على خصمك على طلبك:\n${link}` },
+  { withName:true,  text:(name,link,rest)=> `لقد طال غيابك يا ${name}\nيضم منيو ${rest} عروضًا جديدة تستحق التجربة، اطلب أونلاين من هنا:\n${link}` },
+  { withName:false, text:(name,link,rest)=> `لقد طال الغياب!\nلدى ${rest} عروض جديدة تستحق التجربة، اطلب أونلاين من هنا:\n${link}` },
 ];
 
 function openWaTemplatePicker(templates, name, link, digits){
@@ -1140,7 +1156,7 @@ function openWaTemplatePicker(templates, name, link, digits){
   overlay.innerHTML = `
     <div class="modal">
       <h3>اختر نص الرسالة</h3>
-      <div class="orders-empty" style="padding:0 0 10px; font-size:12px;">تنويع النص كل مرة بيقلل احتمال حظر واتساب للأرقام اللي بترسلها كتير</div>
+      <div class="orders-empty" style="padding:0 0 10px; font-size:12px;">تنويع النص في كل مرة يقلل احتمال حظر واتساب للأرقام التي تُرسَل إليها كثيرًا</div>
       <div class="wa-template-list" id="waTemplateList"></div>
       <div class="modal-actions">
         <button class="btn-cancel" id="waTemplateCancel">إلغاء</button>
@@ -1173,12 +1189,71 @@ function sendMenuLinkWhatsApp(phone, name){
   openWaTemplatePicker(templates, cleanName, link, digits);
 }
 
+// بيبني رسالة تنبيه مناسبة لصاحب المتجر حسب حالته: فترة تجريبية قربت تخلص/خلصت، أو اشتراك قرب ينتهي/انتهى
+function buildExpiryReminderMessage(r){
+  const bizName = r.name || '';
+  if(r.subscription_end_date){
+    const end = new Date(r.subscription_end_date + 'T23:59:59');
+    const daysLeft = Math.ceil((end.getTime() - Date.now()) / 86400000);
+    const endStr = end.toLocaleDateString('ar-EG', { day:'numeric', month:'short', year:'numeric' });
+    if(daysLeft < 0){
+      return `مرحبًا ${bizName}\nنود تنبيهك بأن اشتراكك في منيو m@g قد انتهى بتاريخ ${endStr}، وتم تعليق الوصول للوحة التحكم مؤقتًا.\nبرجاء تجديد الاشتراك في أقرب وقت لاستعادة الخدمة.`;
+    }
+    return `مرحبًا ${bizName}\nنود تذكيرك بأن اشتراكك في منيو m@g سينتهي ${daysLeftLabel(daysLeft)} (بتاريخ ${endStr}).\nبرجاء تجديد الاشتراك لتفادي توقف الخدمة.`;
+  }
+  if(r.demo_days){
+    const end = new Date(r.created_at);
+    end.setDate(end.getDate() + Number(r.demo_days));
+    const daysLeft = Math.ceil((end.getTime() - Date.now()) / 86400000);
+    const endStr = end.toLocaleDateString('ar-EG', { day:'numeric', month:'short', year:'numeric' });
+    if(daysLeft < 0){
+      return `مرحبًا ${bizName}\nنود تنبيهك بأن الفترة التجريبية لحسابك في منيو m@g قد انتهت بتاريخ ${endStr}.\nيسعدنا اشتراكك للاستمرار في استخدام النظام دون انقطاع.`;
+    }
+    return `مرحبًا ${bizName}\nنود تذكيرك بأن الفترة التجريبية لحسابك في منيو m@g ستنتهي ${daysLeftLabel(daysLeft)} (بتاريخ ${endStr}).\nيسعدنا اشتراكك للاستمرار في استخدام النظام دون انقطاع.`;
+  }
+  return `مرحبًا ${bizName}\nنود التواصل معك بخصوص حالة اشتراكك في منيو m@g.`;
+}
+
+// بيبني رسالة تشرح لصاحب المحل إزاي يدفع (إنستاباي) والباقات المتاحة وأسعارها
+function buildPaymentInstructionsMessage(r){
+  const bizName = r.name || '';
+  const plansLines = RENEW_PLANS.map(p=>{
+    const badge = p.badge_ar ? ` (${p.badge_ar})` : '';
+    return `- ${p.name_ar}: ${p.price} جنيه (${p.suffix_ar})${badge}`;
+  }).join('\n');
+  return `مرحبًا ${bizName}\nإليك طريقة دفع اشتراك منيو m@g:\n\n1) افتح رابط الدفع عبر إنستاباي التالي:\n${RENEW_PAY_LINK}\n(أو حوّل مباشرة على حساب إنستاباي: magziko@instapay)\n\n2) اختر الباقة المناسبة لك وادفع قيمتها:\n${plansLines}\n\n3) بعد الدفع، ابعتلنا صورة إثبات التحويل هنا على واتساب وسيتم تفعيل اشتراكك فورًا.\n\nولو حابب الدفع بطريقة تانية (فودافون كاش)، الرقم: ${RENEW_VODAFONE_CASH}`;
+}
+
+// بيفتح واتساب على رقم المتجر برسالة شرح طريقة الدفع (إنستاباي + الباقات)
+function sendPaymentInstructionsWhatsApp(r){
+  const digits = (r.phone || '').replace(/[^\d]/g, '');
+  if(!digits){ toast('لا يوجد رقم تليفون مسجل لهذا المتجر — أضِفه من إعدادات المتجر أولًا'); return; }
+  const msg = buildPaymentInstructionsMessage(r);
+  window.open(`https://wa.me/${digits}?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+// بيفتح واتساب على رقم المتجر برسالة تنبيه جاهزة، وبيسجّل وقت الإرسال وعدد المرات في قاعدة البيانات
+// بيرجع القيم الجديدة (last_reminder_sent_at, reminder_count) عشان يتحدّث بيها الواجهة، أو null لو فشل
+async function sendExpiryReminderWhatsApp(r){
+  const digits = (r.phone || '').replace(/[^\d]/g, '');
+  if(!digits){ toast('لا يوجد رقم تليفون مسجل لهذا المتجر — أضِفه من إعدادات المتجر أولًا'); return null; }
+  const msg = buildExpiryReminderMessage(r);
+  window.open(`https://wa.me/${digits}?text=${encodeURIComponent(msg)}`, '_blank');
+  const nowIso = new Date().toISOString();
+  const newCount = (r.reminder_count || 0) + 1;
+  const { error } = await sb.from('restaurants').update({ last_reminder_sent_at: nowIso, reminder_count: newCount }).eq('id', r.id);
+  if(error) return null;
+  r.last_reminder_sent_at = nowIso;
+  r.reminder_count = newCount;
+  return { last_reminder_sent_at: nowIso, reminder_count: newCount };
+}
+
 // بيبعت تفاصيل طلب توصيل للسائق المعيّن عبر واتساب (اسم العميل، العنوان، الأصناف، الإجمالي)
 function sendOrderToDriverWhatsApp(order, lines, driver){
   const digits = toEgyptWaDigits(driver.phone);
   if(!digits){ toast('لا يوجد رقم تليفون صالح لهذا السائق'); return; }
   const itemsLines = (lines || []).map(l=> `- ${l.item_name} × ${l.quantity}`).join('\n');
-  let msg = `🚴 طلب توصيل جديد${order.order_number != null ? ` #${order.order_number}` : ''}\n\n`;
+  let msg = `طلب توصيل جديد${order.order_number != null ? ` #${order.order_number}` : ''}\n\n`;
   msg += `العميل: ${order.customer_name || ''}\n`;
   msg += `التليفون: ${order.customer_phone || ''}${order.secondary_phone ? ` / ${order.secondary_phone}` : ''}\n`;
   if(order.city || order.area) msg += `المنطقة: ${[order.city, order.area].filter(Boolean).join(' — ')}\n`;
@@ -1346,14 +1421,17 @@ document.getElementById('forgotPasswordLink').addEventListener('click', async ()
   errEl.textContent = 'تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني';
 });
 
-document.getElementById('signOutLink').addEventListener('click', async ()=>{
+// تسجيل خروج موحّد يُستخدم من رابط "تسجيل الخروج" العادي ومن شاشات الحساب المعلّق/التجربة المنتهية
+async function signOutApp(){
   stopOrderAlertLoop();
   await sb.auth.signOut();
   currentUser = null; restaurant = null;
   document.getElementById('authEmail').value='';
   document.getElementById('authPassword').value='';
   show('authScreen');
-});
+}
+
+document.getElementById('signOutLink').addEventListener('click', signOutApp);
 
 /* ================= onboarding (create restaurant) ================= */
 async function afterLogin(){
@@ -1445,6 +1523,11 @@ function daysLeftLabel(n){
   return `خلال ${n} أيام`;
 }
 
+// بيبني رابط واتساب لرقم دعم منيو m@g برسالة جاهزة (الرقم معرّف لاحقًا في RENEW_WA_NUMBER)
+function SUPPORT_WA_LINK(msg){
+  return `https://wa.me/${RENEW_WA_NUMBER}?text=${encodeURIComponent(msg)}`;
+}
+
 function maybeShowRenewSoonBanner(){
   const banner = document.getElementById('renewSoonBanner');
   if(!banner) return;
@@ -1459,6 +1542,10 @@ function maybeShowRenewSoonBanner(){
   document.getElementById('renewSoonBannerText').textContent = `⏳ اشتراكك ينتهي ${daysLeftLabel(daysLeft)} — جدّد الآن لتفادي توقف الخدمة.`;
   banner.classList.remove('hidden');
   document.getElementById('renewSoonBannerBtn').onclick = ()=> openRenewFlow(restaurant);
+  document.getElementById('renewSoonBannerWaBtn').onclick = ()=>{
+    const waLink = SUPPORT_WA_LINK('مرحبًا، أرغب في تجديد اشتراك منيو m@g الخاص بـ "' + (restaurant.name || '') + '" (المتبقي: ' + daysLeftLabel(daysLeft) + ').');
+    window.open(waLink, '_blank');
+  };
   document.getElementById('renewSoonBannerCloseBtn').onclick = ()=>{
     localStorage.setItem(dismissKey, '1');
     banner.classList.add('hidden');
@@ -1512,10 +1599,46 @@ async function openDashboard(){
   await checkDemoExpiry();
   if(restaurant.restriction_banner_enabled) showTrialExpiredBanner();
   maybeShowRenewSoonBanner();
+  updateTrialDaysBadge();
   applyExcelRestrictionUI();
   applyFeaturePlanUI();
   applyGranularRestrictionsUI();
   migrateLegacyImages().catch(()=>{});
+}
+
+// شارة ثابتة بجانب اسم المطعم توضح باستمرار الأيام المتبقية من التجربة المجانية أو الاشتراك،
+// مش بس بانر تحذيري لما يقرب الموعد — عشان الموضوع يفضل حاضر في ذهن صاحب المتجر من بداية التجربة
+function updateTrialDaysBadge(){
+  const badge = document.getElementById('trialDaysBadge');
+  if(!badge) return;
+  badge.classList.add('hidden');
+  badge.onclick = null;
+  if(restaurant.account_suspended) return;
+
+  let daysLeft, label, isSubscription;
+  if(restaurant.subscription_end_date){
+    const end = new Date(restaurant.subscription_end_date + 'T23:59:59');
+    daysLeft = Math.ceil((end.getTime() - Date.now()) / 86400000);
+    isSubscription = true;
+  } else if(restaurant.demo_days){
+    const end = new Date(restaurant.created_at);
+    end.setDate(end.getDate() + Number(restaurant.demo_days));
+    daysLeft = Math.ceil((end.getTime() - Date.now()) / 86400000);
+    isSubscription = false;
+  } else {
+    return;
+  }
+
+  if(daysLeft < 0) return; // الحالة دي بيتغطاها البانر/الشاشة المخصصة للانتهاء أصلًا
+
+  label = isSubscription
+    ? `💳 اشتراكك: متبقي ${daysLeft === 0 ? 'اليوم الأخير' : daysLeft + ' يوم'}`
+    : `🎁 تجربتك المجانية: متبقي ${daysLeft === 0 ? 'اليوم الأخير' : daysLeft + ' يوم'}`;
+
+  badge.textContent = label;
+  badge.classList.remove('hidden', 'normal', 'warn', 'danger');
+  badge.classList.add(daysLeft <= 2 ? 'danger' : (daysLeft <= 5 ? 'warn' : 'normal'));
+  badge.onclick = ()=> openRenewFlow(restaurant);
 }
 
 function applyExcelRestrictionUI(){
@@ -1567,6 +1690,29 @@ function openRenewFlow(rest){
   function closeFlow(){ overlay.remove(); }
   overlay.addEventListener('click', (e)=>{ if(e.target===overlay) closeFlow(); });
 
+  // بيجيب ملخص حقيقي لأداء المتجر (عدد الطلبات والإيرادات) منذ الانضمام، لعرضه كإثبات قيمة ملموس وقت التجديد
+  async function fetchRenewStatsSummary(){
+    const { data, error } = await sb.from('orders').select('total, status').eq('restaurant_id', rest.id);
+    if(error || !data) return null;
+    const nonCancelled = data.filter(o=> o.status !== 'cancelled');
+    const ordersCount = nonCancelled.length;
+    const revenue = nonCancelled.reduce((sum, o)=> sum + (Number(o.total) || 0), 0);
+    if(ordersCount === 0) return null;
+    return { ordersCount, revenue };
+  }
+
+  function renewStatsBannerHtml(stats){
+    if(!stats) return '';
+    return `
+      <div class="renew-stats-banner">
+        <div class="renew-stats-icon">📈</div>
+        <div>
+          <div class="renew-stats-title">حققت منيو m@g لمتجرك حتى الآن:</div>
+          <div class="renew-stats-value">${stats.ordersCount} طلب${stats.revenue > 0 ? ` — بإجمالي ${stats.revenue.toLocaleString('ar-EG')} ج.م` : ''}</div>
+        </div>
+      </div>`;
+  }
+
   function renderPlanStep(){
     overlay.innerHTML = `
       <div class="renew-box">
@@ -1576,6 +1722,7 @@ function openRenewFlow(rest){
           <div class="renew-title-ar">اختر باقة الاشتراك</div>
           <div class="renew-title-en">Choose your subscription plan</div>
         </div>
+        <div id="renewStatsSlot"></div>
         <div class="plan-grid" id="planGrid">
           ${RENEW_PLANS.map(p=>`
             <div class="plan-card" data-plan="${p.key}">
@@ -1593,6 +1740,10 @@ function openRenewFlow(rest){
         <button type="button" class="renew-next-btn" id="renewNextBtn" disabled>${'تابع'} — Continue</button>
       </div>`;
     overlay.querySelector('#renewCloseBtn1').addEventListener('click', closeFlow);
+    fetchRenewStatsSummary().then(stats=>{
+      const slot = overlay.querySelector('#renewStatsSlot');
+      if(slot && stats) slot.innerHTML = renewStatsBannerHtml(stats);
+    });
     let selectedKey = null;
     const nextBtn = overlay.querySelector('#renewNextBtn');
     overlay.querySelectorAll('.plan-card').forEach(card=>{
@@ -1742,9 +1893,18 @@ function showAccountSuspendedBlock(){
       <div class="trial-msg-ar">تم إيقاف الوصول إلى لوحة التحكم مؤقتًا نظرًا لعدم تفعيل الاشتراك. يمكنك تجديد الاشتراك الآن واختيار الباقة المناسبة لك.</div>
       <div class="trial-msg-en">Access to the dashboard has been temporarily suspended due to an inactive subscription. You can renew now and choose the plan that suits you.</div>
       <div class="trial-cta">💳 تجديد الاشتراك الآن &nbsp;|&nbsp; Renew subscription now</div>
+      <button type="button" id="suspendLogoutBtn" style="margin-top:16px; background:none; border:none; color:#9aa4b2; font-family:var(--body); font-size:12.5px; text-decoration:underline; cursor:pointer;">تسجيل الخروج</button>
     </div>`;
   document.body.appendChild(overlay);
-  overlay.querySelector('#suspendBox').addEventListener('click', ()=> openRenewFlow(restaurant));
+  overlay.querySelector('#suspendBox').addEventListener('click', (e)=>{
+    if(e.target.id === 'suspendLogoutBtn') return;
+    openRenewFlow(restaurant);
+  });
+  overlay.querySelector('#suspendLogoutBtn').addEventListener('click', async (e)=>{
+    e.stopPropagation();
+    overlay.remove();
+    await signOutApp();
+  });
 }
 
 function showAccountSuspendedPublicScreen(rest){
@@ -1778,20 +1938,28 @@ function showTrialExpiredBanner(){
       <div class="trial-msg-ar">لتجديد الاشتراك ومواصلة استخدام لوحة التحكم دون انقطاع، اختر الباقة المناسبة لك وأكمل الدفع.</div>
       <div class="trial-msg-en">To renew your subscription and continue using the dashboard without interruption, choose your plan and complete payment.</div>
       <div class="trial-cta">💳 تجديد الاشتراك الآن &nbsp;|&nbsp; Renew subscription now</div>
+      <button type="button" id="trialLogoutBtn" style="margin-top:16px; background:none; border:none; color:#9aa4b2; font-family:var(--body); font-size:12.5px; text-decoration:underline; cursor:pointer;">تسجيل الخروج</button>
     </div>`;
   document.body.appendChild(overlay);
 
   const box = overlay.querySelector('#trialBox');
   const closeBtn = overlay.querySelector('#trialCloseBtn');
+  const logoutBtn = overlay.querySelector('#trialLogoutBtn');
 
   box.addEventListener('click', (e)=>{
-    if(e.target === closeBtn) return;
+    if(e.target === closeBtn || e.target === logoutBtn) return;
     openRenewFlow(restaurant);
   });
 
   closeBtn.addEventListener('click', (e)=>{
     e.stopPropagation();
     overlay.remove();
+  });
+
+  logoutBtn.addEventListener('click', async (e)=>{
+    e.stopPropagation();
+    overlay.remove();
+    await signOutApp();
   });
 
   setTimeout(()=>{ closeBtn.classList.add('show'); }, 50000);
@@ -1901,7 +2069,7 @@ function showNotifPermModal(mode){
     overlay.innerHTML = `
       <div class="modal" style="text-align:center; max-width:380px;">
         <h3>🔔 فعّل تنبيهات الطلبات</h3>
-        <div class="orders-empty" style="padding:0 0 16px;">هيوصلك إشعار على سطح المكتب مع كل أوردر جديد أول ما يوصل، حتى لو التاب مش في الفوكس. المتصفح هيسألك للإذن بعد شوية — اضغط "سماح / Allow".</div>
+        <div class="orders-empty" style="padding:0 0 16px;">سيصلك إشعار على سطح المكتب مع كل طلب جديد فور وصوله، حتى لو لم تكن نافذة المتصفح في المقدمة. سيطلب منك المتصفح الإذن بعد قليل — اضغط "سماح / Allow".</div>
         <div class="modal-actions">
           <button class="btn-cancel" id="notifModalCancelBtn">إلغاء</button>
           <button class="btn-confirm" id="notifModalAskBtn">تفعيل الإشعارات الآن</button>
@@ -1917,7 +2085,7 @@ function showNotifPermModal(mode){
       if(Notification.permission === 'granted'){
         new Notification('تم تفعيل التنبيهات ✅', { body: 'هتوصلك رسالة سطح مكتب مع كل أوردر جديد طول ما المتصفح شغال.' });
       } else if(Notification.permission === 'denied'){
-        toast('تم رفض الإذن — تقدر تفعّله لاحقًا من إعدادات المتصفح');
+        toast('تم رفض الإذن — يمكنك تفعيله لاحقًا من إعدادات المتصفح');
       }
     });
   } else if(mode === 'blocked'){
@@ -1942,9 +2110,9 @@ function showNotifPermModal(mode){
       <div class="modal" style="text-align:center; max-width:420px;">
         <h3>✅ التنبيهات مفعّلة بالفعل</h3>
         <div class="orders-empty" style="text-align:right; padding:0 0 16px; line-height:1.9;">
-          🔸 تأكد إن وضع "Focus Assist / التركيز" في Windows مقفول<br>
-          🔸 من Windows Settings ← System ← Notifications، تأكد إن Chrome مسموحله يبعت إشعارات<br>
-          🔸 جرّب تصغّر نافذة Chrome بدل ما تقفلها
+          🔸 تأكد أن وضع "Focus Assist / التركيز" في Windows مغلق<br>
+          🔸 من Windows Settings ← System ← Notifications، تأكد أن Chrome مسموح له بإرسال الإشعارات<br>
+          🔸 جرّب تصغير نافذة Chrome بدلًا من إغلاقها
         </div>
         <div class="modal-actions">
           <button class="btn-cancel" id="notifModalCloseBtn">تمام</button>
@@ -1954,7 +2122,7 @@ function showNotifPermModal(mode){
     overlay.addEventListener('click', (e)=>{ if(e.target===overlay) overlay.remove(); });
     overlay.querySelector('#notifModalCloseBtn').addEventListener('click', ()=> overlay.remove());
     try{
-      new Notification('تجربة الإشعار 🔔', { body: 'لو شفت الرسالة دي، التنبيهات شغالة تمام.' });
+      new Notification('تجربة الإشعار 🔔', { body: 'إذا شاهدت هذه الرسالة، فإن التنبيهات تعمل بشكل سليم.' });
     }catch(e){ console.error('Notification test failed:', e); }
     startOrderAlertLoop();
   }
@@ -2125,6 +2293,9 @@ async function autoPrintNewOrder(orderId){
     const restoreTitle = ()=>{ document.title = prevTitle; window.removeEventListener('afterprint', restoreTitle); };
     window.addEventListener('afterprint', restoreTitle);
     window.print();
+    if(!order.printed_at){
+      sb.from('orders').update({ printed_at: new Date().toISOString() }).eq('id', orderId).then(()=>{}, ()=>{});
+    }
   }catch(e){}
 }
 
@@ -2276,7 +2447,7 @@ document.getElementById('driversBtn').addEventListener('click', async ()=>{
     const wrap = overlay.querySelector('#driversListWrap');
     const { data: drivers, error } = await sb.from('drivers').select('*').eq('restaurant_id', restaurant.id).order('is_active', { ascending:false }).order('created_at', { ascending:false });
     if(error){ wrap.innerHTML = `<div class="orders-empty">تعذر تحميل السائقين — تأكد من إضافة جدول drivers في قاعدة البيانات</div>`; return; }
-    if(!drivers || drivers.length === 0){ wrap.innerHTML = `<div class="orders-empty">لا يوجد سائقين مضافين بعد</div>`; return; }
+    if(!drivers || drivers.length === 0){ wrap.innerHTML = `<div class="orders-empty">لم تتم إضافة أي سائقين بعد</div>`; return; }
 
     // عدد الطلبات النشطة (قيد الانتظار أو التجهيز) المعيّنة لكل سائق دلوقتي
     const { data: activeAssigned } = await sb.from('orders').select('driver_id').eq('restaurant_id', restaurant.id).in('status', ['pending','preparing']).not('driver_id', 'is', null);
@@ -2287,7 +2458,7 @@ document.getElementById('driversBtn').addEventListener('click', async ()=>{
       <div class="zone-row" data-id="${d.id}" data-name="${escapeHtml(d.name)}" data-phone="${escapeHtml(d.phone)}" style="${d.is_active ? '' : 'opacity:.55;'}">
         <div style="flex:1; min-width:120px;">
           <span class="zone-name" style="display:block;">${escapeHtml(d.name)} ${!d.is_active ? `<span style="font-size:10px; color:var(--stone); font-weight:400;">(غير نشط)</span>` : ''}</span>
-          ${activeCounts[d.id] ? `<span style="display:block; font-size:11.5px; color:var(--ember); margin-top:2px;">🚴 ${activeCounts[d.id]} طلب معلّق عليه دلوقتي</span>` : ''}
+          ${activeCounts[d.id] ? `<span style="display:block; font-size:11.5px; color:var(--ember); margin-top:2px;">🚴 ${activeCounts[d.id]} طلب معلّق عليه الآن</span>` : ''}
         </div>
         <span class="zone-fee" style="direction:ltr;">${escapeHtml(d.phone)}</span>
         <button type="button" data-action="toggleActive">${d.is_active ? 'إيقاف' : 'تفعيل'}</button>
@@ -2309,7 +2480,7 @@ document.getElementById('driversBtn').addEventListener('click', async ()=>{
       btn.addEventListener('click', async ()=>{
         const row = btn.closest('.zone-row');
         const id = row.dataset.id;
-        if(!confirm('حذف هذا السائق؟ الطلبات اللي كانت معيّنة له هتفضل مسجّلة بس من غير سائق.')) return;
+        if(!confirm('هل تريد حذف هذا السائق؟ ستبقى الطلبات التي كانت معيّنة له مسجّلة، لكن من دون سائق.')) return;
         const { error: delErr } = await sb.from('drivers').delete().eq('id', id);
         if(delErr){ toast('تعذر الحذف'); return; }
         await renderDrivers();
@@ -2541,7 +2712,7 @@ document.getElementById('customersBtn').addEventListener('click', async ()=>{
       <div class="modal">
         <h3>أرقام تليفون ${escapeHtml(customerName || 'العميل')}</h3>
         <div class="orders-empty" style="text-align:right; padding:0 0 10px; font-size:12px;">
-          الرقم "الافتراضي" هو اللي بيتربط بيه واتساب والطلبات الجديدة. باقي الأرقام للتواصل بس.
+          الرقم "الافتراضي" هو الذي يرتبط به واتساب والطلبات الجديدة، أما باقي الأرقام فهي للتواصل فقط.
         </div>
         <div id="custPhoneListWrap"><div class="orders-empty">جارِ التحميل...</div></div>
         <div class="zone-add-row" style="flex-wrap:wrap; margin-top:12px;">
@@ -2590,7 +2761,7 @@ document.getElementById('customersBtn').addEventListener('click', async ()=>{
           const row = phones.find(p=> p.id === id);
           btn.disabled = true;
           if(await isPhoneTakenByAnotherCustomer(row.phone)){
-            toast('الرقم ده مسجل بالفعل كرقم أساسي لعميل تاني');
+            toast('هذا الرقم مسجل بالفعل كرقم أساسي لعميل آخر');
             btn.disabled = false;
             return;
           }
@@ -2607,7 +2778,7 @@ document.getElementById('customersBtn').addEventListener('click', async ()=>{
           const row = btn.closest('.zone-row');
           const id = row.dataset.id;
           const target = phones.find(p=> p.id === id);
-          if(target.is_default){ toast('مينفعش تحذف الرقم الافتراضي — عيّن رقم تاني افتراضي الأول'); return; }
+          if(target.is_default){ toast('لا يمكن حذف الرقم الافتراضي — عيّن رقمًا آخر افتراضيًا أولًا'); return; }
           btn.disabled = true;
           const { error: delErr } = await sb.from('customer_phones').delete().eq('id', id);
           if(delErr){ toast('تعذر حذف الرقم'); return; }
@@ -2626,7 +2797,7 @@ document.getElementById('customersBtn').addEventListener('click', async ()=>{
       const btn = phOverlay.querySelector('#phoneAddBtn');
       btn.disabled = true;
       if(await isPhoneTakenByAnotherCustomer(phone)){
-        toast('الرقم ده مسجل بالفعل لعميل تاني');
+        toast('هذا الرقم مسجل بالفعل لعميل آخر');
         btn.disabled = false;
         return;
       }
@@ -2634,7 +2805,7 @@ document.getElementById('customersBtn').addEventListener('click', async ()=>{
       const isFirst = !count || count === 0;
       const { error: insErr } = await sb.from('customer_phones').insert({ customer_id: customerId, label: label || null, phone, is_default: isFirst });
       btn.disabled = false;
-      if(insErr){ toast('تعذر إضافة الرقم — تأكد أنه مش مكرر لنفس العميل'); return; }
+      if(insErr){ toast('تعذر إضافة الرقم — تأكد أنه غير مكرر لنفس العميل'); return; }
       if(isFirst){ await sb.from('customers').update({ phone }).eq('id', customerId); }
       labelInput.value = ''; phoneInput.value = '';
       toast('تمت إضافة الرقم');
@@ -2644,7 +2815,7 @@ document.getElementById('customersBtn').addEventListener('click', async ()=>{
 
   // دمج عميلين لهما نفس الهوية الفعلية في سجل واحد — الأرقام والعناوين تتوحّد تلقائيًا
   function openMergeCustomersModal(){
-    if(allCustomers.length < 2){ toast('محتاج عميلين على الأقل عشان تدمج'); return; }
+    if(allCustomers.length < 2){ toast('يلزم وجود عميلين على الأقل لإجراء الدمج'); return; }
     const mergeOverlay = document.createElement('div');
     mergeOverlay.className = 'overlay';
     const optionsHtml = allCustomers.map(c=> `<option value="${c.id}">${escapeHtml(c.name)} — ${escapeHtml(c.phone)}</option>`).join('');
@@ -2652,18 +2823,18 @@ document.getElementById('customersBtn').addEventListener('click', async ()=>{
       <div class="modal">
         <h3>دمج عملاء مكررين</h3>
         <div class="orders-empty" style="text-align:right; padding:0 0 12px; font-size:12px;">
-          اختار العميلين اللي هما فعليًا نفس الشخص. كل أرقامه وعناوينه هتتجمع في سجل واحد، والعميل التاني هيتحذف نهائيًا.
+          اختر العميلين اللذين هما فعليًا نفس الشخص. ستُجمع جميع أرقامه وعناوينه في سجل واحد، وسيُحذف العميل الآخر نهائيًا.
         </div>
         <div style="display:flex; flex-direction:column; gap:3px; margin-bottom:10px;">
-          <label style="font-size:12px; color:var(--stone);">العميل اللي هيفضل (الأساسي)</label>
+          <label style="font-size:12px; color:var(--stone);">العميل الذي سيبقى (الأساسي)</label>
           <select id="mergeKeepSelect" style="padding:8px; border-radius:8px; border:1px solid var(--line); background:var(--paper-dim); color:var(--ink);">${optionsHtml}</select>
         </div>
         <div style="display:flex; flex-direction:column; gap:3px; margin-bottom:6px;">
-          <label style="font-size:12px; color:var(--stone);">العميل اللي هيتم دمجه وحذفه</label>
+          <label style="font-size:12px; color:var(--stone);">العميل الذي سيتم دمجه وحذفه</label>
           <select id="mergeAwaySelect" style="padding:8px; border-radius:8px; border:1px solid var(--line); background:var(--paper-dim); color:var(--ink);">${optionsHtml}</select>
         </div>
         <div class="orders-empty" style="text-align:right; padding:8px 0 0; font-size:11.5px;">
-          ⚠️ ملحوظة: إحصائيات المبيعات والطلبات القديمة بتتبع رقم التليفون اللي اتسجل بيه الطلب فعليًا، فمش هتندمج رجعيًا مع بعض — الدمج ده بيوحّد بيانات التواصل بس (الاسم/الأرقام/العناوين).
+          ⚠️ ملحوظة: تتبع إحصائيات المبيعات والطلبات القديمة رقم الهاتف الذي سُجّل به الطلب فعليًا، لذا لن تُدمج رجعيًا مع بعضها — هذا الدمج يوحّد بيانات التواصل فقط (الاسم/الأرقام/العناوين).
         </div>
         <div class="modal-actions">
           <button class="btn-cancel" id="mergeCancelBtn">إلغاء</button>
@@ -2680,7 +2851,7 @@ document.getElementById('customersBtn').addEventListener('click', async ()=>{
       if(keepId === awayId){ toast('اختار عميلين مختلفين'); return; }
       const keepC = allCustomers.find(c=> c.id === keepId);
       const awayC = allCustomers.find(c=> c.id === awayId);
-      if(!confirm(`هيتم دمج "${awayC.name} — ${awayC.phone}" جوّا "${keepC.name} — ${keepC.phone}" وحذفه نهائيًا. متابعة؟`)) return;
+      if(!confirm(`سيتم دمج "${awayC.name} — ${awayC.phone}" داخل "${keepC.name} — ${keepC.phone}" وحذفه نهائيًا. هل تريد المتابعة؟`)) return;
       const btn = mergeOverlay.querySelector('#mergeConfirmBtn');
       btn.disabled = true;
       const { error } = await sb.rpc('merge_customers', { p_keep_id: keepId, p_merge_id: awayId });
@@ -3019,7 +3190,7 @@ document.getElementById('viewOrdersBtn').addEventListener('click', async ()=>{
     autoPrintBtn.textContent = on ? '🖨️ الطباعة التلقائية: مفعّلة' : '🖨️ الطباعة التلقائية: متوقفة';
     autoPrintBtn.classList.toggle('active', on);
     autoPrintNote.style.display = on ? 'block' : 'none';
-    autoPrintNote.innerHTML = `تفعيل الطباعة التلقائية هنا خاص بهذا الجهاز/المتصفح بس (مثلًا شاشة المطبخ). المتصفح هيفتح نافذة الطباعة تلقائيًا مع كل طلب جديد، وهتحتاج تضغط "طباعة" فيها إلا لو ظبطت المتصفح على وضع "kiosk printing" اللي بيطبع مباشرة من غير نافذة — اسأل الدعم الفني لو محتاج تظبيط الجهاز بالطريقة دي.`;
+    autoPrintNote.innerHTML = `تفعيل الطباعة التلقائية هنا خاص بهذا الجهاز/المتصفح فقط (مثلًا شاشة المطبخ). سيفتح المتصفح نافذة الطباعة تلقائيًا مع كل طلب جديد، وستحتاج إلى الضغط على "طباعة" فيها، إلا إذا ضبطت المتصفح على وضع "kiosk printing" الذي يطبع مباشرة من دون نافذة — استشر الدعم الفني إذا احتجت إلى ضبط الجهاز بهذه الطريقة.`;
   };
   refreshAutoPrintUI();
   autoPrintBtn.addEventListener('click', ()=>{
@@ -3032,6 +3203,17 @@ document.getElementById('viewOrdersBtn').addEventListener('click', async ()=>{
   const wrap = overlay.querySelector('#ordersListWrap');
   if(error){ wrap.innerHTML = `<div class="orders-empty">تعذر تحميل الطلبات</div>`; return; }
   if(!orders || orders.length === 0){ wrap.innerHTML = `<div class="orders-empty">لا توجد طلبات بعد</div>`; return; }
+
+  // بنسجل مين كان "لسه ما اتشافش" قبل ما نفتح الشاشة دي، عشان نعرض شارة "جديد" ليها في العرض الحالي بس
+  // (لو مانعملناش كده، أي طلب هيتحط عليه seen_at فورًا مجرد ما تفتح الشاشة، فمش هنقدر نميّزه)
+  const unseenAtOpenIds = new Set(orders.filter(o=> !o.seen_at).map(o=> o.id));
+  if(unseenAtOpenIds.size){
+    const nowIso = new Date().toISOString();
+    sb.from('orders').update({ seen_at: nowIso }).in('id', [...unseenAtOpenIds]).then(
+      ()=>{ orders.forEach(o=>{ if(unseenAtOpenIds.has(o.id)) o.seen_at = nowIso; }); },
+      ()=>{}
+    );
+  }
 
   let itemsByOrder = {};
   const orderIds = orders.map(o=>o.id);
@@ -3098,6 +3280,19 @@ document.getElementById('viewOrdersBtn').addEventListener('click', async ()=>{
     const rowClasses = ['order-row', fresh ? 'is-new' : '', today ? 'is-today' : ''].filter(Boolean).join(' ');
     const tagsHtml = `${fresh ? '<span class="o-tag new">جديد</span>' : ''}${today ? '<span class="o-tag today">اليوم</span>' : ''}`;
     const numberHtml = o.order_number != null ? `<span class="o-number">#${o.order_number}</span>` : '';
+    const unseenBadgeHtml = unseenAtOpenIds.has(o.id) ? '<span class="o-tag" style="background:#4a3a10; color:#f5d98a;">👀 لم يُفتح بعد</span>' : '';
+    const printedBadgeHtml = o.printed_at ? '<span class="o-tag" style="background:#1f4d2e; color:#c8f0d6;">🖨️ تمت الطباعة</span>' : '';
+    const isOnlinePay = o.payment_method === 'wallet' || o.payment_method === 'instapay';
+    const payMethodLabel = o.payment_method === 'wallet' ? (o.payment_detail || restaurant.wallet_label || 'محفظة') : (o.payment_method === 'instapay' ? (o.payment_detail || 'إنستاباي') : null);
+    const payBadgeHtml = isOnlinePay
+      ? `<span class="status-badge" style="background:${o.payment_status==='paid' ? '#1f4d2e' : '#4d3a1f'}; color:${o.payment_status==='paid' ? '#c8f0d6' : '#f0dcb0'};">💳 ${escapeHtml(payMethodLabel)} — ${o.payment_status==='paid' ? 'تم الدفع' : 'في انتظار التأكيد'}</span>`
+      : '';
+    const markPaidHtml = (isOnlinePay && o.payment_status !== 'paid')
+      ? `<button type="button" class="btn-export-sm" data-action="markPaid" data-order-id="${o.id}" style="margin-top:6px;">✅ تأكيد استلام الدفع</button>`
+      : '';
+    const ratingBadgeHtml = o.rating_stars
+      ? `<span class="status-badge" style="background:#4a3a10; color:#f5d98a;" title="${o.rating_comment ? escapeHtml(o.rating_comment) : ''}">${'★'.repeat(o.rating_stars)}${'☆'.repeat(5-o.rating_stars)}</span>`
+      : '';
     const isActive = status === 'pending' || status === 'preparing';
     let prepHtml = '';
     if(isActive && o.estimated_ready_at){
@@ -3119,13 +3314,14 @@ document.getElementById('viewOrdersBtn').addEventListener('click', async ()=>{
       <div class="${rowClasses}" data-order-id="${o.id}">
         <div class="o-card-top">
           <div class="o-name">${numberHtml}${escapeHtml(o.customer_name)} <span class="o-type-badge">${typeLabel}</span></div>
-          <div class="o-badges"><span class="status-badge ${status}">${STATUS_LABELS[status] || status}</span>${tagsHtml}</div>
+          <div class="o-badges"><span class="status-badge ${status}">${STATUS_LABELS[status] || status}</span>${payBadgeHtml}${ratingBadgeHtml}${tagsHtml}${unseenBadgeHtml}${printedBadgeHtml}</div>
         </div>
         <div class="o-contact-row">
           <span class="o-phone">${escapeHtml(o.customer_phone)}</span>${o.secondary_phone ? ` / <span class="o-phone">${escapeHtml(o.secondary_phone)}</span>` : ''}
           <button type="button" class="o-wa-btn" data-action="sendMenuWa" data-phone="${escapeHtml(o.customer_phone)}" data-name="${escapeHtml(o.customer_name)}" title="إرسال رابط المنيو للعميل عبر واتساب">📲 إرسال المنيو</button>
           ${restaurant.restriction_print_disabled ? '' : `<button type="button" class="o-print-btn" data-action="printReceipt" data-order-id="${o.id}" title="طباعة الطلب / Print Order">🖨️ طباعة الطلب <span style="opacity:.75;">| Print Order</span></button>`}
         </div>
+        ${markPaidHtml}
         <div class="o-time">📍 ${escapeHtml(o.city || '')}${o.area ? ' — ' + escapeHtml(o.area) : ''}${o.delivery_fee != null ? ` <span class="o-fee">(رسوم التوصيل: ${Number(o.delivery_fee).toFixed(2)} EGP)</span>` : ''}</div>
         ${o.address ? `<div class="o-time">${escapeHtml(o.address)}</div>` : ''}
         ${itemsListHtml}
@@ -3163,6 +3359,33 @@ document.getElementById('viewOrdersBtn').addEventListener('click', async ()=>{
         printBtn.addEventListener('click', ()=>{
           const orderObj = orders.find(o=> o.id === printBtn.dataset.orderId);
           if(orderObj) openReceiptPreviewModal(orderObj, itemsByOrder[orderObj.id] || []);
+          if(orderObj && !orderObj.printed_at){
+            const nowIso = new Date().toISOString();
+            orderObj.printed_at = nowIso;
+            sb.from('orders').update({ printed_at: nowIso }).eq('id', orderObj.id).then(()=>{}, ()=>{});
+            const badgesWrap = row.querySelector('.o-badges');
+            if(badgesWrap){
+              const tag = document.createElement('span');
+              tag.className = 'o-tag';
+              tag.style.cssText = 'background:#1f4d2e; color:#c8f0d6;';
+              tag.textContent = '🖨️ تمت الطباعة';
+              badgesWrap.appendChild(tag);
+            }
+          }
+        });
+      }
+      const markPaidBtn = row.querySelector('[data-action="markPaid"]');
+      if(markPaidBtn){
+        markPaidBtn.addEventListener('click', async ()=>{
+          markPaidBtn.disabled = true;
+          const { error: payErr } = await sb.from('orders').update({ payment_status: 'paid' }).eq('id', orderId);
+          if(payErr){ toast('تعذر تأكيد الدفع'); markPaidBtn.disabled = false; return; }
+          const orderObj = orders.find(o=> o.id === orderId);
+          if(orderObj) orderObj.payment_status = 'paid';
+          toast('تم تأكيد استلام الدفع');
+          markPaidBtn.remove();
+          const payBadge = row.querySelector('.o-badges .status-badge[style*="4d3a1f"]');
+          if(payBadge){ payBadge.style.background = '#1f4d2e'; payBadge.style.color = '#c8f0d6'; payBadge.textContent = payBadge.textContent.replace('في انتظار التأكيد', 'تم الدفع'); }
         });
       }
       const select = row.querySelector('[data-action="statusSelect"]');
@@ -3349,6 +3572,7 @@ function buildReceiptHtml(order, lines, widthMm){
       <div class="receipt-sub">${dateStr}</div>
       <div class="receipt-sub">نوع الطلب: ${typeLabel}</div>
       <div class="receipt-sub">الحالة: ${RECEIPT_STATUS_LABELS[order.status || 'pending'] || order.status}</div>
+      ${(order.payment_method === 'wallet' || order.payment_method === 'instapay') ? `<div class="receipt-sub">الدفع: ${order.payment_method === 'wallet' ? escapeHtml(order.payment_detail || restaurant.wallet_label || 'محفظة') : escapeHtml(order.payment_detail || 'إنستاباي')} — ${order.payment_status === 'paid' ? 'تم الدفع' : 'في انتظار التأكيد'}</div>` : ''}
       <hr>
       <div class="receipt-row"><span class="lbl receipt-highlight">العميل: ${escapeHtml(order.customer_name || '')}</span></div>
       <div class="receipt-row"><span class="lbl val receipt-highlight" style="text-align:right; direction:ltr;">${escapeHtml(order.customer_phone || '')}</span></div>
@@ -3475,6 +3699,7 @@ async function openAdminPanel(){
         <button type="button" class="admin-tab-btn" data-tab="discounts">🏷️ أكواد الخصم</button>
         <button type="button" class="admin-tab-btn" data-tab="codes">🎫 أكواد التسجيل</button>
         <button type="button" class="admin-tab-btn" data-tab="users">👥 المستخدمون</button>
+        <button type="button" class="admin-tab-btn" data-tab="reminders">⏳ تنبيهات الاشتراك</button>
       </div>
 
       <div id="adminPanelRestaurants" class="admin-tab-panel">
@@ -3555,6 +3780,18 @@ async function openAdminPanel(){
         <div class="admin-table-wrap" id="usersTableWrap"><div class="orders-empty">جارِ التحميل...</div></div>
       </div>
 
+      <div id="adminPanelReminders" class="admin-tab-panel hidden">
+        <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px; align-items:center;">
+          <select id="remindersWindowSelect" style="padding:8px 10px; border-radius:8px; border:1px solid rgba(255,255,255,.15); background:rgba(255,255,255,.04); color:inherit; font-family:var(--body); font-size:13px;">
+            <option value="7">خلال 7 أيام (ويشمل المنتهي)</option>
+            <option value="3">خلال 3 أيام (ويشمل المنتهي)</option>
+            <option value="0">المنتهي فقط</option>
+            <option value="30">خلال 30 يومًا (ويشمل المنتهي)</option>
+          </select>
+        </div>
+        <div class="admin-table-wrap" id="remindersTableWrap"><div class="orders-empty">جارِ التحميل...</div></div>
+      </div>
+
       <div class="modal-actions">
         <button class="btn-cancel" id="adminCloseBtn">إغلاق</button>
       </div>
@@ -3570,8 +3807,9 @@ async function openAdminPanel(){
     discounts: overlay.querySelector('#adminPanelDiscounts'),
     codes: overlay.querySelector('#adminPanelCodes'),
     users: overlay.querySelector('#adminPanelUsers'),
+    reminders: overlay.querySelector('#adminPanelReminders'),
   };
-  const tabLoaded = { restaurants:false, payments:false, discounts:false, codes:false, users:false };
+  const tabLoaded = { restaurants:false, payments:false, discounts:false, codes:false, users:false, reminders:false };
   function activateAdminTab(tab){
     overlay.querySelectorAll('.admin-tab-btn').forEach(b=> b.classList.toggle('active', b.dataset.tab===tab));
     Object.keys(tabPanels).forEach(k=> tabPanels[k].classList.toggle('hidden', k!==tab));
@@ -3582,6 +3820,7 @@ async function openAdminPanel(){
       if(tab==='discounts') loadDiscountsTab();
       if(tab==='codes') loadCodesTab();
       if(tab==='users') loadUsersTab();
+      if(tab==='reminders') loadRemindersTab();
     }
   }
   overlay.querySelectorAll('.admin-tab-btn').forEach(btn=>{
@@ -3613,6 +3852,34 @@ async function openAdminPanel(){
     (emailRows || []).forEach(row=>{ emailByOwner[row.owner_id] = row.email; });
   }catch(e){}
 
+  // بيجيب زيارات المنيو لكل المطاعم دفعة واحدة (آخر 30 يوم بس) ويجمّعها حسب المطعم
+  const visitsCutoff = new Date(); visitsCutoff.setDate(visitsCutoff.getDate() - 30);
+  const visitsCutoffStr = visitsCutoff.toLocaleDateString('en-CA', { timeZone:'Africa/Cairo' });
+  const visitsByRestaurant = {};
+  try{
+    const { data: visitRows } = await sb.from('menu_visits_daily').select('*')
+      .in('restaurant_id', allRestaurants.map(r=> r.id))
+      .gte('day', visitsCutoffStr)
+      .order('day', { ascending:false });
+    (visitRows || []).forEach(v=>{
+      if(!visitsByRestaurant[v.restaurant_id]) visitsByRestaurant[v.restaurant_id] = [];
+      visitsByRestaurant[v.restaurant_id].push(v);
+    });
+  }catch(e){}
+
+  // بيجيب طلبات كل المطاعم دفعة واحدة (آخر 30 يوم بس) ويجمّعها حسب المطعم
+  // ملحوظة: لازم يمر عبر RPC بصلاحية أدمن (admin_list_recent_orders) لأن جدول orders محمي بـ RLS
+  // بيسمح لصاحب المطعم بس يشوف طلباته — الاستعلام المباشر كان بيرجّع فاضي لغير حساب الأدمن نفسه
+  const ordersCutoffDate = new Date(); ordersCutoffDate.setDate(ordersCutoffDate.getDate() - 30);
+  const ordersByRestaurant = {};
+  try{
+    const { data: orderRows } = await sb.rpc('admin_list_recent_orders', { p_since: ordersCutoffDate.toISOString() });
+    (orderRows || []).forEach(o=>{
+      if(!ordersByRestaurant[o.restaurant_id]) ordersByRestaurant[o.restaurant_id] = [];
+      ordersByRestaurant[o.restaurant_id].push(o);
+    });
+  }catch(e){}
+
   function demoStatusHtml(r){
     if(!r.demo_days){ return ''; }
     const end = new Date(r.created_at);
@@ -3630,10 +3897,59 @@ async function openAdminPanel(){
     return `<div style="font-size:11px; margin-top:3px; color:${expired ? '#e08a78' : 'var(--stone-light)'};">${expired ? '⚠️ الاشتراك منتهي منذ' : 'الاشتراك ينتهي في'} ${endStr}</div>`;
   }
 
+  // بيعرض تاريخ آخر تنبيه اتبعت للمتجر وعدد المرات، لو اتبعت قبل كده
+  function reminderStatusHtml(r){
+    if(!r.last_reminder_sent_at) return '';
+    const d = new Date(r.last_reminder_sent_at);
+    const dStr = d.toLocaleDateString('ar-EG', { day:'numeric', month:'short', year:'numeric' });
+    const tStr = d.toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit' });
+    return `<span style="opacity:.75;">📨 آخر تنبيه: ${dStr} ${tStr}${r.reminder_count > 1 ? ` (×${r.reminder_count})` : ''}</span>`;
+  }
+
+  // بيحسب عدد زيارات المنيو اليوم/أمس/آخر 7 أيام/آخر 30 يوم لمطعم معيّن من الصفوف المجمّعة مسبقًا
+  function visitsSummaryFor(rId){
+    const rows = visitsByRestaurant[rId] || [];
+    const todayStr = new Date().toLocaleDateString('en-CA', { timeZone:'Africa/Cairo' });
+    const yesterdayDate = new Date(); yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+    const yesterdayStr = yesterdayDate.toLocaleDateString('en-CA', { timeZone:'Africa/Cairo' });
+    const sumSince = (daysAgo, field)=>{
+      const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - daysAgo);
+      const cutoffStr = cutoff.toLocaleDateString('en-CA', { timeZone:'Africa/Cairo' });
+      return rows.filter(r=> r.day >= cutoffStr).reduce((acc,r)=> acc + Number(r[field] || 0), 0);
+    };
+    const today = (rows.find(r=> r.day === todayStr) || { visits_count:0 }).visits_count;
+    const yesterday = (rows.find(r=> r.day === yesterdayStr) || { visits_count:0 }).visits_count;
+    // زيارات وصلت لمنيو وقت ما كان الحساب معلّق — بتدل على عملاء حاولوا يطلبوا وارتدوا بسبب التعليق
+    const suspendedWeek = sumSince(7, 'suspended_visits_count');
+    const suspendedMonth = sumSince(30, 'suspended_visits_count');
+    return { today: Number(today || 0), yesterday: Number(yesterday || 0), week: sumSince(7, 'visits_count'), month: sumSince(30, 'visits_count'), suspendedWeek, suspendedMonth, rows };
+  }
+
+  // بيحسب عدد الطلبات اليوم/أمس/آخر 7 أيام/آخر 30 يوم لمطعم معيّن من الصفوف المجمّعة مسبقًا
+  function ordersSummaryFor(rId){
+    const rows = ordersByRestaurant[rId] || [];
+    const dayOf = (iso)=> new Date(iso).toLocaleDateString('en-CA', { timeZone:'Africa/Cairo' });
+    const todayStr = new Date().toLocaleDateString('en-CA', { timeZone:'Africa/Cairo' });
+    const yesterdayDate = new Date(); yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+    const yesterdayStr = yesterdayDate.toLocaleDateString('en-CA', { timeZone:'Africa/Cairo' });
+    const sumSince = (daysAgo)=>{
+      const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - daysAgo);
+      const cutoffStr = cutoff.toLocaleDateString('en-CA', { timeZone:'Africa/Cairo' });
+      return rows.filter(o=> dayOf(o.created_at) >= cutoffStr).length;
+    };
+    const today = rows.filter(o=> dayOf(o.created_at) === todayStr).length;
+    const yesterday = rows.filter(o=> dayOf(o.created_at) === yesterdayStr).length;
+    // عدد الطلبات (آخر 30 يوم) اللي صاحب المحل لسه ما فتحش شاشة الطلبات عشان يشوفها
+    const unseen = rows.filter(o=> !o.seen_at).length;
+    return { today, yesterday, week: sumSince(7), month: sumSince(30), unseen };
+  }
+
   function rowHtml(r, idx){
     const created = new Date(r.created_at).toLocaleDateString('ar-EG', { day:'numeric', month:'short', year:'numeric' });
     const ownerEmail = emailByOwner[r.owner_id] || '—';
     const isMainAdminAccount = ownerEmail.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase();
+    const visits = visitsSummaryFor(r.id);
+    const orders = ordersSummaryFor(r.id);
     const perm = (field, icon, label) => `
         <label class="admin-perm-item">
           <span class="lbl">${icon} ${label}</span>
@@ -3648,10 +3964,17 @@ async function openAdminPanel(){
               <div class="admin-r-name">${escapeHtml(r.name)} <span style="opacity:.5; font-size:11px;">(${r.business_type === 'store' ? 'متجر' : 'مطعم'})</span> ${r.account_suspended ? '<span class="admin-status-pill" style="background:rgba(166,57,43,.15); color:var(--danger);">معطّل</span>' : '<span class="admin-status-pill" style="background:rgba(63,98,71,.15); color:var(--basil);">نشط</span>'} <span class="admin-collapse-arrow">▾</span></div>
               <div class="admin-r-meta">/${escapeHtml(r.slug)} · انضم ${created}</div>
               <div class="admin-r-meta" style="direction:ltr; text-align:right; margin-top:2px;">✉️ ${escapeHtml(ownerEmail)}</div>
+              <div class="admin-r-meta" style="margin-top:2px;">👁️ زيارات اليوم: ${visits.today} · أمس: ${visits.yesterday} · آخر 7 أيام: ${visits.week}</div>
+              <div class="admin-r-meta" style="margin-top:2px;">🧾 طلبات اليوم: ${orders.today} · أمس: ${orders.yesterday} · آخر 7 أيام: ${orders.week}</div>
+              ${orders.unseen > 0 ? `<div class="admin-r-meta" style="margin-top:2px; color:#e08a78;">👀 طلبات لم يفتحها المحل بعد (آخر 30 يوم): ${orders.unseen}</div>` : ''}
+              ${visits.suspendedWeek > 0 ? `<div class="admin-r-meta" style="margin-top:2px; color:#e08a78;">⚠️ محاولات دخول على منيو معلّق (آخر 7 أيام): ${visits.suspendedWeek}</div>` : ''}
             </div>
           </div>
           <div class="admin-card-actions">
             ${ownerEmail !== '—' ? `<button type="button" class="link-btn admin-reset-pw-btn" data-email="${escapeHtml(ownerEmail)}" style="font-size:11px; padding:4px 9px;">🔑 تغيير كلمة المرور</button>` : ''}
+            ${r.phone ? `<button type="button" class="link-btn admin-send-reminder-btn" data-id="${r.id}" style="font-size:11px; padding:4px 9px;">📲 تنبيه انتهاء</button>` : ''}
+            ${r.phone ? `<button type="button" class="link-btn admin-send-payment-btn" data-id="${r.id}" style="font-size:11px; padding:4px 9px;">💳 شرح الدفع</button>` : ''}
+            <span class="admin-reminder-status" data-id="${r.id}" style="font-size:10.5px;">${reminderStatusHtml(r)}</span>
             <a href="${location.origin}${location.pathname}?r=${encodeURIComponent(r.slug)}" target="_blank" rel="noopener" class="link-btn admin-menu-link-btn" style="display:inline-block; font-size:11px; padding:4px 9px; text-decoration:none;">🔗 فتح المنيو</a>
           </div>
         </div>
@@ -3689,6 +4012,57 @@ async function openAdminPanel(){
               🚫 تعليق الحساب بالكامل
             </label>`}
           </div>
+        </div>
+
+        <div class="admin-section">
+          <div class="admin-section-title">👁️ زيارات المنيو</div>
+          <div class="admin-plan-row" style="margin-bottom:10px;">
+            <label class="admin-toggle-group" style="flex-direction:column; align-items:flex-start; gap:2px;">
+              <span style="opacity:.7; font-size:11px;">اليوم</span>
+              <span style="font-weight:800; font-size:15px;">${visits.today}</span>
+            </label>
+            <label class="admin-toggle-group" style="flex-direction:column; align-items:flex-start; gap:2px;">
+              <span style="opacity:.7; font-size:11px;">آخر 7 أيام</span>
+              <span style="font-weight:800; font-size:15px;">${visits.week}</span>
+            </label>
+            <label class="admin-toggle-group" style="flex-direction:column; align-items:flex-start; gap:2px;">
+              <span style="opacity:.7; font-size:11px;">آخر 30 يوم</span>
+              <span style="font-weight:800; font-size:15px;">${visits.month}</span>
+            </label>
+          </div>
+          <div class="admin-visits-trend">${buildDailyTrendSVG(visits.rows, 30, row=> Number(row.visits_count || 0), v=> `${v} زيارة`)}</div>
+          ${visits.suspendedMonth > 0 ? `
+          <div style="margin-top:10px; padding:10px 12px; border-radius:10px; background:rgba(224,138,120,.12); border:1px solid rgba(224,138,120,.35);">
+            <div style="font-size:12.5px; font-weight:800; color:#e08a78;">⚠️ محاولات دخول على المنيو أثناء تعليق الحساب</div>
+            <div style="font-size:12px; margin-top:4px; color:var(--stone);">آخر 7 أيام: ${visits.suspendedWeek} · آخر 30 يوم: ${visits.suspendedMonth} — عملاء فتحوا الرابط ولقوا شاشة "غير متاحة"، فرصة كويسة تستخدمها في التواصل عشان التجديد.</div>
+          </div>` : ''}
+        </div>
+
+        <div class="admin-section">
+          <div class="admin-section-title">🧾 الطلبات</div>
+          <div class="admin-plan-row" style="margin-bottom:10px;">
+            <label class="admin-toggle-group" style="flex-direction:column; align-items:flex-start; gap:2px;">
+              <span style="opacity:.7; font-size:11px;">اليوم</span>
+              <span style="font-weight:800; font-size:15px;">${orders.today}</span>
+            </label>
+            <label class="admin-toggle-group" style="flex-direction:column; align-items:flex-start; gap:2px;">
+              <span style="opacity:.7; font-size:11px;">أمس</span>
+              <span style="font-weight:800; font-size:15px;">${orders.yesterday}</span>
+            </label>
+            <label class="admin-toggle-group" style="flex-direction:column; align-items:flex-start; gap:2px;">
+              <span style="opacity:.7; font-size:11px;">آخر 7 أيام</span>
+              <span style="font-weight:800; font-size:15px;">${orders.week}</span>
+            </label>
+            <label class="admin-toggle-group" style="flex-direction:column; align-items:flex-start; gap:2px;">
+              <span style="opacity:.7; font-size:11px;">آخر 30 يوم</span>
+              <span style="font-weight:800; font-size:15px;">${orders.month}</span>
+            </label>
+          </div>
+          ${orders.unseen > 0 ? `
+          <div style="margin-top:10px; padding:10px 12px; border-radius:10px; background:rgba(224,138,120,.12); border:1px solid rgba(224,138,120,.35);">
+            <div style="font-size:12.5px; font-weight:800; color:#e08a78;">👀 طلبات لم يفتحها المحل بعد</div>
+            <div style="font-size:12px; margin-top:4px; color:var(--stone);">${orders.unseen} طلب (آخر 30 يوم) لسه صاحب المحل ما فتحش شاشة "الطلبات الواردة" ليهم — مؤشر إن المحل مش بيتابع طلباته أول بأول.</div>
+          </div>` : ''}
         </div>
 
         <div class="admin-section">
@@ -3759,6 +4133,30 @@ async function openAdminPanel(){
     a.addEventListener('click', (e)=> e.stopPropagation());
   });
 
+  wrap.querySelectorAll('.admin-send-reminder-btn').forEach(btn=>{
+    btn.addEventListener('click', async (e)=>{
+      e.stopPropagation();
+      const r = allRestaurants.find(x=> x.id === btn.dataset.id);
+      if(!r) return;
+      btn.disabled = true;
+      const result = await sendExpiryReminderWhatsApp(r);
+      btn.disabled = false;
+      if(result){
+        const statusEl = wrap.querySelector(`.admin-reminder-status[data-id="${r.id}"]`);
+        if(statusEl) statusEl.innerHTML = reminderStatusHtml(r);
+      }
+    });
+  });
+
+  wrap.querySelectorAll('.admin-send-payment-btn').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const r = allRestaurants.find(x=> x.id === btn.dataset.id);
+      if(!r) return;
+      sendPaymentInstructionsWhatsApp(r);
+    });
+  });
+
   wrap.querySelectorAll('[data-action="toggleCollapse"]').forEach(header=>{
     header.addEventListener('click', ()=>{
       header.closest('.admin-restaurant-row').classList.toggle('collapsed');
@@ -3791,7 +4189,7 @@ async function openAdminPanel(){
       cb.addEventListener('change', async ()=>{
         const field = cb.dataset.field;
         if(field === 'account_suspended' && cb.checked){
-          if(!confirm('هيتم إيقاف المنيو العام ولوحة التحكم بالكامل لهذا العميل فورًا. متأكد؟')){
+          if(!confirm('سيتم إيقاف المنيو العام ولوحة التحكم بالكامل لهذا العميل فورًا. هل أنت متأكد؟')){
             cb.checked = false;
             return;
           }
@@ -4077,7 +4475,7 @@ async function openAdminPanel(){
       wrap.querySelectorAll('.admin-disc-delete-btn').forEach(btn=>{
         btn.addEventListener('click', async ()=>{
           const id = btn.dataset.id;
-          if(!confirm('حذف كود الخصم ده نهائيًا؟')) return;
+          if(!confirm('هل تريد حذف كود الخصم هذا نهائيًا؟')) return;
           const { error: delErr } = await sb.from('discount_codes').delete().eq('id', id);
           if(delErr){ toast('تعذر الحذف'); return; }
           toast('تم الحذف');
@@ -4241,11 +4639,111 @@ async function openAdminPanel(){
     });
   }
 
+  /* ================ تبويب تنبيهات الاشتراك (المتاجر القريبة من الانتهاء) ================ */
+  async function loadRemindersTab(){
+    const wrap = overlay.querySelector('#remindersTableWrap');
+    const windowSelect = overlay.querySelector('#remindersWindowSelect');
+
+    async function renderReminders(){
+      wrap.innerHTML = `<div class="orders-empty">جارِ التحميل...</div>`;
+      const { data: allRestaurants, error } = await sb.from('restaurants').select('*').order('created_at', { ascending:false });
+      if(error){ wrap.innerHTML = `<div class="orders-empty">تعذر تحميل بيانات العملاء</div>`; return; }
+
+      const windowDays = parseInt(windowSelect.value, 10);
+
+      // بيحسب أقرب موعد انتهاء للمتجر (اشتراك فعلي، أو Demo لو مفيش اشتراك) وعدد الأيام المتبقية
+      function expiryInfo(r){
+        if(r.subscription_end_date){
+          const end = new Date(r.subscription_end_date + 'T23:59:59');
+          const daysLeft = Math.ceil((end.getTime() - Date.now()) / 86400000);
+          return { type:'subscription', end, daysLeft };
+        }
+        if(r.demo_days){
+          const end = new Date(r.created_at);
+          end.setDate(end.getDate() + Number(r.demo_days));
+          const daysLeft = Math.ceil((end.getTime() - Date.now()) / 86400000);
+          return { type:'demo', end, daysLeft };
+        }
+        return null;
+      }
+
+      const expiring = allRestaurants
+        .map(r=> ({ r, info: expiryInfo(r) }))
+        .filter(x=> x.info && x.info.daysLeft <= windowDays)
+        .sort((a,b)=> a.info.daysLeft - b.info.daysLeft);
+
+      if(!expiring.length){ wrap.innerHTML = `<div class="orders-empty">لا يوجد متاجر ضمن هذا النطاق 🎉</div>`; return; }
+
+      function reminderRowHtml(r, info){
+        const endStr = info.end.toLocaleDateString('ar-EG', { day:'numeric', month:'short', year:'numeric' });
+        const expired = info.daysLeft < 0;
+        const typeLabel = info.type === 'subscription' ? 'اشتراك' : 'فترة تجريبية';
+        const statusColor = expired ? 'var(--danger)' : (info.daysLeft <= 2 ? '#c99a2e' : 'var(--stone-light)');
+        const statusText = expired ? `⚠️ ${typeLabel} منتهي منذ ${endStr}` : `⏳ ${typeLabel} ينتهي ${daysLeftLabel(info.daysLeft)} (${endStr})`;
+        const lastReminder = r.last_reminder_sent_at
+          ? `<div class="admin-r-meta" style="margin-top:2px;">📨 آخر تنبيه: ${new Date(r.last_reminder_sent_at).toLocaleDateString('ar-EG', { day:'numeric', month:'short', year:'numeric' })} ${new Date(r.last_reminder_sent_at).toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit' })}${r.reminder_count > 1 ? ` (×${r.reminder_count})` : ''}</div>`
+          : `<div class="admin-r-meta" style="margin-top:2px; opacity:.6;">لم يُرسل أي تنبيه بعد</div>`;
+        return `
+          <div class="admin-list-row" data-id="${r.id}" style="border-right-color:${statusColor}; flex-wrap:wrap;">
+            <div style="flex:1; min-width:200px;">
+              <div style="font-weight:800; font-size:14px;">${escapeHtml(r.name)} <span style="opacity:.5; font-size:11px;">(${r.business_type === 'store' ? 'متجر' : 'مطعم'})</span></div>
+              <div class="admin-r-meta" style="color:${statusColor};">${statusText}</div>
+              ${lastReminder}
+            </div>
+            ${r.phone
+              ? `<div style="display:flex; gap:6px; flex-wrap:wrap;">
+                   <button type="button" class="link-btn reminders-send-btn" data-id="${r.id}" style="font-size:12px; padding:6px 12px; white-space:nowrap;">📲 إرسال تنبيه الآن</button>
+                   <button type="button" class="link-btn reminders-send-payment-btn" data-id="${r.id}" style="font-size:12px; padding:6px 12px; white-space:nowrap;">💳 شرح الدفع</button>
+                 </div>`
+              : `<span class="admin-r-meta" style="opacity:.6;">لا يوجد رقم تليفون مسجل</span>`}
+          </div>`;
+      }
+
+      wrap.innerHTML = expiring.map(x=> reminderRowHtml(x.r, x.info)).join('');
+
+      wrap.querySelectorAll('.reminders-send-btn').forEach(btn=>{
+        btn.addEventListener('click', async ()=>{
+          const item = expiring.find(x=> x.r.id === btn.dataset.id);
+          if(!item) return;
+          btn.disabled = true;
+          const originalText = btn.textContent;
+          btn.textContent = 'جارِ الإرسال...';
+          const result = await sendExpiryReminderWhatsApp(item.r);
+          btn.disabled = false;
+          btn.textContent = originalText;
+          if(result){
+            const row = btn.closest('.admin-list-row');
+            const metaEls = row.querySelectorAll('.admin-r-meta');
+            const lastEl = metaEls[metaEls.length - 1];
+            if(lastEl){
+              const d = new Date(result.last_reminder_sent_at);
+              lastEl.style.opacity = '';
+              lastEl.textContent = `📨 آخر تنبيه: ${d.toLocaleDateString('ar-EG', { day:'numeric', month:'short', year:'numeric' })} ${d.toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit' })}${result.reminder_count > 1 ? ` (×${result.reminder_count})` : ''}`;
+            }
+          }
+        });
+      });
+
+      wrap.querySelectorAll('.reminders-send-payment-btn').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          const item = expiring.find(x=> x.r.id === btn.dataset.id);
+          if(!item) return;
+          sendPaymentInstructionsWhatsApp(item.r);
+        });
+      });
+    }
+
+    windowSelect.addEventListener('change', renderReminders);
+    renderReminders();
+  }
+
   activateAdminTab('restaurants');
 }
 
 // رسم بياني SVG خفيف لاتجاه المبيعات (آخر N يوم) — من غير أي مكتبة خارجية
-function buildSalesTrendSVG(rows, numDays, metric){
+// رسم بياني SVG خفيف لاتجاه القيم اليومية (مبيعات/طلبات/زيارات...) — من غير أي مكتبة خارجية
+// valueFn(row) بترجع القيمة الرقمية للصف، labelFn(value) بترجع نص الـ tooltip
+function buildDailyTrendSVG(rows, numDays, valueFn, labelFn){
   const byDay = {};
   (rows || []).forEach(r=>{ byDay[r.day] = r; });
   const days = [];
@@ -4254,7 +4752,7 @@ function buildSalesTrendSVG(rows, numDays, metric){
     d.setDate(d.getDate() - i);
     const key = d.toLocaleDateString('en-CA', { timeZone:'Africa/Cairo' });
     const r = byDay[key];
-    const value = metric === 'count' ? (r ? Number(r.orders_count || 0) : 0) : (r ? Number(r.orders_total || 0) : 0);
+    const value = r ? valueFn(r) : 0;
     days.push({ key, value, dateObj: d });
   }
   const max = Math.max(1, ...days.map(d=> d.value));
@@ -4268,7 +4766,7 @@ function buildSalesTrendSVG(rows, numDays, metric){
     const barH = (d.value / max) * chartH;
     const y = padT + (chartH - barH);
     const dLabel = d.dateObj.toLocaleDateString('ar-EG', { day:'numeric', month:'short', timeZone:'Africa/Cairo' });
-    const valLabel = metric === 'count' ? `${d.value} طلب` : `${d.value.toFixed(2)} EGP`;
+    const valLabel = labelFn(d.value);
     const showLabel = (i % labelEvery === 0) || i === days.length - 1;
     return `
       <rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(barH,0).toFixed(1)}" rx="2" fill="var(--ember)" opacity="${d.value > 0 ? 1 : 0.15}">
@@ -4277,8 +4775,17 @@ function buildSalesTrendSVG(rows, numDays, metric){
       ${showLabel ? `<text x="${(x + barW/2).toFixed(1)}" y="${h - 8}" font-size="9" fill="var(--stone)" text-anchor="middle">${dLabel}</text>` : ''}`;
   }).join('');
   const totalVal = days.reduce((s,d)=> s + d.value, 0);
-  const emptyNote = totalVal === 0 ? `<div class="orders-empty" style="text-align:center; padding:8px 0 0; font-size:12px;">لا توجد بيانات كافية في الفترة دي بعد</div>` : '';
+  const emptyNote = totalVal === 0 ? `<div class="orders-empty" style="text-align:center; padding:8px 0 0; font-size:12px;">لا توجد بيانات كافية في هذه الفترة بعد</div>` : '';
   return `<svg viewBox="0 0 ${w} ${h}" style="width:100%; height:auto; display:block;">${bars}</svg>${emptyNote}`;
+}
+
+// نفس المنطق القديم (لتوافق أي استخدام سابق باسم buildSalesTrendSVG) — بيلف على buildDailyTrendSVG
+function buildSalesTrendSVG(rows, numDays, metric){
+  return buildDailyTrendSVG(
+    rows, numDays,
+    r=> metric === 'count' ? Number(r.orders_count || 0) : Number(r.orders_total || 0),
+    v=> metric === 'count' ? `${v} طلب` : `${v.toFixed(2)} EGP`
+  );
 }
 
 // رسم بياني لتوزيع الطلبات على مدار 24 ساعة
@@ -4368,7 +4875,7 @@ function buildTopAreasList(areaRows, err){
 }
 
 // رؤى تلقائية بسيطة (rule-based) مبنية على البيانات الثابتة المتاحة بالفعل — من غير أي استعلامات إضافية
-function buildInsights({ rows, itemStatsRows, hourlyRows, custRows }){
+function buildInsights({ rows, itemStatsRows, hourlyRows, custRows, visitRows }){
   const cards = [];
   const dayKey = (d)=> d.toLocaleDateString('en-CA', { timeZone:'Africa/Cairo' });
   const sumRange = (list, field, startDaysAgo, endDaysAgo)=>{
@@ -4384,16 +4891,30 @@ function buildInsights({ rows, itemStatsRows, hourlyRows, custRows }){
   if(prev7Sales > 0){
     const delta = ((last7Sales - prev7Sales) / prev7Sales) * 100;
     if(delta >= 15){
-      cards.push({ type:'positive', icon:'📈', text:`مبيعاتك في آخر 7 أيام زادت ${delta.toFixed(0)}% عن الأسبوع اللي قبله (${last7Sales.toFixed(0)} مقابل ${prev7Sales.toFixed(0)} جنيه).` });
+      cards.push({ type:'positive', icon:'📈', text:`ارتفعت مبيعاتك في آخر 7 أيام بنسبة ${delta.toFixed(0)}% مقارنةً بالأسبوع السابق (${last7Sales.toFixed(0)} مقابل ${prev7Sales.toFixed(0)} جنيه).` });
     } else if(delta <= -15){
-      cards.push({ type:'warning', icon:'📉', text:`مبيعاتك في آخر 7 أيام قلّت ${Math.abs(delta).toFixed(0)}% عن الأسبوع اللي قبله (${last7Sales.toFixed(0)} مقابل ${prev7Sales.toFixed(0)} جنيه).` });
+      cards.push({ type:'warning', icon:'📉', text:`انخفضت مبيعاتك في آخر 7 أيام بنسبة ${Math.abs(delta).toFixed(0)}% مقارنةً بالأسبوع السابق (${last7Sales.toFixed(0)} مقابل ${prev7Sales.toFixed(0)} جنيه).` });
+    }
+  }
+
+  // 1ب) اتجاه زيارات المنيو: آخر 7 أيام مقابل الـ7 اللي قبلهم
+  if(visitRows && visitRows.length > 0){
+    const last7Visits = sumRange(visitRows, 'visits_count', 6, 0);
+    const prev7Visits = sumRange(visitRows, 'visits_count', 13, 7);
+    if(prev7Visits > 0){
+      const visitDelta = ((last7Visits - prev7Visits) / prev7Visits) * 100;
+      if(visitDelta >= 15){
+        cards.push({ type:'positive', icon:'👁️', text:`ارتفعت زيارات المنيو في آخر 7 أيام بنسبة ${visitDelta.toFixed(0)}% مقارنةً بالأسبوع السابق (${last7Visits} مقابل ${prev7Visits} زيارة).` });
+      } else if(visitDelta <= -15){
+        cards.push({ type:'warning', icon:'👁️', text:`انخفضت زيارات المنيو في آخر 7 أيام بنسبة ${Math.abs(visitDelta).toFixed(0)}% مقارنةً بالأسبوع السابق (${last7Visits} مقابل ${prev7Visits} زيارة).` });
+      }
     }
   }
 
   // 2) عدم وجود طلبات في آخر 3 أيام
   const last3Count = sumRange(rows, 'orders_count', 2, 0);
   if(last3Count === 0 && rows.length > 3){
-    cards.push({ type:'warning', icon:'⚠️', text:`مفيش أي طلبات مسجّلة في آخر 3 أيام — يستاهل تتأكد إن المنيو والدفع شغالين تمام.` });
+    cards.push({ type:'warning', icon:'⚠️', text:`لا توجد أي طلبات مسجّلة في آخر 3 أيام — يُستحسن أن تتأكد من أن المنيو وطرق الدفع تعمل بشكل سليم.` });
   }
 
   // 3) تركّز الطلبات في وقت معيّن
@@ -4450,12 +4971,12 @@ function buildInsights({ rows, itemStatsRows, hourlyRows, custRows }){
     const repeat = custRows.filter(c=> c.orders_count > 1).length;
     const pct = Math.round(repeat / custRows.length * 100);
     if(pct < 20){
-      cards.push({ type:'info', icon:'👥', text:`بس ${pct}% من عملاءك طلبوا أكتر من مرة — ممكن تفكر في عرض أو رسالة متابعة للعملاء اللي طلبوا مرة واحدة بس.` });
+      cards.push({ type:'info', icon:'👥', text:`${pct}% فقط من عملائك طلبوا أكثر من مرة — يمكنك التفكير في عرض أو رسالة متابعة للعملاء الذين طلبوا مرة واحدة فقط.` });
     }
   }
 
   if(cards.length === 0){
-    return `<div class="insight-card info"><span class="insight-icon">💡</span><span>لسه مفيش بيانات كفاية لرؤى تلقائية — هتظهر أول ما يتراكم عندك تاريخ طلبات أكتر.</span></div>`;
+    return `<div class="insight-card info"><span class="insight-icon">💡</span><span>لا توجد حتى الآن بيانات كافية لعرض رؤى تلقائية — ستظهر بمجرد تراكم عدد أكبر من الطلبات.</span></div>`;
   }
   return cards.slice(0,5).map(c=> `<div class="insight-card ${c.type}"><span class="insight-icon">${c.icon}</span><span>${escapeHtml(c.text)}</span></div>`).join('');
 }
@@ -4498,10 +5019,30 @@ document.getElementById('viewStatsBtn').addEventListener('click', async ()=>{
   const allTime = rows.reduce((acc,r)=>({ count: acc.count + r.orders_count, total: acc.total + Number(r.orders_total) }), { count:0, total:0 });
 
   const vRows = visitRows || [];
+  const yesterdayDate = new Date(); yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+  const yesterdayStr = yesterdayDate.toLocaleDateString('en-CA', { timeZone:'Africa/Cairo' });
   const todayVisits = (vRows.find(r=> r.day === todayStr) || { visits_count:0 }).visits_count;
+  const yesterdayVisits = (vRows.find(r=> r.day === yesterdayStr) || { visits_count:0 }).visits_count;
   const weekVisits = sumSince(vRows, 'visits_count', 7);
   const monthVisits = sumSince(vRows, 'visits_count', 30);
   const allTimeVisits = vRows.reduce((acc,r)=> acc + Number(r.visits_count || 0), 0);
+  // نسبة تغيّر زيارات آخر 7 أيام مقارنةً بالـ7 اللي قبلهم (زي مبيعات بالظبط)
+  const sumRangeVisits = (startDaysAgo, endDaysAgo)=>{
+    const start = new Date(); start.setDate(start.getDate() - startDaysAgo);
+    const end = new Date(); end.setDate(end.getDate() - endDaysAgo);
+    const startKey = start.toLocaleDateString('en-CA', { timeZone:'Africa/Cairo' });
+    const endKey = end.toLocaleDateString('en-CA', { timeZone:'Africa/Cairo' });
+    return vRows.filter(r=> r.day >= startKey && r.day <= endKey).reduce((s,r)=> s + Number(r.visits_count||0), 0);
+  };
+  const prevWeekVisits = sumRangeVisits(13, 7);
+  let visitsWeekDeltaHtml = '';
+  if(prevWeekVisits > 0){
+    const d = ((weekVisits - prevWeekVisits) / prevWeekVisits) * 100;
+    if(Math.abs(d) >= 1){
+      const up = d > 0;
+      visitsWeekDeltaHtml = ` <span style="font-size:11px; font-weight:800; color:${up ? '#1a7a3d' : '#a6392b'};">${up ? '▲' : '▼'} ${Math.abs(d).toFixed(0)}%</span>`;
+    }
+  }
 
   const card = (label, count, total)=> `
     <div class="order-row" style="display:flex; justify-content:space-between; align-items:center;">
@@ -4527,12 +5068,20 @@ document.getElementById('viewStatsBtn').addEventListener('click', async ()=>{
     <h3 style="margin-top:20px;">عدد زيارات المنيو</h3>
     <div class="orders-list">
       ${visitCard('اليوم', todayVisits)}
-      ${visitCard('آخر 7 أيام', weekVisits)}
+      ${visitCard('أمس', yesterdayVisits)}
+      <div class="order-row" style="display:flex; justify-content:space-between; align-items:center;">
+        <span class="o-name" style="font-weight:700;">آخر 7 أيام</span>
+        <span class="o-time" style="text-align:left; margin:0;">${weekVisits} زيارة${visitsWeekDeltaHtml}</span>
+      </div>
       ${visitCard('آخر 30 يوم', monthVisits)}
       ${visitCard('الإجمالي منذ البداية', allTimeVisits)}
     </div>
+    <h3 style="margin-top:20px; display:flex; justify-content:space-between; align-items:center;">
+      <span>زيارات المنيو يوميًا (آخر 30 يوم)</span>
+    </h3>
+    <div id="visitsTrendWrap">${buildDailyTrendSVG(vRows, 30, r=> Number(r.visits_count || 0), v=> `${v} زيارة`)}</div>
     <div class="orders-empty" style="text-align:right; padding:10px 0 0; font-size:12px;">
-      عايز تحليل أعمق (اتجاه المبيعات، أكتر الأصناف، أوقات الذروة، العملاء، المناطق، وتصدير تقرير)؟ جرّب "التقارير" من شريط الأدوات.
+      هل ترغب في تحليل أعمق (اتجاه المبيعات، أكثر الأصناف مبيعًا، أوقات الذروة، العملاء، المناطق، وتصدير تقرير)؟ جرّب "التقارير" من شريط الأدوات.
     </div>`;
 });
 
@@ -4557,6 +5106,7 @@ document.getElementById('reportsBtn').addEventListener('click', async ()=>{
 
   const wrap = overlay.querySelector('#statsSummaryWrap');
   const { data: rows, error } = await sb.from('order_stats_daily').select('*').eq('restaurant_id', restaurant.id).order('day', { ascending:false });
+  const { data: visitRows } = await sb.from('menu_visits_daily').select('*').eq('restaurant_id', restaurant.id).order('day', { ascending:false });
   if(error){ wrap.innerHTML = `<div class="orders-empty">تعذر تحميل التقارير</div>`; return; }
   if(!rows || rows.length === 0){ wrap.innerHTML = `<div class="orders-empty">لا توجد بيانات كافية بعد</div>`; return; }
 
@@ -4612,11 +5162,11 @@ document.getElementById('reportsBtn').addEventListener('click', async ()=>{
       </select>
     </h3>
     <div id="customerSummaryWrap" class="orders-empty">جارِ التحميل...</div>
-    <div class="orders-empty" style="text-align:right; padding:10px 0 4px; font-size:12px; font-weight:700; color:var(--ink);">أكتر العملاء طلبًا</div>
+    <div class="orders-empty" style="text-align:right; padding:10px 0 4px; font-size:12px; font-weight:700; color:var(--ink);">أكثر العملاء طلبًا</div>
     <div id="topCustomersWrap"><div class="orders-empty">جارِ التحميل...</div></div>
     <h3 style="margin-top:20px;">تقرير المناطق والتوصيل</h3>
     <div id="deliverySummaryWrap" class="orders-empty">جارِ التحميل...</div>
-    <div class="orders-empty" style="text-align:right; padding:10px 0 4px; font-size:12px; font-weight:700; color:var(--ink);">أكتر المناطق طلبًا</div>
+    <div class="orders-empty" style="text-align:right; padding:10px 0 4px; font-size:12px; font-weight:700; color:var(--ink);">أكثر المناطق طلبًا</div>
     <div id="topAreasWrap"><div class="orders-empty">جارِ التحميل...</div></div>`;
 
   const trendWrap = overlay.querySelector('#salesTrendWrap');
@@ -4791,11 +5341,11 @@ document.getElementById('reportsBtn').addEventListener('click', async ()=>{
     peakSummaryWrap.innerHTML = `
       <div class="orders-list">
         <div class="order-row" style="display:flex; justify-content:space-between; align-items:center;">
-          <span class="o-name" style="font-weight:700;">أكتر ساعة زحمة</span>
+          <span class="o-name" style="font-weight:700;">أكثر ساعة ازدحامًا</span>
           <span class="o-time" style="text-align:left; margin:0;">من ${String(peakHour.hour).padStart(2,'0')}:00 لـ ${String((peakHour.hour+1)%24).padStart(2,'0')}:00 (${peakHour.count} طلب)</span>
         </div>
         <div class="order-row" style="display:flex; justify-content:space-between; align-items:center;">
-          <span class="o-name" style="font-weight:700;">أكتر يوم في الأسبوع</span>
+          <span class="o-name" style="font-weight:700;">أكثر يوم ازدحامًا في الأسبوع</span>
           <span class="o-time" style="text-align:left; margin:0;">${DOW_LABELS[peakDowIdx]} (${byDow[peakDowIdx]} طلب إجمالًا)</span>
         </div>
         <div class="order-row" style="display:flex; justify-content:space-between; align-items:center;">
@@ -4829,7 +5379,7 @@ document.getElementById('reportsBtn').addEventListener('click', async ()=>{
           <span class="o-time" style="text-align:left; margin:0;">${totalCustomers} عميل</span>
         </div>
         <div class="order-row" style="display:flex; justify-content:space-between; align-items:center;">
-          <span class="o-name" style="font-weight:700;">عملاء طلبوا أكتر من مرة</span>
+          <span class="o-name" style="font-weight:700;">عملاء طلبوا أكثر من مرة</span>
           <span class="o-time" style="text-align:left; margin:0;">${repeatCustomers} عميل (${totalCustomers ? Math.round(repeatCustomers/totalCustomers*100) : 0}%)</span>
         </div>
         <div class="order-row" style="display:flex; justify-content:space-between; align-items:center;">
@@ -4868,7 +5418,7 @@ document.getElementById('reportsBtn').addEventListener('click', async ()=>{
   overlay.querySelector('#topAreasWrap').innerHTML = buildTopAreasList(areaRows, areaErr);
 
   overlay.querySelector('#insightsWrap').innerHTML = buildInsights({
-    rows, itemStatsRows: itemStatsRows || [], hourlyRows: hourlyRows || [], custRows: custRows || []
+    rows, itemStatsRows: itemStatsRows || [], hourlyRows: hourlyRows || [], custRows: custRows || [], visitRows: visitRows || []
   });
 
   overlay.querySelector('#statsExportPdfBtn').addEventListener('click', ()=>{
@@ -4921,7 +5471,7 @@ function buildMonthlyReportHtml({ restaurant, dailyRows, itemStatsRows, custRows
   };
   const salesDelta = pctDelta(curSales, prevSales);
   const ordersDelta = pctDelta(curOrders, prevOrders);
-  const deltaHtml = (d)=> d === null ? `<span class="kpi-delta">بيانات غير كافية للمقارنة</span>` : `<span class="kpi-delta ${d>=0?'up':'down'}">${d>=0?'▲':'▼'} ${Math.abs(d).toFixed(0)}% عن نفس الفترة الشهر اللي فات</span>`;
+  const deltaHtml = (d)=> d === null ? `<span class="kpi-delta">بيانات غير كافية للمقارنة</span>` : `<span class="kpi-delta ${d>=0?'up':'down'}">${d>=0?'▲':'▼'} ${Math.abs(d).toFixed(0)}% عن نفس الفترة من الشهر الماضي</span>`;
   const avgOrderValue = curOrders ? (curSales/curOrders) : 0;
 
   const itemAgg = {};
@@ -4971,7 +5521,7 @@ function buildMonthlyReportHtml({ restaurant, dailyRows, itemStatsRows, custRows
         ${topItems.length ? topItems.map(([name,v])=> `<tr><td>${escapeHtml(name)}</td><td class="num">${v.quantity}</td><td class="num">${v.revenue.toFixed(2)} EGP</td></tr>`).join('') : `<tr><td colspan="3">لا توجد بيانات كافية</td></tr>`}
       </table>
 
-      <h2>أكتر العملاء طلبًا (كل الوقت)</h2>
+      <h2>أكثر العملاء طلبًا (طوال الوقت)</h2>
       <table>
         <tr><th>العميل</th><th>عدد الطلبات</th><th>إجمالي الإنفاق</th></tr>
         ${topCustomers.length ? topCustomers.map(c=> `<tr><td>${escapeHtml(c.customer_name||'بدون اسم')} — ${escapeHtml(c.customer_phone)}</td><td class="num">${c.orders_count}</td><td class="num">${Number(c.orders_total).toFixed(2)} EGP</td></tr>`).join('') : `<tr><td colspan="3">لا توجد بيانات كافية</td></tr>`}
@@ -4984,7 +5534,7 @@ function buildMonthlyReportHtml({ restaurant, dailyRows, itemStatsRows, custRows
         <tr><td>استلام من المحل</td><td class="num">${pickup.orders_count} (${100-deliveryPct}%)</td><td class="num">${Number(pickup.orders_total).toFixed(2)} EGP</td></tr>
       </table>
 
-      <h2>أكتر المناطق طلبًا (كل الوقت)</h2>
+      <h2>أكثر المناطق طلبًا (طوال الوقت)</h2>
       <table>
         <tr><th>المنطقة</th><th>عدد الطلبات</th><th>القيمة</th></tr>
         ${topAreas.length ? topAreas.map(a=> `<tr><td>${escapeHtml(a.area)}</td><td class="num">${a.orders_count}</td><td class="num">${Number(a.orders_total).toFixed(2)} EGP</td></tr>`).join('') : `<tr><td colspan="3">لا توجد بيانات كافية</td></tr>`}
@@ -5069,7 +5619,7 @@ function openCleanupOrdersModal(){
         <input type="number" id="cleanupOrderNumber" min="1" placeholder="مثال: 128">
       </div>
       <div class="orders-empty" style="text-align:right; padding:6px 0 0;" id="cleanupNote">
-        هيتم حذف الطلبات وتفاصيلها نهائيًا، لكن إحصائيات عدد الطلبات وقيمتها هتفضل محفوظة حتى بعد الحذف.
+        سيتم حذف الطلبات وتفاصيلها نهائيًا، لكن ستبقى إحصائيات عدد الطلبات وقيمتها محفوظة حتى بعد الحذف.
       </div>
       <div class="field" style="margin-top:10px; display:flex; flex-direction:row; align-items:center; gap:8px;">
         <input type="checkbox" id="cleanupExportFirst" checked style="width:auto; margin:0;">
@@ -5107,11 +5657,11 @@ function openCleanupOrdersModal(){
     customWrap.classList.toggle('hidden', !(scope === 'old' && periodSelect.value === 'custom'));
     singleWrap.classList.toggle('hidden', scope !== 'single');
     if(scope === 'today'){
-      noteEl.textContent = 'هيتم حذف كل طلبات النهاردة نهائيًا. هذا الإجراء لا يمكن التراجع عنه.';
+      noteEl.textContent = 'سيتم حذف جميع طلبات اليوم نهائيًا. هذا الإجراء لا يمكن التراجع عنه.';
     } else if(scope === 'single'){
-      noteEl.textContent = 'هيتم حذف الطلب المحدد برقمه نهائيًا. هذا الإجراء لا يمكن التراجع عنه.';
+      noteEl.textContent = 'سيتم حذف الطلب المحدد برقمه نهائيًا. هذا الإجراء لا يمكن التراجع عنه.';
     } else {
-      noteEl.textContent = 'هيتم حذف الطلبات وتفاصيلها نهائيًا، لكن إحصائيات عدد الطلبات وقيمتها هتفضل محفوظة حتى بعد الحذف.';
+      noteEl.textContent = 'سيتم حذف الطلبات وتفاصيلها نهائيًا، لكن ستبقى إحصائيات عدد الطلبات وقيمتها محفوظة حتى بعد الحذف.';
     }
   }
   scopeSelect.addEventListener('change', syncScopeUI);
@@ -5254,10 +5804,10 @@ function openCleanupImagesModal(){
     <div class="modal">
       <h3>تنظيف وتحسين الصور</h3>
       <div class="orders-empty" style="text-align:right; padding:6px 0 0;">
-        هيتم فحص كل صور الشعار والأصناف الخاصة بيك، وهيحصل الآتي:
-        <br>• أي ملف صورة مش مرتبط بصنف أو شعار حاليًا (تبقى من صور اتحذفت قبل كده) هيتمسح نهائيًا لتوفير المساحة.
-        <br>• أي صورة لسه بالنظام القديم (غير مضغوطة بأحدث طريقة) هيُعاد ضغطها تلقائيًا وتقليل حجمها.
-        <br><br>العملية دي آمنة على الصور الظاهرة حاليًا في المنيو، وممكن تاخد شوية وقت حسب عدد الأصناف.
+        سيتم فحص جميع صور الشعار والأصناف الخاصة بك، وسيحدث ما يلي:
+        <br>• أي ملف صورة غير مرتبط بصنف أو شعار حاليًا (بقي من صور محذوفة سابقًا) سيُحذف نهائيًا لتوفير المساحة.
+        <br>• أي صورة لا تزال بالنظام القديم (غير مضغوطة بأحدث طريقة) سيُعاد ضغطها تلقائيًا وتقليل حجمها.
+        <br><br>هذه العملية آمنة على الصور الظاهرة حاليًا في المنيو، وقد تستغرق بعض الوقت حسب عدد الأصناف.
       </div>
       <div class="modal-actions">
         <button class="btn-cancel" id="ciCancelBtn">إلغاء</button>
@@ -5290,7 +5840,7 @@ function openCleanupImagesModal(){
       <h3>تم الانتهاء ✅</h3>
       <div class="orders-empty" style="text-align:right; padding:6px 0 0;">
         ${report.scanFailed ? '⚠️ تعذر فحص ملفات التخزين (مشكلة صلاحيات محتملة)، لكن تم فحص الصور المحفوظة في قاعدة البيانات بنجاح.<br>' : ''}
-        🗑️ ملفات غير مستخدمة اتمسحت: <b>${report.orphansDeleted}</b> (${freedKB > 0 ? `~${freedKB}KB اتوفرت` : 'مفيش مساحة إضافية'})
+        🗑️ ملفات غير مستخدمة تم حذفها: <b>${report.orphansDeleted}</b> (${freedKB > 0 ? `~${freedKB}KB تم توفيرها` : 'لا توجد مساحة إضافية'})
         <br>🗜️ صور اتضغطت وحُسّنت: <b>${report.imagesOptimized}</b> ${savedKB > 0 ? `(اتوفر منها ~${savedKB}KB)` : ''}
         ${report.errors > 0 ? `<br>⚠️ حصل خطأ في ${report.errors} عملية، ممكن تعيد المحاولة تاني.` : ''}
       </div>
@@ -5457,7 +6007,7 @@ document.getElementById('restaurantSettingsBtn').addEventListener('click', ()=>{
       </div>
       <div class="field">
         <label>متوسط وقت تجهيز الطلب (بالدقايق)</label>
-        <small>بيتحسب تلقائيًا وقت الجاهزية المتوقع لكل طلب جديد بناءً على الرقم ده، وتقدر تعدّله لكل طلب لوحده من شاشة الطلبات.</small>
+        <small>يُحسب وقت الجاهزية المتوقع تلقائيًا لكل طلب جديد بناءً على هذا الرقم، ويمكنك تعديله لكل طلب على حدة من شاشة الطلبات.</small>
         <input type="number" id="restPrepMinutesInput" min="1" max="180" value="${restaurant.default_prep_minutes || 20}" style="direction:ltr; margin-top:8px;">
       </div>
       <div class="field">
@@ -5498,15 +6048,44 @@ document.getElementById('restaurantSettingsBtn').addEventListener('click', ()=>{
         <input type="number" id="restMinOrderInput" value="${restaurant.min_delivery_order != null ? restaurant.min_delivery_order : ''}" placeholder="مثال: 100" min="0" step="0.01">
       </div>
       <div class="field">
+        <label>حد أدنى مختلف في حال الدفع أونلاين (اختياري — اترك الحقل فارغًا لاستخدام نفس الحد المذكور أعلاه)</label>
+        <small>مفيد إذا أردت تقليل الحد الأدنى تشجيعًا للدفع أونلاين، أو زيادته لتقليل التحويلات الصغيرة.</small>
+        <input type="number" id="restMinOrderOnlineInput" value="${restaurant.min_delivery_order_online != null ? restaurant.min_delivery_order_online : ''}" placeholder="مثال: 50" min="0" step="0.01" style="margin-top:6px;">
+      </div>
+      <div class="field" id="rsOnlinePaymentField">
+        <label style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+          <span>💳 قبول الدفع أونلاين</span>
+          <span class="admin-switch"><input type="checkbox" id="rsOnlinePayEnabled" ${restaurant.accept_online_payment ? 'checked' : ''}><span class="admin-switch-slider"></span></span>
+        </label>
+        <small>عند تفعيلها، سيتمكن العميل من اختيار الدفع أونلاين وقت تأكيد الطلب، وسيرى بيانات الدفع التي تكتبها هنا (محفظة إلكترونية واحدة أو أكثر و/أو حساب إنستاباي).</small>
+        <div id="rsOnlinePayWrap" style="margin-top:10px; ${restaurant.accept_online_payment ? '' : 'display:none;'}">
+          <div class="field" style="margin-bottom:14px;">
+            <label>المحافظ الإلكترونية</label>
+            <small>يمكنك إضافة أكثر من محفظة (فودافون كاش، اتصالات كاش، أورنج كاش...) وسيختار العميل منها وقت الدفع.</small>
+            <div id="rsWalletsListWrap" style="margin-top:8px; display:flex; flex-direction:column; gap:8px;"></div>
+            <button type="button" class="add-btn" id="rsAddWalletBtn" style="margin-top:8px;">+ إضافة محفظة</button>
+          </div>
+          <div class="field" style="margin-bottom:0;">
+            <label>حساب إنستاباي (اختياري)</label>
+            <small>اسم المستخدم الخاص بك على إنستاباي (مثل ‎@mystore) أو رابط الدفع الكامل إن وُجد — في حال إدخال رابط، سيُفتح تلقائيًا للعميل بدلًا من أن يبحث عنك يدويًا.</small>
+            <div style="display:flex; gap:8px; align-items:flex-start; margin-top:8px;">
+              <input type="text" id="rsInstapayInput" value="${restaurant.instapay_account ? escapeHtml(restaurant.instapay_account) : ''}" placeholder="مثال: mystore@instapay أو رابط الدفع" style="direction:ltr; flex:1;">
+              <button type="button" id="rsInstapayTestBtn" title="اختبار الرابط" style="background:#fff; border:1.5px solid var(--line); border-radius:8px; cursor:pointer; padding:9px 12px; flex-shrink:0; white-space:nowrap;">🔗 اختبار</button>
+            </div>
+            <small id="rsInstapayKindHint" style="display:block; margin-top:4px;"></small>
+          </div>
+        </div>
+      </div>
+      <div class="field">
         <label>إشعار واتساب بالطلبات الجديدة (اختياري)</label>
         <small>لتفعيل الإشعار: احفظ رقم <span dir="ltr" style="font-family:var(--mono);">+34 684 74 26 79</span> في هاتفك، وابعتله على واتساب رسالة نصها بالإنجليزية بالظبط: <span dir="ltr" style="font-family:var(--mono);">I allow callmebot to send me messages</span>، وهيردلك برسالة فيها الرمز الخاص بيك (apikey). اكتب رقمك ورمزك تحت.</small>
         <input type="text" id="notifPhoneInput" value="${restaurant.notification_phone ? escapeHtml(restaurant.notification_phone) : ''}" placeholder="رقم واتساب بصيغة دولية: 201154361888" style="margin-top:8px; direction:ltr;" ${restaurant.restriction_notif_settings_disabled ? 'disabled title="تعديل رقم التنبيهات غير متاح في نسختك الحالية"' : ''}>
-        <input type="text" id="notifApikeyInput" value="${restaurant.notification_apikey ? escapeHtml(restaurant.notification_apikey) : ''}" placeholder="الرمز (apikey) اللي وصلك من البوت" style="margin-top:8px; direction:ltr;" ${restaurant.restriction_notif_settings_disabled ? 'disabled title="تعديل رقم التنبيهات غير متاح في نسختك الحالية"' : ''}>
+        <input type="text" id="notifApikeyInput" value="${restaurant.notification_apikey ? escapeHtml(restaurant.notification_apikey) : ''}" placeholder="الرمز (apikey) الذي وصلك من البوت" style="margin-top:8px; direction:ltr;" ${restaurant.restriction_notif_settings_disabled ? 'disabled title="تعديل رقم التنبيهات غير متاح في نسختك الحالية"' : ''}>
         ${restaurant.restriction_notif_settings_disabled ? `<small style="color:var(--stone); margin-top:4px; display:block;">🔒 رقم استلام إشعارات الطلبات مقفول من الإدارة.</small>` : ''}
       </div>
       <div class="field">
         <label>الصيانة</label>
-        <small>أدوات صيانة دورية، مش لازم تستخدمها كتير</small>
+        <small>أدوات صيانة دورية، لا حاجة لاستخدامها كثيرًا</small>
         <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
           <button type="button" class="add-btn" id="rsCleanupOrdersBtn" style="margin:0; flex:1;">حذف الطلبات</button>
           <button type="button" class="add-btn" id="rsCleanupImagesBtn" style="margin:0; flex:1;">تنظيف وتحسين الصور</button>
@@ -5519,6 +6098,116 @@ document.getElementById('restaurantSettingsBtn').addEventListener('click', ()=>{
     </div>`;
   document.body.appendChild(overlay);
   wireEnterToConfirm(overlay, overlay.querySelector('#rsConfirm'));
+
+  // إدارة قائمة المحافظ الإلكترونية (أكتر من محفظة لكل متجر)
+  let pendingWallets = (Array.isArray(restaurant.wallets) && restaurant.wallets.length)
+    ? restaurant.wallets.map(w => ({ label: w && w.label || '', number: w && w.number || '', ussd: w && w.ussd || '' }))
+    : (restaurant.wallet_number ? [{ label: restaurant.wallet_label || 'فودافون كاش', number: restaurant.wallet_number, ussd: '' }] : [{ label: 'فودافون كاش', number: '', ussd: '' }]);
+  const walletsListWrap = overlay.querySelector('#rsWalletsListWrap');
+  function renderWalletsList(){
+    walletsListWrap.innerHTML = pendingWallets.map((w, i) => `
+      <div class="field-row" data-wallet-row="${i}" style="align-items:flex-end; flex-wrap:wrap;">
+        <div class="field" style="margin-bottom:0;">
+          <label>اسم المحفظة</label>
+          <input type="text" class="rs-wallet-label" data-idx="${i}" value="${escapeHtml(w.label)}" placeholder="مثال: فودافون كاش">
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label>رقم المحفظة</label>
+          <small>اكتب رقمًا عاديًا إذا كان العميل سيحوّل بنفسه، أو الصق رابط دفع مباشر (إذا كان بنكك/محفظتك يوفره) ليُفتح تلقائيًا للعميل.</small>
+          <input type="text" class="rs-wallet-number" data-idx="${i}" value="${escapeHtml(w.number)}" placeholder="01xxxxxxxxx أو رابط دفع مباشر" style="direction:ltr; margin-top:6px;">
+          <small class="rs-wallet-kind-hint" data-idx="${i}" style="display:block; margin-top:4px;"></small>
+        </div>
+        <button type="button" class="rs-wallet-test" data-idx="${i}" title="اختبار الرابط" style="background:#fff; border:1.5px solid var(--line); border-radius:8px; cursor:pointer; padding:9px 12px; flex-shrink:0; white-space:nowrap;">🔗 اختبار</button>
+        <button type="button" class="rs-wallet-remove" data-idx="${i}" title="حذف المحفظة" style="background:#fff; border:1.5px solid var(--line); color:var(--danger); border-radius:8px; cursor:pointer; padding:9px 12px; flex-shrink:0;">🗑</button>
+        <div class="field" style="margin-bottom:0; flex-basis:100%;">
+          <label>كود الاتصال السريع (USSD) — اختياري</label>
+          <small>إذا كان لديك كود تحويل سريع لبنك/محفظة الموبايل الخاصة بك، اكتبه هنا واستخدم <span style="font-family:var(--mono);">{amount}</span> مكان المبلغ (مثال: <span dir="ltr" style="font-family:var(--mono);">*9*7*01xxxxxxxxx*{amount}#</span>). سيتمكن العميل من الضغط على زر واحد لفتح شاشة الاتصال جاهزة، من دون كتابة أي شيء بنفسه.</small>
+          <div style="display:flex; gap:8px; align-items:flex-start; margin-top:6px;">
+            <input type="text" class="rs-wallet-ussd" data-idx="${i}" value="${escapeHtml(w.ussd || '')}" placeholder="مثال: *9*7*01xxxxxxxxx*{amount}#" style="direction:ltr; flex:1;">
+            <button type="button" class="rs-wallet-test-ussd" data-idx="${i}" title="اختبار كود الاتصال" style="background:#fff; border:1.5px solid var(--line); border-radius:8px; cursor:pointer; padding:9px 12px; flex-shrink:0; white-space:nowrap;">📞 اختبار</button>
+          </div>
+        </div>
+      </div>`).join('');
+    function updateWalletKindHint(idx){
+      const hintEl = walletsListWrap.querySelector(`.rs-wallet-kind-hint[data-idx="${idx}"]`);
+      if(!hintEl) return;
+      const val = (pendingWallets[idx].number || '').trim();
+      if(!val){ hintEl.textContent = ''; return; }
+      if(/^https?:\/\//i.test(val)){
+        hintEl.textContent = '✅ هذا رابط دفع مباشر — سيُفتح تلقائيًا للعميل وسيظهر معه رمز QR للمسح.';
+        hintEl.style.color = '#1f7a3f';
+      } else {
+        hintEl.textContent = 'ℹ️ هذا رقم عادي — سيظهر للعميل كرقم يمكن التحويل إليه يدويًا.';
+        hintEl.style.color = 'var(--stone)';
+      }
+    }
+    walletsListWrap.querySelectorAll('.rs-wallet-kind-hint').forEach(el=> updateWalletKindHint(Number(el.dataset.idx)));
+    walletsListWrap.querySelectorAll('.rs-wallet-label').forEach(inp=>{
+      inp.addEventListener('input', ()=>{ pendingWallets[Number(inp.dataset.idx)].label = inp.value; });
+    });
+    walletsListWrap.querySelectorAll('.rs-wallet-number').forEach(inp=>{
+      inp.addEventListener('input', ()=>{
+        const idx = Number(inp.dataset.idx);
+        pendingWallets[idx].number = inp.value;
+        updateWalletKindHint(idx);
+      });
+    });
+    walletsListWrap.querySelectorAll('.rs-wallet-ussd').forEach(inp=>{
+      inp.addEventListener('input', ()=>{ pendingWallets[Number(inp.dataset.idx)].ussd = inp.value; });
+    });
+    walletsListWrap.querySelectorAll('.rs-wallet-test').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const val = (pendingWallets[Number(btn.dataset.idx)].number || '').trim();
+        if(!val){ toast('اكتب رقم المحفظة أو الرابط الأول'); return; }
+        if(/^https?:\/\//i.test(val)) window.open(val, '_blank', 'noopener');
+        else toast('هذا رقم عادي وليس رابطًا — لن يُفتح شيء، وسيظهر للعميل كرقم للتحويل إليه فقط');
+      });
+    });
+    walletsListWrap.querySelectorAll('.rs-wallet-test-ussd').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const val = (pendingWallets[Number(btn.dataset.idx)].ussd || '').trim();
+        if(!val){ toast('اكتب كود الاتصال الأول'); return; }
+        window.location.href = buildUssdTelLink(val, 100);
+      });
+    });
+    walletsListWrap.querySelectorAll('.rs-wallet-remove').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        pendingWallets.splice(Number(btn.dataset.idx), 1);
+        renderWalletsList();
+      });
+    });
+  }
+  renderWalletsList();
+  overlay.querySelector('#rsAddWalletBtn').addEventListener('click', ()=>{
+    pendingWallets.push({ label: '', number: '', ussd: '' });
+    renderWalletsList();
+  });
+
+  const instapayInput = overlay.querySelector('#rsInstapayInput');
+  const instapayHint = overlay.querySelector('#rsInstapayKindHint');
+  function updateInstapayHint(){
+    const val = instapayInput.value.trim();
+    if(!val){ instapayHint.textContent = ''; return; }
+    if(/^https?:\/\//i.test(val)){
+      instapayHint.textContent = '✅ هذا رابط دفع مباشر — سيُفتح تلقائيًا للعميل وسيظهر معه رمز QR للمسح.';
+      instapayHint.style.color = '#1f7a3f';
+    } else {
+      instapayHint.textContent = 'ℹ️ هذا اسم مستخدم/رقم عادي — سيظهر للعميل ليبحث عنك بنفسه في تطبيق إنستاباي.';
+      instapayHint.style.color = 'var(--stone)';
+    }
+  }
+  updateInstapayHint();
+  instapayInput.addEventListener('input', updateInstapayHint);
+  overlay.querySelector('#rsInstapayTestBtn').addEventListener('click', ()=>{
+    const val = instapayInput.value.trim();
+    if(!val){ toast('اكتب حساب إنستاباي الأول'); return; }
+    if(/^https?:\/\//i.test(val)) window.open(val, '_blank', 'noopener');
+    else toast('هذا اسم مستخدم وليس رابطًا — لن يُفتح شيء، وسيظهر للعميل كنص فقط');
+  });
+
+  overlay.querySelector('#rsOnlinePayEnabled').addEventListener('change', (e)=>{
+    overlay.querySelector('#rsOnlinePayWrap').style.display = e.target.checked ? '' : 'none';
+  });
   overlay.querySelector('#rsCleanupOrdersBtn').addEventListener('click', ()=>{
     overlay.remove();
     openCleanupOrdersModal();
@@ -5599,10 +6288,21 @@ document.getElementById('restaurantSettingsBtn').addEventListener('click', ()=>{
     const closing_time = overlay.querySelector('#restCloseTimeInput').value || null;
     const minOrderRaw = overlay.querySelector('#restMinOrderInput').value.trim();
     const min_delivery_order = minOrderRaw ? Number(minOrderRaw) : null;
+    const minOrderOnlineRaw = overlay.querySelector('#restMinOrderOnlineInput').value.trim();
+    const min_delivery_order_online = minOrderOnlineRaw ? Number(minOrderOnlineRaw) : null;
     const notification_phone = overlay.querySelector('#notifPhoneInput').value.trim() || null;
     const notification_apikey = overlay.querySelector('#notifApikeyInput').value.trim() || null;
     const prepRaw = Number(overlay.querySelector('#restPrepMinutesInput').value);
     const default_prep_minutes = (prepRaw && prepRaw > 0) ? Math.round(prepRaw) : 20;
+    const accept_online_payment = overlay.querySelector('#rsOnlinePayEnabled').checked;
+    const wallets = pendingWallets
+      .map(w => ({ label: (w.label || '').trim() || 'محفظة', number: (w.number || '').trim(), ussd: (w.ussd || '').trim() || undefined }))
+      .filter(w => w.number);
+    const instapay_account = overlay.querySelector('#rsInstapayInput').value.trim() || null;
+    if(accept_online_payment && !wallets.length && !instapay_account){
+      toast('يجب إضافة محفظة إلكترونية واحدة على الأقل أو حساب إنستاباي لتفعيل الدفع أونلاين');
+      return;
+    }
     const btn = overlay.querySelector('#rsConfirm');
     btn.disabled = true;
     let finalLogoUrl = pendingLogo;
@@ -5615,7 +6315,7 @@ document.getElementById('restaurantSettingsBtn').addEventListener('click', ()=>{
         return;
       }
     }
-    const { data, error } = await sb.from('restaurants').update({ logo_url: finalLogoUrl, name, name_en, phone, messenger_username, telegram_username, address, opening_time, closing_time, min_delivery_order, notification_phone, notification_apikey, business_type: pendingBizType, default_prep_minutes }).eq('id', restaurant.id).select().single();
+    const { data, error } = await sb.from('restaurants').update({ logo_url: finalLogoUrl, name, name_en, phone, messenger_username, telegram_username, address, opening_time, closing_time, min_delivery_order, min_delivery_order_online, notification_phone, notification_apikey, business_type: pendingBizType, default_prep_minutes, accept_online_payment, wallets, wallet_label: wallets[0] ? wallets[0].label : null, wallet_number: wallets[0] ? wallets[0].number : null, instapay_account }).eq('id', restaurant.id).select().single();
     if(error){ toast('تعذر الحفظ'); btn.disabled=false; return; }
     restaurant = data;
     if(originalLogoUrl && originalLogoUrl !== finalLogoUrl){
@@ -5674,7 +6374,7 @@ document.getElementById('showQrBtn').addEventListener('click', ()=>{
       setTimeout(()=> URL.revokeObjectURL(objUrl), 3000);
     }catch(e){
       window.open(qrImgUrl, '_blank');
-      toast('افتحنا الصورة في تاب جديد، اضغط عليها بزرار الفأرة اليمين واحفظها');
+      toast('فتحنا الصورة في نافذة جديدة، اضغط عليها بزر الفأرة الأيمن واحفظها');
     }
   });
 });
@@ -5775,7 +6475,7 @@ async function buildShareStoryBlob(){
 
   ctx.font = "500 40px 'Tajawal',sans-serif";
   ctx.fillStyle = '#D8D2C0';
-  ctx.fillText(`${biz(restaurant.business_type,'itemsDef')} أونلاين — اطلب دلوقتي`, W/2, 520 + (nameLines>1 ? 100 : 60));
+  ctx.fillText(`${biz(restaurant.business_type,'itemsDef')} أونلاين — اطلب الآن`, W/2, 520 + (nameLines>1 ? 100 : 60));
 
   const qrSize = 520, qrX = W/2 - qrSize/2, qrY = 760, pad = 40;
   canvasRoundRect(ctx, qrX - pad, qrY - pad, qrSize + pad*2, qrSize + pad*2, 32);
@@ -5790,7 +6490,7 @@ async function buildShareStoryBlob(){
 
   ctx.font = "700 44px 'Tajawal',sans-serif";
   ctx.fillStyle = '#F6F1E4';
-  ctx.fillText('امسح الكود واطلب دلوقتي 📲', W/2, qrY + qrSize + pad + 74);
+  ctx.fillText('امسح الرمز واطلب الآن 📲', W/2, qrY + qrSize + pad + 74);
 
   ctx.font = "600 30px 'Tajawal',sans-serif";
   ctx.fillStyle = '#8A8577';
@@ -6011,7 +6711,7 @@ function openImportPreviewModal(parsed, uniqueCats, isDetailedFormat){
       <h3>استيراد ${biz(restaurant.business_type,'itemsIndef')} من إكسيل</h3>
       <div class="orders-empty" style="text-align:right; padding:6px 0 14px;">
         تم العثور على <b>${parsed.length}</b> ${biz(restaurant.business_type,'itemIndef')} ضمن <b>${uniqueCats.length}</b> فئة.
-        سيتم إنشاء أي فئة غير موجودة تلقائيًا. ${isDetailedFormat ? `أي ${biz(restaurant.business_type,'itemIndef')} موجود بنفس الاسم داخل نفس الفئة هيتم تحديث بياناته بالكامل، وأي صنف جديد هيتضاف بكل تفاصيله.` : `سيتم إضافة ${biz(restaurant.business_type,'itemsDef')} كأسعار ثابتة، وتحديث السعر لو الصنف موجود بالفعل بنفس الاسم.`}
+        سيتم إنشاء أي فئة غير موجودة تلقائيًا. ${isDetailedFormat ? `أي ${biz(restaurant.business_type,'itemIndef')} موجود بنفس الاسم داخل نفس الفئة سيتم تحديث بياناته بالكامل، وسيُضاف أي صنف جديد بكل تفاصيله.` : `سيتم إضافة ${biz(restaurant.business_type,'itemsDef')} كأسعار ثابتة، وتحديث السعر إذا كان الصنف موجودًا بالفعل بالاسم نفسه.`}
       </div>
       <div id="importPreviewWrap">${previewRows}${parsed.length > 8 ? `<div class="orders-empty">و ${parsed.length - 8} ${biz(restaurant.business_type,'itemIndef')} آخر...</div>` : ''}</div>
       <div class="modal-actions">
@@ -6964,11 +7664,22 @@ document.getElementById('addItemBtn').addEventListener('click', ()=> openItemMod
 
 /* ================= public menu (no auth) ================= */
 let trackingInterval = null;
+let trackingChannel = null;
 async function loadOrderTracking(orderId){
   show('trackingScreen');
   await refreshTrackingData(orderId);
   if(trackingInterval) clearInterval(trackingInterval);
-  trackingInterval = setInterval(()=> refreshTrackingData(orderId), 15000);
+  // بولّينج كل 30 ثانية كخط رجوع احتياطي، مع اشتراك Realtime للتحديث الفوري لحظة ما حالة الطلب تتغيّر
+  trackingInterval = setInterval(()=> refreshTrackingData(orderId), 30000);
+  if(trackingChannel){ sb.removeChannel(trackingChannel); trackingChannel = null; }
+  trackingChannel = sb.channel(`track-${orderId}`)
+    .on('postgres_changes', {
+      event: 'UPDATE',
+      schema: 'public',
+      table: 'orders',
+      filter: `id=eq.${orderId}`
+    }, ()=> refreshTrackingData(orderId))
+    .subscribe();
 }
 
 async function refreshTrackingData(orderId){
@@ -6977,16 +7688,26 @@ async function refreshTrackingData(orderId){
   if(error || !row){
     document.getElementById('trackRestName').textContent = 'لم يتم العثور على هذا الطلب';
     document.getElementById('trackStatusWrap').innerHTML = '';
+    document.getElementById('trackPaymentReminderWrap').innerHTML = '';
     document.getElementById('trackItemsWrap').innerHTML = '';
     document.getElementById('trackTotalWrap').innerHTML = '';
     document.getElementById('trackContactWrap').innerHTML = '';
+    document.getElementById('trackRatingWrap').innerHTML = '';
     if(trackingInterval){ clearInterval(trackingInterval); trackingInterval = null; }
+    if(trackingChannel){ sb.removeChannel(trackingChannel); trackingChannel = null; }
     return;
   }
   document.getElementById('trackLogoWrap').innerHTML = row.restaurant_logo
     ? `<img src="${row.restaurant_logo}" style="max-height:56px; max-width:200px; object-fit:contain;">` : '';
   document.getElementById('trackRestName').textContent = row.restaurant_name || '';
   document.getElementById('trackStatusWrap').innerHTML = renderTrackingStatus(row.order_status);
+  const isOnlinePay = row.payment_method === 'wallet' || row.payment_method === 'instapay';
+  document.getElementById('trackPaymentReminderWrap').innerHTML = (isOnlinePay && row.payment_status !== 'paid' && row.order_status !== 'cancelled')
+    ? `<div class="insight-card warning" style="text-align:right; margin-top:10px;">
+        <span class="insight-icon">⏳</span>
+        <span>ألم تدفع قيمة الطلب بعد؟ يرجى إتمام التحويل حتى يتم تجهيز طلبك، وسيُؤكَّد الطلب تلقائيًا بعد التحقق من الدفع.</span>
+      </div>`
+    : '';
   const items = row.items || [];
   document.getElementById('trackItemsWrap').innerHTML = items.map(it=>`
     <div style="display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid var(--line); font-size:13px; color:var(--ink);">
@@ -6995,7 +7716,63 @@ async function refreshTrackingData(orderId){
     </div>`).join('');
   document.getElementById('trackTotalWrap').textContent = row.total != null ? `الإجمالي: ${Number(row.total).toFixed(2)} EGP` : '';
   document.getElementById('trackContactWrap').innerHTML = renderTrackingContactButtons(row);
+  renderRatingWidget(orderId, row);
   document.getElementById('trackUpdatedAt').textContent = new Date().toLocaleTimeString('ar-EG');
+}
+
+// بيعرض ويجت التقييم بعد ما الطلب يتسلم، أو النجوم اللي اتقيّمت بيها لو العميل قيّمه قبل كده
+function renderRatingWidget(orderId, row){
+  const wrap = document.getElementById('trackRatingWrap');
+  if(row.order_status !== 'delivered'){ wrap.innerHTML = ''; return; }
+  if(row.rating_stars){
+    const starsHtml = [1,2,3,4,5].map(n=> `<span style="font-size:22px; color:${n <= row.rating_stars ? '#f5a623' : '#ddd'};">★</span>`).join('');
+    wrap.innerHTML = `
+      <div class="orders-empty" style="padding:0 0 6px; font-weight:700; color:var(--ink);">تقييمك للطلب</div>
+      <div>${starsHtml}</div>
+      ${row.rating_comment ? `<div class="orders-empty" style="padding-top:6px; font-size:12.5px;">${escapeHtml(row.rating_comment)}</div>` : ''}
+      <div class="orders-empty" style="padding-top:6px; color:var(--stone); font-size:12px;">شكرًا لتقييمك 🙏</div>`;
+    return;
+  }
+  let selectedStars = 0;
+  wrap.innerHTML = `
+    <div class="orders-empty" style="padding:0 0 8px; font-weight:700; color:var(--ink);">قيّم طلبك</div>
+    <div id="trackRatingStars" style="font-size:28px; letter-spacing:4px; cursor:pointer;">
+      ${[1,2,3,4,5].map(n=> `<span data-star="${n}" style="color:#ddd;">★</span>`).join('')}
+    </div>
+    <textarea id="trackRatingComment" placeholder="تعليق (اختياري)" style="width:100%; margin-top:8px; padding:8px; border:1px solid var(--line); border-radius:8px; font-family:var(--body); font-size:13px; resize:vertical; min-height:50px;"></textarea>
+    <button type="button" class="btn-confirm" id="trackRatingSubmitBtn" style="width:100%; margin-top:8px;" disabled>إرسال التقييم</button>
+  `;
+  const starsWrap = wrap.querySelector('#trackRatingStars');
+  const submitBtn = wrap.querySelector('#trackRatingSubmitBtn');
+  function paintStars(n){
+    starsWrap.querySelectorAll('[data-star]').forEach(el=>{
+      el.style.color = Number(el.dataset.star) <= n ? '#f5a623' : '#ddd';
+    });
+  }
+  starsWrap.querySelectorAll('[data-star]').forEach(el=>{
+    el.addEventListener('mouseenter', ()=> paintStars(Number(el.dataset.star)));
+    el.addEventListener('click', ()=>{
+      selectedStars = Number(el.dataset.star);
+      paintStars(selectedStars);
+      submitBtn.disabled = false;
+    });
+  });
+  starsWrap.addEventListener('mouseleave', ()=> paintStars(selectedStars));
+  submitBtn.addEventListener('click', async ()=>{
+    if(!selectedStars) return;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'جاري الإرسال...';
+    const comment = wrap.querySelector('#trackRatingComment').value.trim();
+    const { data: ok, error } = await sb.rpc('submit_order_rating', { p_order_id: orderId, p_stars: selectedStars, p_comment: comment });
+    if(error || !ok){
+      toast('تعذر إرسال التقييم، حاول تاني');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'إرسال التقييم';
+      return;
+    }
+    toast('شكرًا لتقييمك! 🙏');
+    refreshTrackingData(orderId);
+  });
 }
 
 // بيبني نص الطلب كامل (زي رسالة الطلب الأصلية) عشان يتبعت من شاشة التتبع لو العميل حاب يتواصل بخصوص طلبه
@@ -7078,6 +7855,12 @@ function getRestaurantOpenStatus(rest){
   return { isOpen, openLabel: rest.opening_time.slice(0,5), closeLabel: rest.closing_time.slice(0,5) };
 }
 
+// بيحول كود الـUSSD (زي *9*7*01xxxxxxxxx*{amount}#) لرابط tel: بعد ما يحط المبلغ الفعلي مكان {amount} — مستخدمة في شاشة الطلب ولوحة تحكم المطعم
+function buildUssdTelLink(ussdTemplate, amount){
+  const code = String(ussdTemplate).trim().replace(/\{amount\}/gi, String(Math.round(amount)));
+  return 'tel:' + encodeURIComponent(code);
+}
+
 async function loadPublic(slug){
   show('loadingScreen');
   const cachedLogoUrl = slug ? localStorage.getItem(`pubLogo_${slug}`) : null;
@@ -7095,13 +7878,17 @@ async function loadPublic(slug){
     try{ localStorage.setItem(`pubLogo_${slug}`, rest.logo_url); }catch(e){}
     if(rest.logo_url !== cachedLogoUrl) setLoadingLogo(rest.logo_url);
   }
+  // بيسجل الزيارة دايمًا (حتى لو الحساب معلّق) — الدالة نفسها بتفرّق بين زيارة عادية وزيارة لمنيو معلّق
+  sb.rpc('track_menu_visit', { p_restaurant_id: rest.id }).then(
+    (res)=>{ if(res && res.error) console.error('track_menu_visit failed:', res.error); },
+    (err)=>{ console.error('track_menu_visit failed:', err); }
+  );
   if(rest.account_suspended){
     resetLoadingLogo();
     show('publicScreen');
     showAccountSuspendedPublicScreen(rest);
     return;
   }
-  sb.rpc('track_menu_visit', { p_restaurant_id: rest.id }).then(()=>{}, ()=>{});
   const pubFooterEl = document.getElementById('pubFooter');
   if(pubFooterEl){
     const watermarkOn = !!rest.restriction_watermark_enabled;
@@ -7366,7 +8153,7 @@ async function loadPublic(slug){
         </p>
         <div class="modal-actions">
           <button class="btn-cancel" id="aboutCloseBtn">${lang==='en' ? 'Close' : 'إغلاق'}</button>
-          <button class="btn-confirm" id="aboutSignupBtn" type="button">${lang==='en' ? 'Create your account now' : 'أنشئ حسابك دلوقتي'}</button>
+          <button class="btn-confirm" id="aboutSignupBtn" type="button">${lang==='en' ? 'Create your account now' : 'أنشئ حسابك الآن'}</button>
           <a class="btn-confirm" style="display:flex; align-items:center; justify-content:center; text-decoration:none;" href="${waLink}" target="_blank" rel="noopener">${lang==='en' ? 'Ask us on WhatsApp' : 'اسألنا عبر واتساب'}</a>
         </div>
       </div>`;
@@ -7774,7 +8561,7 @@ async function loadPublic(slug){
     overlay.innerHTML = `
       <div class="modal">
         <h3>${lang==='en' ? 'Choose menu design' : 'اختر شكل المنيو'}</h3>
-        <p style="margin:0 0 14px; color:var(--stone); font-size:13px;">${lang==='en' ? 'Pick the look you like best while browsing.' : 'اختر الشكل اللي يعجبك وانت بتختار طلبك.'}</p>
+        <p style="margin:0 0 14px; color:var(--stone); font-size:13px;">${lang==='en' ? 'Pick the look you like best while browsing.' : 'اختر الشكل الذي يعجبك أثناء اختيار طلبك.'}</p>
         <div class="design-picker-grid" id="designPickerGrid">
           ${MENU_DESIGNS.map(d=>{
             let previewInner, previewCls = '';
@@ -7841,8 +8628,50 @@ async function loadPublic(slug){
       </div>`;
   }
 
+  // بيرجع قائمة وسائل التواصل المفعّلة عند المطعم/المتجر لإرسال رسالة الطلب عليها — مشتركة بين مودال تأكيد الطلب وشاشة نجاح الطلب
+  function getOrderChannelsShared(){
+    const channels = [];
+    if(rest.phone) channels.push({ id:'whatsapp', icon:'📲', label: lang==='en' ? 'WhatsApp' : 'واتساب' });
+    if(rest.messenger_username) channels.push({ id:'messenger', icon:'💬', label: lang==='en' ? 'Messenger' : 'ماسنجر' });
+    if(rest.telegram_username) channels.push({ id:'telegram', icon:'✈️', label: lang==='en' ? 'Telegram' : 'تليجرام' });
+    return channels;
+  }
+  // بيفتح رسالة الطلب جاهزة في وسيلة التواصل المطلوبة — مشتركة بين مودال تأكيد الطلب وشاشة نجاح الطلب
+  function openOrderChannel(channelId, msgText){
+    const text = encodeURIComponent(msgText);
+    if(channelId === 'whatsapp' && rest.phone){
+      const digits = rest.phone.replace(/[^\d]/g,'');
+      window.open(`https://wa.me/${digits}?text=${text}`, '_blank');
+    } else if(channelId === 'messenger' && rest.messenger_username){
+      window.open(`https://m.me/${rest.messenger_username}?text=${text}`, '_blank');
+    } else if(channelId === 'telegram' && rest.telegram_username){
+      window.open(`https://t.me/${rest.telegram_username}?text=${text}`, '_blank');
+    }
+  }
+
+  // بيرجع قائمة المحافظ الإلكترونية المفعّلة للمطعم (يدعم التوافق مع البيانات القديمة اللي فيها محفظة واحدة بس)
+  function getWalletsList(){
+    if(Array.isArray(rest.wallets) && rest.wallets.length) return rest.wallets.filter(w => w && w.number);
+    if(rest.wallet_number) return [{ label: rest.wallet_label || 'فودافون كاش', number: rest.wallet_number }];
+    return [];
+  }
+
   function openOrderDetailsModal(){
     let orderType = 'delivery';
+    const canPayOnline = !!(rest.accept_online_payment && (getWalletsList().length || rest.instapay_account));
+    let paymentMethod = 'cash';
+    let onlinePayOption = getWalletsList().length ? 0 : 'instapay';
+    let lastPayPref = null;
+    if(canPayOnline){
+      try{ lastPayPref = JSON.parse(localStorage.getItem(`menuLastPay_${rest.id}`)); }catch(e){ lastPayPref = null; }
+      if(lastPayPref && lastPayPref.method === 'online'){
+        const walletsList = getWalletsList();
+        const validOption = (typeof lastPayPref.onlinePayOption === 'number' && walletsList[lastPayPref.onlinePayOption])
+          || (lastPayPref.onlinePayOption === 'instapay' && rest.instapay_account);
+        if(validOption){ paymentMethod = 'online'; onlinePayOption = lastPayPref.onlinePayOption; }
+      }
+    }
+    let paymentProofFile = null;
     const subtotal = cartSubtotal();
     const overlay = document.createElement('div');
     overlay.className = 'overlay';
@@ -7858,6 +8687,20 @@ async function loadPublic(slug){
             <div class="ord-type-btn" id="ordTypePickup">${lang==='en' ? 'Pickup' : 'استلام'}</div>
           </div>
         </div>
+        ${canPayOnline ? `
+        <div class="field" id="ordPayField">
+          <label>${lang==='en' ? 'Payment method' : 'طريقة الدفع'} *</label>
+          <div class="ord-type-toggle">
+            <div class="ord-type-btn ${paymentMethod==='cash' ? 'active' : ''}" id="ordPayCash">${lang==='en' ? 'Cash' : 'الدفع عند الاستلام'}</div>
+            <div class="ord-type-btn ${paymentMethod==='online' ? 'active' : ''}" id="ordPayOnline">${lang==='en' ? 'Pay online' : 'الدفع أونلاين'}</div>
+          </div>
+          <div id="ordPayOnlineWrap" style="${paymentMethod==='online' ? '' : 'display:none;'} margin-top:10px;"></div>
+          <div id="ordPayProofWrap" style="${paymentMethod==='online' ? '' : 'display:none;'} margin-top:10px;">
+            <label style="font-size:13px; font-weight:700;">${lang==='en' ? 'Payment screenshot (optional)' : 'صورة إثبات التحويل (اختياري)'}</label>
+            <small>${lang==='en' ? "After confirming, you'll get a one-tap button to send this picture on WhatsApp too." : 'بعد تأكيد الطلب، سيظهر لك زر لإرسال هذه الصورة عبر واتساب أيضًا بضغطة واحدة.'}</small>
+            <input type="file" accept="image/*" id="ordPaymentProofInput" style="margin-top:6px;">
+          </div>
+        </div>` : ''}
         <div class="field-row">
           <div class="field">
             <label>${lang==='en' ? 'Full name' : 'الاسم الكامل'} *</label>
@@ -7921,10 +8764,16 @@ async function loadPublic(slug){
       }
       return 0;
     }
+    // بيرجع الحد الأدنى المناسب لقيمة الطلب حسب طريقة الدفع المختارة (لو فيه حد مختلف للدفع أونلاين)
+    function currentMinOrder(){
+      if(paymentMethod === 'online' && rest.min_delivery_order_online != null) return Number(rest.min_delivery_order_online);
+      return rest.min_delivery_order != null ? Number(rest.min_delivery_order) : null;
+    }
     function renderSummary(){
       const fee = currentDeliveryFee();
       const total = subtotal + fee;
-      const showMinOrderNote = orderType === 'delivery' && rest.min_delivery_order != null && subtotal < Number(rest.min_delivery_order);
+      const minOrder = currentMinOrder();
+      const showMinOrderNote = orderType === 'delivery' && minOrder != null && subtotal < minOrder;
       overlay.querySelector('#ordSummaryWrap').innerHTML = `
         ${Object.entries(cart).map(([key,c])=>`
           <div class="cart-row">
@@ -7936,8 +8785,8 @@ async function loadPublic(slug){
         <div class="cart-summary-row"><span>${lang==='en' ? 'Delivery fee' : 'رسوم التوصيل'}</span><span>${fee.toFixed(2)} EGP</span></div>
         <div class="cart-summary-row total"><span>${lang==='en' ? 'Total' : 'الإجمالي'}</span><span>${total.toFixed(2)} EGP</span></div>
         ${showMinOrderNote ? `<div class="orders-empty" style="color:#a33; font-weight:700; padding-top:6px;">${lang==='en'
-          ? `Minimum delivery order is ${rest.min_delivery_order} EGP — add ${(Number(rest.min_delivery_order) - subtotal).toFixed(2)} EGP more`
-          : `أقل قيمة طلب للتوصيل ${rest.min_delivery_order} جنيه — أضف ${(Number(rest.min_delivery_order) - subtotal).toFixed(2)} جنيه لإتمام الطلب`}</div>` : ''}
+          ? `Minimum delivery order is ${minOrder} EGP — add ${(minOrder - subtotal).toFixed(2)} EGP more`
+          : `أقل قيمة طلب للتوصيل ${minOrder} جنيه — أضف ${(minOrder - subtotal).toFixed(2)} جنيه لإتمام الطلب`}</div>` : ''}
       `;
       overlay.querySelectorAll('.cart-item-note').forEach(inp=>{
         inp.addEventListener('input', ()=>{
@@ -7998,27 +8847,144 @@ async function loadPublic(slug){
     const zoneSelect = overlay.querySelector('#ordZoneSelect');
     if(zoneSelect) zoneSelect.addEventListener('change', renderSummary);
 
-    // بيرجع قائمة وسائل التواصل المفعّلة عند المطعم/المتجر لإرسال رسالة الطلب عليها
-    function getOrderChannels(){
-      const channels = [];
-      if(rest.phone) channels.push({ id:'whatsapp', icon:'📲', label: lang==='en' ? 'WhatsApp' : 'واتساب' });
-      if(rest.messenger_username) channels.push({ id:'messenger', icon:'💬', label: lang==='en' ? 'Messenger' : 'ماسنجر' });
-      if(rest.telegram_username) channels.push({ id:'telegram', icon:'✈️', label: lang==='en' ? 'Telegram' : 'تليجرام' });
-      return channels;
-    }
-    // بيفتح رسالة الطلب جاهزة في وسيلة التواصل المطلوبة
-    function openOrderChannel(channelId, msgText){
-      const text = encodeURIComponent(msgText);
-      if(channelId === 'whatsapp' && rest.phone){
-        const digits = rest.phone.replace(/[^\d]/g,'');
-        window.open(`https://wa.me/${digits}?text=${text}`, '_blank');
-      } else if(channelId === 'messenger' && rest.messenger_username){
-        window.open(`https://m.me/${rest.messenger_username}?text=${text}`, '_blank');
-      } else if(channelId === 'telegram' && rest.telegram_username){
-        window.open(`https://t.me/${rest.telegram_username}?text=${text}`, '_blank');
+    if(canPayOnline){
+      const payCashBtn = overlay.querySelector('#ordPayCash');
+      const payOnlineBtn = overlay.querySelector('#ordPayOnline');
+      const payOnlineWrap = overlay.querySelector('#ordPayOnlineWrap');
+      function renderOnlinePayOptions(){
+        const walletsList = getWalletsList();
+        const options = walletsList.map((w,i)=>({ id:i, label: w.label || 'محفظة' }));
+        if(rest.instapay_account) options.push({ id:'instapay', label:'InstaPay' });
+        if(!options.some(o=>o.id===onlinePayOption)) onlinePayOption = options.length ? options[0].id : null;
+        const tabsHtml = options.length > 1 ? `
+          <div style="display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap;">
+            ${options.map(o=>`<button type="button" class="chip-btn ${onlinePayOption===o.id ? 'active' : ''}" data-pay-tab="${o.id}" style="flex:1; min-width:100px;">${escapeHtml(o.label)}</button>`).join('')}
+          </div>` : '';
+        let detailHtml = '';
+        if(typeof onlinePayOption === 'number' && walletsList[onlinePayOption]){
+          const w = walletsList[onlinePayOption];
+          const wIsLink = /^https?:\/\//i.test(w.number || '');
+          const total = subtotal + currentDeliveryFee();
+          const ussdTel = w.ussd ? buildUssdTelLink(w.ussd, total) : null;
+          detailHtml = `
+            <div class="orders-empty" style="text-align:${lang==='en' ? 'left' : 'right'}; padding:10px 0;">
+              ${wIsLink
+                ? (lang==='en' ? `We opened ${escapeHtml(w.label)} for you to pay — if it didn't open, tap "Open" below.` : `فتحنا لك ${escapeHtml(w.label)} لتدفع — إذا لم يُفتح، اضغط "فتح" أدناه.`)
+                : (lang==='en' ? `Transfer the total amount to the ${escapeHtml(w.label)} number below, then confirm your order.` : `حوّل قيمة الطلب إلى رقم ${escapeHtml(w.label)} التالي، ثم أكّد الطلب.`)}
+            </div>
+            <div style="display:flex; align-items:center; gap:8px; background:var(--paper-dim); border:1px solid var(--line); border-radius:8px; padding:10px 12px; flex-wrap:wrap;">
+              <span style="direction:ltr; font-family:var(--mono); font-weight:800; flex:1; word-break:break-all;">${escapeHtml(w.number)}</span>
+              ${wIsLink ? `<a href="${escapeHtml(w.number)}" target="_blank" rel="noopener" class="btn-export-sm" style="width:auto; padding:6px 12px; text-decoration:none;">${lang==='en' ? 'Open' : 'فتح'}</a>` : ''}
+              <button type="button" class="btn-export-sm" id="ordCopyWalletBtn" style="width:auto; padding:6px 12px;">${lang==='en' ? 'Copy' : 'نسخ'}</button>
+            </div>
+            ${wIsLink ? `
+            <div style="text-align:center; margin-top:10px;">
+              <canvas id="ordPayQr"></canvas>
+              <div class="orders-empty" style="padding-top:4px;">${lang==='en' ? 'Or scan with another phone' : 'أو امسح الرمز من هاتف آخر'}</div>
+            </div>` : ''}
+            ${ussdTel ? `
+            <a href="${escapeHtml(ussdTel)}" class="btn-export-sm" style="display:block; text-align:center; margin-top:8px; padding:9px 12px; text-decoration:none;">
+              ${lang==='en' ? '📞 Quick dial (fills the code for you)' : '📞 اتصال سريع (سيفتح لك شاشة الاتصال بالكود جاهزًا)'}
+            </a>` : ''}`;
+        } else if(onlinePayOption === 'instapay' && rest.instapay_account){
+          const isLink = /^https?:\/\//i.test(rest.instapay_account);
+          detailHtml = `
+            <div class="orders-empty" style="text-align:${lang==='en' ? 'left' : 'right'}; padding:10px 0;">
+              ${isLink
+                ? (lang==='en' ? 'We opened InstaPay for you to pay — if it didn\'t open, tap "Open" below.' : 'فتحنا لك إنستاباي لتدفع — إذا لم يُفتح، اضغط "فتح" أدناه.')
+                : (lang==='en' ? 'Pay the total amount via InstaPay to the account below, then confirm your order.' : 'ادفع قيمة الطلب عبر إنستاباي إلى الحساب التالي، ثم أكّد الطلب.')}
+            </div>
+            <div style="display:flex; align-items:center; gap:8px; background:var(--paper-dim); border:1px solid var(--line); border-radius:8px; padding:10px 12px;">
+              <span style="direction:ltr; font-family:var(--mono); font-weight:800; flex:1; word-break:break-all;">${escapeHtml(rest.instapay_account)}</span>
+              ${isLink ? `<a href="${escapeHtml(rest.instapay_account)}" target="_blank" rel="noopener" class="btn-export-sm" style="width:auto; padding:6px 12px; text-decoration:none;">${lang==='en' ? 'Open' : 'فتح'}</a>` : ''}
+              <button type="button" class="btn-export-sm" id="ordCopyInstapayBtn" style="width:auto; padding:6px 12px;">${lang==='en' ? 'Copy' : 'نسخ'}</button>
+            </div>
+            ${isLink ? `
+            <div style="text-align:center; margin-top:10px;">
+              <canvas id="ordPayQr"></canvas>
+              <div class="orders-empty" style="padding-top:4px;">${lang==='en' ? 'Or scan with another phone' : 'أو امسح الرمز من هاتف آخر'}</div>
+            </div>` : ''}`;
+        }
+        payOnlineWrap.innerHTML = tabsHtml + detailHtml;
+        const qrCanvas = payOnlineWrap.querySelector('#ordPayQr');
+        if(qrCanvas && window.QRCode){
+          const linkVal = getCurrentPayLinkValue();
+          if(linkVal) QRCode.toCanvas(qrCanvas, linkVal, { width: 140, margin: 1 }, ()=>{});
+        }
+        payOnlineWrap.querySelectorAll('[data-pay-tab]').forEach(btn=>{
+          btn.addEventListener('click', ()=>{
+            const v = btn.dataset.payTab;
+            onlinePayOption = v === 'instapay' ? 'instapay' : Number(v);
+            renderOnlinePayOptions();
+            openCurrentPayLink();
+          });
+        });
+        const copyWalletBtn = payOnlineWrap.querySelector('#ordCopyWalletBtn');
+        if(copyWalletBtn && typeof onlinePayOption === 'number' && walletsList[onlinePayOption]){
+          copyWalletBtn.addEventListener('click', ()=> copyToClipboard(walletsList[onlinePayOption].number, lang==='en' ? 'Number copied' : 'تم نسخ الرقم'));
+        }
+        const copyInstapayBtn = payOnlineWrap.querySelector('#ordCopyInstapayBtn');
+        if(copyInstapayBtn) copyInstapayBtn.addEventListener('click', ()=> copyToClipboard(rest.instapay_account, lang==='en' ? 'Account copied' : 'تم نسخ الحساب'));
       }
+      // بيرجع رابط وسيلة الدفع المختارة حاليًا (لو كانت رابط)، من غير ما يفتحه
+      function getCurrentPayLinkValue(){
+        let val = null;
+        if(onlinePayOption === 'instapay') val = rest.instapay_account;
+        else if(typeof onlinePayOption === 'number'){
+          const w = getWalletsList()[onlinePayOption];
+          val = w ? w.number : null;
+        }
+        return (val && /^https?:\/\//i.test(val)) ? val : null;
+      }
+      // بيفتح رابط وسيلة الدفع المختارة تلقائي (يفتح التطبيق لو موجود على الموبايل، أو الموقع لو من الكمبيوتر)
+      function openCurrentPayLink(){
+        const val = getCurrentPayLinkValue();
+        if(val) window.open(val, '_blank', 'noopener');
+      }
+      const payProofWrap = overlay.querySelector('#ordPayProofWrap');
+      const paymentProofInput = overlay.querySelector('#ordPaymentProofInput');
+      if(paymentProofInput){
+        paymentProofInput.addEventListener('change', ()=>{
+          paymentProofFile = paymentProofInput.files && paymentProofInput.files[0] ? paymentProofInput.files[0] : null;
+        });
+      }
+      payCashBtn.addEventListener('click', ()=>{
+        paymentMethod = 'cash';
+        payCashBtn.classList.add('active');
+        payOnlineBtn.classList.remove('active');
+        payOnlineWrap.style.display = 'none';
+        if(payProofWrap) payProofWrap.style.display = 'none';
+        renderSummary();
+      });
+      payOnlineBtn.addEventListener('click', ()=>{
+        paymentMethod = 'online';
+        payOnlineBtn.classList.add('active');
+        payCashBtn.classList.remove('active');
+        payOnlineWrap.style.display = '';
+        if(payProofWrap) payProofWrap.style.display = '';
+        renderOnlinePayOptions();
+        openCurrentPayLink();
+        renderSummary();
+      });
+      if(paymentMethod === 'online') renderOnlinePayOptions();
     }
 
+    // بيرجع قائمة وسائل التواصل المفعّلة عند المطعم/المتجر لإرسال رسالة الطلب عليها
+    function getOrderChannels(){
+      return getOrderChannelsShared();
+    }
+
+    function paymentMethodLabel(){
+      if(paymentMethod !== 'online') return null;
+      if(typeof onlinePayOption === 'number'){
+        const w = getWalletsList()[onlinePayOption];
+        if(w) return lang==='en' ? `Online payment via ${w.label} (${w.number}) — please confirm the transfer` : `دفع أونلاين عبر ${w.label} (${w.number}) — برجاء تأكيد التحويل`;
+      }
+      if(onlinePayOption === 'instapay' && rest.instapay_account){
+        return lang==='en' ? `Online payment via InstaPay (${rest.instapay_account}) — please confirm the transfer` : `دفع أونلاين عبر إنستاباي (${rest.instapay_account}) — برجاء تأكيد التحويل`;
+      }
+      return null;
+    }
     function buildOrderMessage({customer_name, customer_phone, secondary_phone, orderType, city, area, address, notes, fee, total}){
       const typeLabel = orderType==='delivery' ? (lang==='en' ? 'Delivery' : 'توصيل') : (lang==='en' ? 'Pickup' : 'استلام');
       const now = new Date();
@@ -8043,6 +9009,8 @@ async function loadPublic(slug){
         if(secondary_phone) msg += `\nAlt. phone: ${secondary_phone}`;
         if(orderType==='delivery'){ if(city) msg += `\nCity: ${city}`; if(address) msg += `\nAddress: ${address}`; }
         if(notes) msg += `\nNotes: ${notes}`;
+        const payLabel = paymentMethodLabel();
+        if(payLabel) msg += `\nPayment: ${payLabel}`;
         return msg;
       }
       let msg = `طلب جديد — ${restName}\nالتاريخ والوقت: ${dateTimeStr}\n\n${lines}\n\nالمجموع الفرعي: ${subtotal.toFixed(2)} جنيه`;
@@ -8052,6 +9020,8 @@ async function loadPublic(slug){
       if(secondary_phone) msg += `\nتليفون إضافي: ${secondary_phone}`;
       if(orderType==='delivery'){ if(city) msg += `\nالمدينة: ${city}`; if(address) msg += `\nالعنوان: ${address}`; }
       if(notes) msg += `\nملاحظات: ${notes}`;
+      const payLabel = paymentMethodLabel();
+      if(payLabel) msg += `\nالدفع: ${payLabel}`;
       return msg;
     }
 
@@ -8089,15 +9059,21 @@ async function loadPublic(slug){
         toast(lang==='en' ? 'Please fill in all required fields' : 'يرجى إدخال جميع الحقول المطلوبة');
         return;
       }
-      if(orderType === 'delivery' && rest.min_delivery_order != null && subtotal < Number(rest.min_delivery_order)){
-        const remaining = (Number(rest.min_delivery_order) - subtotal).toFixed(2);
+      if(orderType === 'delivery' && currentMinOrder() != null && subtotal < currentMinOrder()){
+        const minOrder = currentMinOrder();
+        const remaining = (minOrder - subtotal).toFixed(2);
         toast(lang==='en'
-          ? `Minimum delivery order is ${rest.min_delivery_order} EGP. Add ${remaining} EGP more`
-          : `أقل قيمة طلب للتوصيل ${rest.min_delivery_order} جنيه — أضف ${remaining} جنيه لإتمام الطلب`);
+          ? `Minimum delivery order is ${minOrder} EGP. Add ${remaining} EGP more`
+          : `أقل قيمة طلب للتوصيل ${minOrder} جنيه — أضف ${remaining} جنيه لإتمام الطلب`);
         return;
       }
       const fee = delivery_fee != null ? Number(delivery_fee) : 0;
       const total = subtotal + fee;
+
+      if(canPayOnline && paymentMethod === 'online' && !((typeof onlinePayOption === 'number' && getWalletsList()[onlinePayOption]) || (onlinePayOption==='instapay' && rest.instapay_account))){
+        toast(lang==='en' ? 'Please choose a payment option' : 'يرجى اختيار وسيلة الدفع');
+        return;
+      }
 
       const btn = overlay.querySelector('#ordConfirm');
       btn.disabled = true;
@@ -8107,11 +9083,26 @@ async function loadPublic(slug){
       const newOrderId = (crypto && crypto.randomUUID) ? crypto.randomUUID() : ('xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c=>{
         const r = Math.random()*16|0, v = c==='x'?r:(r&0x3|0x8); return v.toString(16);
       }));
+      const isOnlinePayment = canPayOnline && paymentMethod === 'online';
+      let orderPaymentMethod = 'cash', orderPaymentDetail = null;
+      if(isOnlinePayment){
+        if(typeof onlinePayOption === 'number' && getWalletsList()[onlinePayOption]){
+          const w = getWalletsList()[onlinePayOption];
+          orderPaymentMethod = 'wallet';
+          orderPaymentDetail = `${w.label} — ${w.number}`;
+        } else if(onlinePayOption === 'instapay'){
+          orderPaymentMethod = 'instapay';
+          orderPaymentDetail = rest.instapay_account || null;
+        }
+      }
       const orderPayload = {
         id: newOrderId,
         restaurant_id: rest.id, customer_name, customer_phone, secondary_phone,
         order_type: orderType, city, area, address, notes, zone_id, delivery_fee,
-        subtotal, total
+        subtotal, total,
+        payment_method: orderPaymentMethod,
+        payment_detail: orderPaymentDetail,
+        payment_status: isOnlinePayment ? 'unpaid' : null
       };
       const { error } = await sb.from('orders').insert(orderPayload);
       if(error){
@@ -8135,6 +9126,9 @@ async function loadPublic(slug){
         zoneId: zone_id || '',
         address: address || ''
       });
+      if(canPayOnline){
+        try{ localStorage.setItem(`menuLastPay_${rest.id}`, JSON.stringify({ method: paymentMethod, onlinePayOption })); }catch(e){}
+      }
       try{
         const lastOrderSnapshot = Object.values(cart).map(c=>({
           itemId: c.item.id, variantLabel: c.variantLabel || null, unitPrice: c.unitPrice, qty: c.qty
@@ -8162,24 +9156,36 @@ async function loadPublic(slug){
       renderPublicBody();
       overlay.remove();
 
-      // الطلب اتحفظ فعليًا في قاعدة البيانات وهيظهر في شاشة الطلبات — لو وسيلة تواصل واحدة بس مفعّلة نفتحها أوتوماتيك،
-      // لو أكتر من وسيلة، نسيب العميل يختار من شاشة نجاح الطلب (عشان المتصفح ممكن يمنع فتح أكتر من تاب في نفس الوقت)
-      if(orderChannels.length === 1 && orderMsgText){
-        openOrderChannel(orderChannels[0].id, orderMsgText);
+      // الطلب اتحفظ فعليًا في قاعدة البيانات وهيظهر في شاشة الطلبات دايمًا وبشكل أوتوماتيكي.
+      // واتساب — لو مفعّل — بيتفتح أوتوماتيك زي ما كان، وفي نفس الوقت بتفضل أزرار ماسنجر/تليجرام
+      // (لو مفعّلين) ظاهرة في شاشة نجاح الطلب كخيار إضافي للعميل يبعت بيهم كمان لو حب.
+      // لو مفيش واتساب لكن فيه وسيلة واحدة بس تانية مفعّلة، نفتحها هي أوتوماتيك بدل واتساب.
+      if(orderMsgText){
+        const waChannel = orderChannels.find(c=> c.id === 'whatsapp');
+        if(waChannel){
+          openOrderChannel('whatsapp', orderMsgText);
+        } else if(orderChannels.length === 1){
+          openOrderChannel(orderChannels[0].id, orderMsgText);
+        }
       }
-      showOrderSuccessModal(orderRow, orderChannels, orderMsgText);
+      showOrderSuccessModal(orderRow, orderChannels, orderMsgText, isOnlinePayment, paymentProofFile);
     });
   }
 
-  function showOrderSuccessModal(orderRow, channels, orderMsgText){
+  function showOrderSuccessModal(orderRow, channels, orderMsgText, isOnlinePayment, paymentProofFile){
     const orderId = orderRow.id;
     const orderNumberHtml = orderRow.order_number != null
       ? `<div class="orders-empty" style="padding:0 0 10px; font-size:20px; font-weight:800; color:var(--ember); font-family:var(--mono); direction:ltr;">#${orderRow.order_number}</div>`
       : '';
     const trackLink = `${location.origin}${location.pathname}?t=${orderId}`;
+    const waChannel = channels.find(c=> c.id === 'whatsapp');
     let statusMsg;
     if(channels.length === 0){
       statusMsg = lang==='en' ? `Order saved (${biz(rest.business_type,'entityEn').toLowerCase()} has no contact channel set).` : `تم حفظ طلبك (لم يضف ${biz(rest.business_type,'entityDef')} وسيلة تواصل).`;
+    } else if(waChannel){
+      statusMsg = channels.length === 1
+        ? (lang==='en' ? `Your order was sent to the ${biz(rest.business_type,'entityEn').toLowerCase()} via WhatsApp.` : `تم إرسال طلبك لـ${biz(rest.business_type,'entityDef')} عبر واتساب.`)
+        : (lang==='en' ? `Your order was sent via WhatsApp. You can also send it via other channels below.` : `تم إرسال طلبك عبر واتساب. يمكنك أيضًا إرساله عبر وسائل أخرى أدناه إن أردت.`);
     } else if(channels.length === 1){
       statusMsg = lang==='en' ? `Your order was sent to the ${biz(rest.business_type,'entityEn').toLowerCase()} via ${channels[0].label}.` : `تم إرسال طلبك لـ${biz(rest.business_type,'entityDef')} عبر ${channels[0].label}.`;
     } else {
@@ -8189,6 +9195,10 @@ async function loadPublic(slug){
         <div class="modal-actions" style="flex-wrap:wrap;" id="successChannelsWrap">
           ${channels.map(c=>`<button type="button" class="btn-confirm" data-channel="${c.id}" style="flex:1; min-width:110px;">${c.icon} ${escapeHtml(c.label)}</button>`).join('')}
         </div>` : '';
+    const proofHtml = (isOnlinePayment && paymentProofFile) ? `
+        <button type="button" class="btn-confirm" id="successSendProofBtn" style="width:100%; margin-top:10px;">
+          📎 ${lang==='en' ? 'Send payment screenshot on WhatsApp' : 'أرسل صورة إثبات الدفع عبر واتساب'}
+        </button>` : '';
     const successOverlay = document.createElement('div');
     successOverlay.className = 'overlay';
     successOverlay.innerHTML = `
@@ -8196,6 +9206,11 @@ async function loadPublic(slug){
         <h3>${lang==='en' ? 'Order sent! ✅' : 'تم إرسال طلبك بنجاح! ✅'}</h3>
         ${orderNumberHtml}
         <div class="orders-empty" style="padding:0 0 14px;">${statusMsg}</div>
+        ${isOnlinePayment ? `<div class="insight-card warning" style="text-align:${lang==='en' ? 'left' : 'right'};">
+          <span class="insight-icon">💳</span>
+          <span>${lang==='en' ? 'Please complete the transfer if you haven\'t already. Your order will be confirmed once the payment is verified.' : 'برجاء إتمام التحويل إن لم يكن قد تم بعد. سيتم تأكيد طلبك بعد التحقق من الدفع.'}</span>
+        </div>` : ''}
+        ${proofHtml}
         ${channelsHtml}
         <div class="orders-empty" style="padding:14px 0 8px; font-weight:700; color:var(--ink);">${lang==='en' ? 'Track your order status here:' : 'تابع حالة طلبك من هنا:'}</div>
         <div class="orders-empty" style="padding:0 0 14px; font-size:12px; word-break:break-all;">${escapeHtml(trackLink)}</div>
@@ -8216,6 +9231,27 @@ async function loadPublic(slug){
     successOverlay.querySelector('#successTrackBtn').addEventListener('click', ()=>{
       window.open(trackLink, '_blank');
     });
+    const sendProofBtn = successOverlay.querySelector('#successSendProofBtn');
+    if(sendProofBtn){
+      sendProofBtn.addEventListener('click', async ()=>{
+        const caption = lang==='en'
+          ? `Payment proof — order #${orderRow.order_number != null ? orderRow.order_number : ''} — ${tName(rest.name, rest.name_en)}`
+          : `إثبات دفع — طلب رقم ${orderRow.order_number != null ? orderRow.order_number : ''} — ${tName(rest.name, rest.name_en)}`;
+        // بيحاول يستخدم شاشة المشاركة بتاعة الجهاز عشان يبعت الصورة نفسها لواتساب بضغطة واحدة (متاحة غالبًا على الموبايل)
+        if(navigator.canShare && navigator.canShare({ files: [paymentProofFile] })){
+          try{
+            await navigator.share({ files: [paymentProofFile], text: caption });
+            return;
+          }catch(e){ /* المستخدم لغى المشاركة أو فشلت — هنكمل بالطريقة التانية تحت */ }
+        }
+        // لو المشاركة المباشرة مش متاحة (زي أغلب متصفحات الكمبيوتر)، بنفتح شاشة واتساب مع رسالة، والصورة المستخدم يرفقها بنفسه لأن روابط واتساب مش بتدعم إرفاق صور تلقائي
+        if(rest.phone){
+          const digits = rest.phone.replace(/[^\d]/g,'');
+          window.open(`https://wa.me/${digits}?text=${encodeURIComponent(caption)}`, '_blank');
+        }
+        toast(lang==='en' ? 'Please attach the photo manually in the WhatsApp chat that opened' : 'يرجى إرفاق الصورة يدويًا في شاشة واتساب التي فُتحت');
+      });
+    }
     if(orderMsgText){
       successOverlay.querySelectorAll('[data-channel]').forEach(btn=>{
         btn.addEventListener('click', ()=> openOrderChannel(btn.dataset.channel, orderMsgText));

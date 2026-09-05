@@ -104,6 +104,22 @@ body{margin:0; font-family:var(--body); background:var(--ink); color:var(--ink);
 .link-btn-split{ display:inline-flex; }
 .link-btn-split .split-copy{ border-radius:6px 0 0 6px; border-left:none; }
 .link-btn-split .split-open{ border-radius:0 6px 6px 0; padding:9px 12px; }
+
+.dash-menu-group{ position:relative; }
+.dash-menu-trigger{ display:inline-flex; align-items:center; gap:6px; }
+.dash-menu-trigger .caret{ font-size:9px; opacity:.65; transition:transform .15s ease; }
+.dash-menu-group.open .dash-menu-trigger{ background:#3a3733; border-color:var(--stone); }
+.dash-menu-group.open .dash-menu-trigger .caret{ transform:rotate(180deg); }
+.dash-menu-dropdown{ position:absolute; top:calc(100% + 8px); inset-inline-start:0; background:#2A2825; border:1px solid #454138; border-radius:10px; padding:6px; min-width:235px; z-index:80; box-shadow:0 12px 32px rgba(0,0,0,.4); display:none; flex-direction:column; gap:3px; }
+.dash-menu-group.open .dash-menu-dropdown{ display:flex; }
+.dash-menu-dropdown .link-btn{ width:100%; text-align:right; border-radius:7px; background:transparent; border-color:transparent; padding:9px 12px; }
+.dash-menu-dropdown .link-btn:hover{ background:#3a3733; border-color:#454138; }
+.dash-menu-dropdown .link-btn-split{ display:flex; width:100%; }
+.dash-menu-dropdown .link-btn-split .split-copy{ flex:1; text-align:right; background:transparent; border-color:transparent; }
+.dash-menu-dropdown .link-btn-split .split-open{ background:transparent; border-color:transparent; }
+.dash-menu-dropdown .link-btn-split:hover .split-copy, .dash-menu-dropdown .link-btn-split:hover .split-open{ background:#3a3733; border-color:#454138; }
+.dash-menu-divider{ height:1px; background:#454138; margin:4px 2px; }
+@media (max-width:980px){ .dash-menu-dropdown{ inset-inline-start:auto; inset-inline-end:0; } }
 .save-btn{ background:var(--basil); color:var(--paper); border:none; font-family:var(--body); font-weight:700; font-size:14px; padding:9px 20px; border-radius:6px; cursor:pointer; }
 .save-btn:hover{background:var(--basil-dark);}
 
@@ -751,22 +767,48 @@ body.pub-design-dark .pub-more-menu{ background:#2A2825; border-color:#3A352D; }
       <span class="switch-link" id="signOutLink">تسجيل الخروج</span>
     </div>
     <div class="topbar-actions">
-      <button class="link-btn" id="viewOrdersBtn">الطلبات <span id="newOrdersBadge" class="new-orders-badge hidden">0</span></button>
-      <button class="link-btn" id="viewStatsBtn">الإحصائيات</button>
-      <button class="link-btn" id="reportsBtn">التقارير</button>
-      <span class="link-btn-split" id="publicLinkSplitBtn">
-        <button class="link-btn split-copy" id="copyPublicLinkBtn">نسخ رابط القائمة العام</button><button class="link-btn split-open" id="openPublicLinkBtn" title="فتح المنيو مباشرة">🔗</button>
-      </span>
-      <button class="link-btn" id="showQrBtn">QR Code</button>
-      <button class="link-btn" id="shareMenuBtn">📤 مشاركة القائمة</button>
-      <button class="link-btn" id="deliveryZonesBtn">مناطق التوصيل</button>
-      <button class="link-btn" id="customersBtn">العملاء</button>
-      <button class="link-btn" id="driversBtn">🚴 السائقين</button>
-      <button class="link-btn" id="importExcelBtn">استيراد من إكسيل</button>
-      <button class="link-btn" id="exportExcelBtn">تصدير إلى إكسيل</button>
-      <button class="link-btn" id="notifPermBtn">🔔 تفعيل تنبيهات المتصفح</button>
-      <button class="link-btn" id="restaurantSettingsBtn">إعدادات المطعم</button>
-      <button class="link-btn" id="subscriptionBtn">💳 الاشتراك</button>
+      <button class="link-btn" id="viewOrdersBtn">📦 الطلبات <span id="newOrdersBadge" class="new-orders-badge hidden">0</span></button>
+
+      <div class="dash-menu-group" data-menu="menu-reports">
+        <button type="button" class="link-btn dash-menu-trigger">📊 التقارير والإحصائيات <span class="caret">▾</span></button>
+        <div class="dash-menu-dropdown">
+          <button class="link-btn" id="viewStatsBtn">الإحصائيات</button>
+          <button class="link-btn" id="reportsBtn">التقارير</button>
+        </div>
+      </div>
+
+      <div class="dash-menu-group" data-menu="menu-share">
+        <button type="button" class="link-btn dash-menu-trigger">🔗 القائمة والمشاركة <span class="caret">▾</span></button>
+        <div class="dash-menu-dropdown">
+          <span class="link-btn-split" id="publicLinkSplitBtn">
+            <button class="link-btn split-copy" id="copyPublicLinkBtn">نسخ رابط القائمة العام</button><button class="link-btn split-open" id="openPublicLinkBtn" title="فتح المنيو مباشرة">🔗</button>
+          </span>
+          <button class="link-btn" id="showQrBtn">QR Code</button>
+          <button class="link-btn" id="shareMenuBtn">📤 مشاركة القائمة</button>
+          <div class="dash-menu-divider"></div>
+          <button class="link-btn" id="importExcelBtn">📥 استيراد من إكسيل</button>
+          <button class="link-btn" id="exportExcelBtn">📤 تصدير إلى إكسيل</button>
+        </div>
+      </div>
+
+      <div class="dash-menu-group" data-menu="menu-customers">
+        <button type="button" class="link-btn dash-menu-trigger">👥 العملاء والتوصيل <span class="caret">▾</span></button>
+        <div class="dash-menu-dropdown">
+          <button class="link-btn" id="customersBtn">العملاء</button>
+          <button class="link-btn" id="deliveryZonesBtn">مناطق التوصيل</button>
+          <button class="link-btn" id="driversBtn">🚴 السائقين</button>
+        </div>
+      </div>
+
+      <div class="dash-menu-group" data-menu="menu-settings">
+        <button type="button" class="link-btn dash-menu-trigger">⚙️ الإعدادات <span class="caret">▾</span></button>
+        <div class="dash-menu-dropdown">
+          <button class="link-btn" id="restaurantSettingsBtn">إعدادات المطعم</button>
+          <button class="link-btn" id="subscriptionBtn">💳 الاشتراك</button>
+          <button class="link-btn" id="notifPermBtn">🔔 تفعيل تنبيهات المتصفح</button>
+        </div>
+      </div>
+
       <button class="link-btn hidden" id="adminPanelBtn" style="background:#3a2145; color:#e6c9ff;">🛠️ لوحة تحكم m@g</button>
       <input type="file" id="importExcelInput" accept=".xlsx,.xls" style="display:none;">
     </div>
@@ -7594,19 +7636,35 @@ function openItemModal(existing){
     }
     if(pricing_type === 'sizes'){
       const rows = sizesRowsWrap.querySelectorAll('.zone-add-row');
+      const zeroPriceSizeNames = [];
       for(const row of rows){
         const sName = row.querySelector('.size-name-input').value.trim();
         const sPrice = parseFloat(row.querySelector('.size-price-input').value);
         if(!sName || isNaN(sPrice) || sPrice < 0) continue;
+        if(sPrice === 0) zeroPriceSizeNames.push(sName);
         sizesToSave.push({ size_name: sName, price: sPrice });
       }
       if(sizesToSave.length === 0){
         toast('يرجى إضافة حجم واحد على الأقل بسعره');
         return;
       }
+      // تأكيد صريح لو أي حجم هيتحفظ بسعر صفر — عشان منمنعش العروض المجانية المقصودة، بس نتأكد إنها مش غلطة كتابة
+      if(zeroPriceSizeNames.length > 0){
+        const sizesMsg = zeroPriceSizeNames.join('، ');
+        if(!confirm(`الحجم/الأحجام دي هتتحفظ بسعر صفر (${sizesMsg}) — يعني العميل هيقدر يطلبها مجانًا. متأكد إنك عايز كده؟`)){
+          return;
+        }
+      }
     } else {
       price = parseFloat(overlay.querySelector('#itemPrice').value);
       if(isNaN(price) || price < 0){ overlay.querySelector('#itemPrice').focus(); return; }
+      // تأكيد صريح لو السعر صفر — عشان منمنعش العروض المجانية المقصودة، بس نتأكد إنها مش غلطة كتابة
+      if(price === 0){
+        if(!confirm('السعر هيتحفظ صفر — يعني أي عميل هيقدر يطلب هذا الصنف مجانًا. متأكد إنك عايز كده؟')){
+          overlay.querySelector('#itemPrice').focus();
+          return;
+        }
+      }
       const oldPriceRaw = overlay.querySelector('#itemOldPrice').value.trim();
       if(oldPriceRaw !== ''){
         const parsedOld = parseFloat(oldPriceRaw);
@@ -9353,6 +9411,26 @@ async function loadPublic(slug){
   renderPublicBody();
   show('publicScreen');
 }
+
+// تفعيل القوائم المنسدلة الجديدة في الشريط العلوي (تجميع الأزرار داخل قوائم بدل عرضها كلها في صف واحد)
+document.querySelectorAll('.dash-menu-group').forEach(group=>{
+  const trigger = group.querySelector('.dash-menu-trigger');
+  if(!trigger) return;
+  trigger.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    const willOpen = !group.classList.contains('open');
+    document.querySelectorAll('.dash-menu-group.open').forEach(g=>{ if(g!==group) g.classList.remove('open'); });
+    group.classList.toggle('open', willOpen);
+  });
+  group.querySelectorAll('.dash-menu-dropdown button').forEach(btn=>{
+    btn.addEventListener('click', ()=> group.classList.remove('open'));
+  });
+});
+document.addEventListener('click', (e)=>{
+  document.querySelectorAll('.dash-menu-group.open').forEach(g=>{
+    if(!g.contains(e.target)) g.classList.remove('open');
+  });
+});
 
 boot();
 </script>

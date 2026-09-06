@@ -331,7 +331,7 @@ body.pub-menu-only .add-to-cart-btn{ display:none !important; }
 }
 .pub-side-ad:hover{ transform:translateY(-50%) scale(1.03); box-shadow:0 20px 44px rgba(0,0,0,.45); }
 .pub-side-ad::after{ content:''; position:absolute; inset:0; background:radial-gradient(circle at 30% 15%, rgba(255,255,255,.18), transparent 55%); pointer-events:none; }
-.pub-side-ad-left{ left:26px; }
+.pub-side-ad-left{ left:26px; background:linear-gradient(165deg, var(--confirm-strong) 0%, var(--confirm-strong-dark) 75%); }
 .pub-side-ad-right{ right:26px; }
 .pub-side-ad-badge{ position:absolute; top:12px; inset-inline-start:14px; font-size:10px; font-weight:700; background:rgba(255,255,255,.22); padding:3px 9px; border-radius:10px; letter-spacing:.5px; z-index:5; }
 .pub-side-ad-close{
@@ -348,6 +348,7 @@ body.pub-menu-only .add-to-cart-btn{ display:none !important; }
 .pub-side-ad-title{ font-family:var(--display); font-size:21px; line-height:1.3; }
 .pub-side-ad-desc{ font-size:12.5px; line-height:1.7; opacity:.92; }
 .pub-side-ad-cta{ margin-top:4px; background:#fff; color:var(--ember-dark); font-weight:800; font-size:12.5px; padding:10px 18px; border-radius:22px; }
+.pub-side-ad-left .pub-side-ad-cta{ color:var(--confirm-strong-dark); }
 .pub-side-ad.pub-side-ad-hidden{ display:none !important; }
 /* إعلان مقسوم لنصفين، كل نصف بلينك مختلف */
 .pub-side-ad-split{ padding:0; gap:0; background:#1c1a17; }
@@ -360,6 +361,9 @@ body.pub-menu-only .add-to-cart-btn{ display:none !important; }
 .pub-side-ad-half .pub-side-ad-cta{ background:rgba(255,255,255,.92); }
 .pub-side-ad-divider{ height:2px; width:100%; background:rgba(255,255,255,.2); flex-shrink:0; }
 @media (min-width:1280px){ .pub-side-ad{ display:flex; } }
+/* الإعلان الجانبي الأيمن (راديو/قرآن) غير مرتبط بمجال المنيو، فنخليه أهدأ وأقل لفتًا أثناء الطلب */
+.pub-side-ad-right{ opacity:.5; filter:grayscale(.55) saturate(.7); transition:opacity .25s ease, filter .25s ease, transform .2s ease, box-shadow .2s ease; }
+.pub-side-ad-right:hover{ opacity:1; filter:grayscale(0) saturate(1); }
 
 /* === شريط إعلان رفيع لشاشات الموبايل والتابلت (بديل الإعلانات الجانبية) === */
 .pub-mobile-ad-bar{
@@ -967,16 +971,16 @@ body.pub-design-dark .pub-more-menu{ background:#2A2825; border-color:#3A352D; }
     <button type="button" class="pub-side-ad-close" data-side-ad-close aria-label="إغلاق الإعلان">✕</button>
     <a class="pub-side-ad-half ad-half-radio" href="https://magziko.github.io/Radio/" target="_blank" rel="noopener">
       <div class="pub-side-ad-icon">📻</div>
-      <div class="pub-side-ad-title">راديو أونلاين</div>
-      <div class="pub-side-ad-desc">استمع لبثنا المباشر في أي وقت</div>
-      <div class="pub-side-ad-cta">استمع الآن ←</div>
+      <div class="pub-side-ad-title">لحظات هادئة...</div>
+      <div class="pub-side-ad-desc">وصوت يصل إلى القلب.</div>
+      <div class="pub-side-ad-cta">اكتشف الآن ←</div>
     </a>
     <div class="pub-side-ad-divider"></div>
     <a class="pub-side-ad-half ad-half-quran" href="https://magziko.github.io/equran/" target="_blank" rel="noopener">
       <div class="pub-side-ad-icon">📖</div>
-      <div class="pub-side-ad-title">القرآن الكريم</div>
-      <div class="pub-side-ad-desc">تصفح واستمع للقرآن الكريم أونلاين</div>
-      <div class="pub-side-ad-cta">افتح الآن ←</div>
+      <div class="pub-side-ad-title">شيء جميل ينتظرك...</div>
+      <div class="pub-side-ad-desc">افتح واكتشف بنفسك.</div>
+      <div class="pub-side-ad-cta">افتح ←</div>
     </a>
   </div>
   <div class="pub-mobile-ad-bar" id="pubMobileAdBar">
@@ -990,12 +994,12 @@ body.pub-design-dark .pub-more-menu{ background:#2A2825; border-color:#3A352D; }
       </a>
       <a class="pub-mobile-ad-slide" href="https://magziko.github.io/Radio/" target="_blank" rel="noopener">
         <span class="pub-mobile-ad-icon">📻</span>
-        <span class="pub-mobile-ad-text"><strong>راديو أونلاين</strong> — استمع للبث المباشر</span>
-        <span class="pub-mobile-ad-cta">استمع</span>
+        <span class="pub-mobile-ad-text"><strong>لحظات هادئة...</strong> وصوت يصل إلى القلب</span>
+        <span class="pub-mobile-ad-cta">اكتشف</span>
       </a>
       <a class="pub-mobile-ad-slide" href="https://magziko.github.io/equran/" target="_blank" rel="noopener">
         <span class="pub-mobile-ad-icon">📖</span>
-        <span class="pub-mobile-ad-text"><strong>القرآن الكريم</strong> — تصفح واستمع أونلاين</span>
+        <span class="pub-mobile-ad-text"><strong>شيء جميل ينتظرك...</strong> افتح واكتشف بنفسك</span>
         <span class="pub-mobile-ad-cta">افتح</span>
       </a>
     </div>

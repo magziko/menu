@@ -961,50 +961,50 @@ body.pub-design-dark .pub-more-menu{ background:#2A2825; border-color:#3A352D; }
 
 <div id="publicScreen" class="hidden">
   <a class="pub-side-ad pub-side-ad-left" id="pubSideAdLeft" href="https://magziko.github.io/Pos/index.html" target="_blank" rel="noopener">
-    <span class="pub-side-ad-badge">إعلان</span>
+    <span class="pub-side-ad-badge" id="pubAdBadgePos">إعلان</span>
     <button type="button" class="pub-side-ad-close" data-side-ad-close aria-label="إغلاق الإعلان">✕</button>
     <div class="pub-side-ad-content">
       <div class="pub-side-ad-icon">🧾</div>
-      <div class="pub-side-ad-title">نظام نقاط البيع</div>
-      <div class="pub-side-ad-desc">إدارة مبيعاتك ومخزونك وطلباتك من مكان واحد بسهولة تامة</div>
-      <div class="pub-side-ad-cta">جرّب الآن ←</div>
+      <div class="pub-side-ad-title" id="pubAdPosTitle">نظام نقاط البيع</div>
+      <div class="pub-side-ad-desc" id="pubAdPosDesc">إدارة مبيعاتك ومخزونك وطلباتك من مكان واحد بسهولة تامة</div>
+      <div class="pub-side-ad-cta" id="pubAdPosCta">جرّب الآن ←</div>
     </div>
   </a>
   <div class="pub-side-ad pub-side-ad-right pub-side-ad-split" id="pubSideAdRight">
-    <span class="pub-side-ad-badge">إعلان</span>
+    <span class="pub-side-ad-badge" id="pubAdBadgeRight">إعلان</span>
     <button type="button" class="pub-side-ad-close" data-side-ad-close aria-label="إغلاق الإعلان">✕</button>
     <a class="pub-side-ad-half ad-half-radio" href="https://magziko.github.io/Radio/" target="_blank" rel="noopener">
       <div class="pub-side-ad-icon">📻</div>
-      <div class="pub-side-ad-title">لحظات هادئة...</div>
-      <div class="pub-side-ad-desc">وصوت يصل إلى القلب.</div>
-      <div class="pub-side-ad-cta">اكتشف الآن ←</div>
+      <div class="pub-side-ad-title" id="pubAdRadioTitle">لحظات هادئة...</div>
+      <div class="pub-side-ad-desc" id="pubAdRadioDesc">وصوت يصل إلى القلب.</div>
+      <div class="pub-side-ad-cta" id="pubAdRadioCta">اكتشف الآن ←</div>
     </a>
     <div class="pub-side-ad-divider"></div>
     <a class="pub-side-ad-half ad-half-quran" href="https://magziko.github.io/equran/" target="_blank" rel="noopener">
       <div class="pub-side-ad-icon">📖</div>
-      <div class="pub-side-ad-title">شيء جميل ينتظرك...</div>
-      <div class="pub-side-ad-desc">افتح واكتشف بنفسك.</div>
-      <div class="pub-side-ad-cta">افتح ←</div>
+      <div class="pub-side-ad-title" id="pubAdQuranTitle">شيء جميل ينتظرك...</div>
+      <div class="pub-side-ad-desc" id="pubAdQuranDesc">افتح واكتشف بنفسك.</div>
+      <div class="pub-side-ad-cta" id="pubAdQuranCta">افتح ←</div>
     </a>
   </div>
   <div class="pub-mobile-ad-bar" id="pubMobileAdBar">
-    <span class="pub-mobile-ad-badge">إعلان</span>
+    <span class="pub-mobile-ad-badge" id="pubAdBadgeMobile">إعلان</span>
     <button type="button" class="pub-mobile-ad-close" data-side-ad-close aria-label="إغلاق الإعلان">✕</button>
     <div class="pub-mobile-ad-track" id="pubMobileAdTrack">
       <a class="pub-mobile-ad-slide" href="https://magziko.github.io/Pos/index.html" target="_blank" rel="noopener">
         <span class="pub-mobile-ad-icon">🧾</span>
-        <span class="pub-mobile-ad-text"><strong>نظام نقاط البيع</strong> — إدارة مبيعاتك بسهولة</span>
-        <span class="pub-mobile-ad-cta">جرّب</span>
+        <span class="pub-mobile-ad-text" id="pubAdPosTextMobile"><strong>نظام نقاط البيع</strong> — إدارة مبيعاتك بسهولة</span>
+        <span class="pub-mobile-ad-cta" id="pubAdPosCtaMobile">جرّب</span>
       </a>
       <a class="pub-mobile-ad-slide" href="https://magziko.github.io/Radio/" target="_blank" rel="noopener">
         <span class="pub-mobile-ad-icon">📻</span>
-        <span class="pub-mobile-ad-text"><strong>لحظات هادئة...</strong> وصوت يصل إلى القلب</span>
-        <span class="pub-mobile-ad-cta">اكتشف</span>
+        <span class="pub-mobile-ad-text" id="pubAdRadioTextMobile"><strong>لحظات هادئة...</strong> وصوت يصل إلى القلب</span>
+        <span class="pub-mobile-ad-cta" id="pubAdRadioCtaMobile">اكتشف</span>
       </a>
       <a class="pub-mobile-ad-slide" href="https://magziko.github.io/equran/" target="_blank" rel="noopener">
         <span class="pub-mobile-ad-icon">📖</span>
-        <span class="pub-mobile-ad-text"><strong>شيء جميل ينتظرك...</strong> افتح واكتشف بنفسك</span>
-        <span class="pub-mobile-ad-cta">افتح</span>
+        <span class="pub-mobile-ad-text" id="pubAdQuranTextMobile"><strong>شيء جميل ينتظرك...</strong> افتح واكتشف بنفسك</span>
+        <span class="pub-mobile-ad-cta" id="pubAdQuranCtaMobile">افتح</span>
       </a>
     </div>
   </div>
@@ -8305,7 +8305,30 @@ async function loadPublic(slug){
     return (other && other !== primary) ? other : '';
   }
 
+  function updateSideAdsLang(){
+    const en = lang === 'en';
+    const setText = (id, ar, enText) => { const el = document.getElementById(id); if(el) el.textContent = en ? enText : ar; };
+    const setHtml = (id, ar, enHtml) => { const el = document.getElementById(id); if(el) el.innerHTML = en ? enHtml : ar; };
+    ['pubAdBadgePos','pubAdBadgeRight','pubAdBadgeMobile'].forEach(id => setText(id, 'إعلان', 'Ad'));
+    setText('pubAdPosTitle', 'نظام نقاط البيع', 'Point of Sale System');
+    setText('pubAdPosDesc', 'إدارة مبيعاتك ومخزونك وطلباتك من مكان واحد بسهولة تامة', 'Manage your sales, inventory and orders from one place');
+    setText('pubAdPosCta', 'جرّب الآن ←', en ? 'Try now →' : 'جرّب الآن ←');
+    setText('pubAdRadioTitle', 'لحظات هادئة...', 'Quiet moments...');
+    setText('pubAdRadioDesc', 'وصوت يصل إلى القلب.', 'and a voice that reaches the heart.');
+    setText('pubAdRadioCta', en ? 'Discover now →' : 'اكتشف الآن ←', en ? 'Discover now →' : 'اكتشف الآن ←');
+    setText('pubAdQuranTitle', 'شيء جميل ينتظرك...', 'Something beautiful awaits...');
+    setText('pubAdQuranDesc', 'افتح واكتشف بنفسك.', 'Open and discover for yourself.');
+    setText('pubAdQuranCta', en ? 'Open →' : 'افتح ←', en ? 'Open →' : 'افتح ←');
+    setHtml('pubAdPosTextMobile', '<strong>نظام نقاط البيع</strong> — إدارة مبيعاتك بسهولة', '<strong>Point of Sale System</strong> — manage your sales easily');
+    setText('pubAdPosCtaMobile', en ? 'Try' : 'جرّب', en ? 'Try' : 'جرّب');
+    setHtml('pubAdRadioTextMobile', '<strong>لحظات هادئة...</strong> وصوت يصل إلى القلب', '<strong>Quiet moments...</strong> a voice that reaches the heart');
+    setText('pubAdRadioCtaMobile', en ? 'Discover' : 'اكتشف', en ? 'Discover' : 'اكتشف');
+    setHtml('pubAdQuranTextMobile', '<strong>شيء جميل ينتظرك...</strong> افتح واكتشف بنفسك', '<strong>Something beautiful awaits...</strong> open and discover');
+    setText('pubAdQuranCtaMobile', en ? 'Open' : 'افتح', en ? 'Open' : 'افتح');
+  }
+
   function renderHeader(){
+    updateSideAdsLang();
     document.documentElement.dir = lang==='en' ? 'ltr' : 'rtl';
     document.getElementById('pubLangLabel').textContent = lang==='en' ? 'العربية' : 'English';
     const restName = tName(rest.name, rest.name_en);

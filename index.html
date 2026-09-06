@@ -126,6 +126,16 @@ body{margin:0; font-family:var(--body); background:var(--ink); color:var(--ink);
 .rail{ background:#2A2825; padding:20px 16px; border-left:1px solid #3a3733; }
 .rail h2{ font-family:var(--display); color:var(--paper); font-size:20px; margin:0 0 14px; }
 .add-btn{ width:100%; background:transparent; border:1.5px dashed var(--stone); color:var(--stone-light); font-family:var(--body); font-weight:700; font-size:14px; padding:10px; border-radius:8px; cursor:pointer; margin-bottom:14px; }
+/* كارت إعلان هادئ وثابت لنظام نقاط البيع - يظهر مرة واحدة ويقفل بدون إلحاح */
+.rail-ad-card{ position:relative; margin-top:20px; padding:12px 30px 12px 12px; background:#221F1C; border:1px solid #3a3733; border-radius:10px; }
+.rail-ad-card.rail-ad-hidden{ display:none !important; }
+.rail-ad-close{ position:absolute; top:6px; inset-inline-end:6px; width:20px; height:20px; border-radius:50%; background:transparent; border:none; color:var(--stone); font-size:11px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background-color .15s ease, color .15s ease; }
+.rail-ad-close:hover{ background:#3a3733; color:var(--paper); }
+.rail-ad-link{ display:flex; align-items:center; gap:10px; text-decoration:none; }
+.rail-ad-icon{ font-size:22px; flex-shrink:0; }
+.rail-ad-text{ display:flex; flex-direction:column; gap:2px; min-width:0; }
+.rail-ad-text strong{ font-size:12.5px; font-weight:800; color:var(--paper); }
+.rail-ad-text span:last-child{ font-size:11px; color:var(--stone); line-height:1.4; }
 .chip-btn{ background:var(--paper-dim); border:1px solid var(--line); color:var(--stone); font-family:var(--body); font-weight:700; font-size:11px; padding:5px 10px; border-radius:999px; cursor:pointer; }
 .chip-btn.active{ background:var(--ember); border-color:var(--ember); color:#fff; }
 .insight-card{ display:flex; gap:10px; align-items:flex-start; padding:10px 12px; border-radius:10px; margin-bottom:8px; font-size:12.5px; line-height:1.6; }
@@ -305,6 +315,87 @@ body.pub-menu-only .add-to-cart-btn{ display:none !important; }
 @media (max-width:480px){
   .pub-footer.pub-footer-float{ font-size:9.5px; padding:5px 10px; }
 }
+/* === إعلانات جانبية طولية (نسخة الكمبيوتر فقط) === */
+.pub-side-ad{
+  position:fixed; top:50%; transform:translateY(-50%);
+  width:180px; height:min(520px,80vh);
+  background:linear-gradient(165deg, var(--ember) 0%, var(--ember-dark) 75%);
+  border-radius:18px;
+  box-shadow:0 16px 38px rgba(0,0,0,.4);
+  color:#fff; text-decoration:none;
+  display:none; /* تُفعّل فقط على الشاشات الواسعة عبر الميديا كويري بالأسفل */
+  flex-direction:column; align-items:center; justify-content:center;
+  padding:28px 18px; gap:12px;
+  z-index:70; overflow:hidden; cursor:pointer;
+  transition:transform .2s ease, box-shadow .2s ease;
+}
+.pub-side-ad:hover{ transform:translateY(-50%) scale(1.03); box-shadow:0 20px 44px rgba(0,0,0,.45); }
+.pub-side-ad::after{ content:''; position:absolute; inset:0; background:radial-gradient(circle at 30% 15%, rgba(255,255,255,.18), transparent 55%); pointer-events:none; }
+.pub-side-ad-left{ left:26px; }
+.pub-side-ad-right{ right:26px; }
+.pub-side-ad-badge{ position:absolute; top:12px; inset-inline-start:14px; font-size:10px; font-weight:700; background:rgba(255,255,255,.22); padding:3px 9px; border-radius:10px; letter-spacing:.5px; z-index:5; }
+.pub-side-ad-close{
+  position:absolute; top:9px; inset-inline-end:9px; width:27px; height:27px; border-radius:50%;
+  background:rgba(0,0,0,.28); border:none; color:#fff; font-size:14px; line-height:1; font-weight:700;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  opacity:0; pointer-events:none; transform:scale(.7); z-index:5;
+  transition:opacity .35s ease, transform .35s ease, background-color .15s ease;
+}
+.pub-side-ad-close.pub-side-ad-close-visible{ opacity:1; pointer-events:auto; transform:scale(1); }
+.pub-side-ad-close:hover{ background:rgba(0,0,0,.5); }
+.pub-side-ad-content{ text-align:center; display:flex; flex-direction:column; align-items:center; gap:10px; }
+.pub-side-ad-icon{ font-size:46px; line-height:1; filter:drop-shadow(0 4px 6px rgba(0,0,0,.3)); }
+.pub-side-ad-title{ font-family:var(--display); font-size:21px; line-height:1.3; }
+.pub-side-ad-desc{ font-size:12.5px; line-height:1.7; opacity:.92; }
+.pub-side-ad-cta{ margin-top:4px; background:#fff; color:var(--ember-dark); font-weight:800; font-size:12.5px; padding:10px 18px; border-radius:22px; }
+.pub-side-ad.pub-side-ad-hidden{ display:none !important; }
+/* إعلان مقسوم لنصفين، كل نصف بلينك مختلف */
+.pub-side-ad-split{ padding:0; gap:0; background:#1c1a17; }
+.pub-side-ad-half{ flex:1; width:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; padding:22px 16px; color:#fff; text-decoration:none; text-align:center; transition:filter .15s ease; }
+.pub-side-ad-half:hover{ filter:brightness(1.1); }
+.pub-side-ad-half.ad-half-radio{ background:linear-gradient(160deg, var(--confirm-strong) 0%, var(--confirm-strong-dark) 100%); }
+.pub-side-ad-half.ad-half-quran{ background:linear-gradient(160deg, var(--basil) 0%, var(--basil-dark) 100%); }
+.pub-side-ad-half .pub-side-ad-icon{ font-size:38px; }
+.pub-side-ad-half .pub-side-ad-title{ font-size:18px; }
+.pub-side-ad-half .pub-side-ad-cta{ background:rgba(255,255,255,.92); }
+.pub-side-ad-divider{ height:2px; width:100%; background:rgba(255,255,255,.2); flex-shrink:0; }
+@media (min-width:1280px){ .pub-side-ad{ display:flex; } }
+
+/* === شريط إعلان رفيع لشاشات الموبايل والتابلت (بديل الإعلانات الجانبية) === */
+.pub-mobile-ad-bar{
+  position:fixed; left:0; right:0; bottom:0;
+  min-height:54px; padding:8px 46px 8px 14px;
+  padding-bottom:calc(8px + env(safe-area-inset-bottom,0px));
+  background:linear-gradient(90deg, var(--ember-dark), var(--ember));
+  color:#fff; z-index:65;
+  box-shadow:0 -6px 18px rgba(0,0,0,.28);
+  display:flex; align-items:center;
+  transition:transform .3s ease;
+}
+.pub-mobile-ad-bar.pub-side-ad-hidden{ transform:translateY(110%); pointer-events:none; }
+.pub-mobile-ad-badge{ position:absolute; top:5px; inset-inline-start:12px; font-size:9px; font-weight:700; background:rgba(255,255,255,.22); padding:2px 7px; border-radius:8px; letter-spacing:.4px; z-index:5; }
+.pub-mobile-ad-track{ flex:1; min-width:0; position:relative; height:36px; }
+.pub-mobile-ad-slide{ position:absolute; inset:0; display:none; align-items:center; gap:10px; text-decoration:none; color:#fff; }
+.pub-mobile-ad-slide.active{ display:flex; animation:mobAdIn .35s ease; }
+@keyframes mobAdIn{ from{ opacity:0; transform:translateY(6px); } to{ opacity:1; transform:translateY(0); } }
+.pub-mobile-ad-icon{ font-size:21px; flex-shrink:0; }
+.pub-mobile-ad-text{ font-size:12px; line-height:1.4; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.pub-mobile-ad-text strong{ font-weight:800; }
+.pub-mobile-ad-cta{ flex-shrink:0; background:#fff; color:var(--ember-dark); font-weight:800; font-size:11.5px; padding:6px 13px; border-radius:16px; white-space:nowrap; }
+.pub-mobile-ad-close{
+  position:absolute; top:6px; inset-inline-end:8px; width:24px; height:24px; border-radius:50%;
+  background:rgba(0,0,0,.28); border:none; color:#fff; font-size:12px; font-weight:700;
+  display:flex; align-items:center; justify-content:center; cursor:pointer;
+  opacity:0; pointer-events:none; transform:scale(.7); z-index:5;
+  transition:opacity .35s ease, transform .35s ease, background-color .15s ease;
+}
+.pub-mobile-ad-close.pub-side-ad-close-visible{ opacity:1; pointer-events:auto; transform:scale(1); }
+.pub-mobile-ad-close:hover{ background:rgba(0,0,0,.5); }
+@media (min-width:1280px){ .pub-mobile-ad-bar{ display:none !important; } }
+/* رفع زرار الطلب فوق شريط الإعلان على الموبايل حتى لا يتغطى */
+body.pub-mobile-ad-open .pub-order-btn{ bottom:calc(22px + 58px); }
+@media (min-width:1280px){ body.pub-mobile-ad-open .pub-order-btn{ bottom:22px; } }
+
 .pub-order-btn{ position:fixed; bottom:22px; inset-inline-end:22px; background:var(--ember); color:#fff; border:none; padding:13px 24px; border-radius:30px; font-family:var(--body); font-weight:800; font-size:14px; cursor:pointer; box-shadow:0 10px 24px rgba(0,0,0,.3); z-index:40; display:flex; align-items:center; gap:8px; min-height:44px; }
 .pub-order-btn:hover{background:var(--ember-dark);}
 .pub-order-btn-icon{ font-size:20px; line-height:1; }
@@ -826,6 +917,16 @@ body.pub-design-dark .pub-more-menu{ background:#2A2825; border-color:#3A352D; }
     <h2>الفئات</h2>
     <button class="add-btn" id="addCategoryBtn">+ إضافة فئة جديدة</button>
     <div id="categoryList"></div>
+    <div class="rail-ad-card" id="railAdCard">
+      <button type="button" class="rail-ad-close" id="railAdCloseBtn" aria-label="إغلاق">✕</button>
+      <a class="rail-ad-link" href="https://magziko.github.io/Pos/index.html" target="_blank" rel="noopener">
+        <span class="rail-ad-icon">🧾</span>
+        <span class="rail-ad-text">
+          <strong>نظام نقاط البيع</strong>
+          <span>جرّب نظام POS من نفس الفريق</span>
+        </span>
+      </a>
+    </div>
   </div>
   <div class="main">
     <h2 id="mainTitle">—</h2>
@@ -851,6 +952,54 @@ body.pub-design-dark .pub-more-menu{ background:#2A2825; border-color:#3A352D; }
 </div>
 
 <div id="publicScreen" class="hidden">
+  <a class="pub-side-ad pub-side-ad-left" id="pubSideAdLeft" href="https://magziko.github.io/Pos/index.html" target="_blank" rel="noopener">
+    <span class="pub-side-ad-badge">إعلان</span>
+    <button type="button" class="pub-side-ad-close" data-side-ad-close aria-label="إغلاق الإعلان">✕</button>
+    <div class="pub-side-ad-content">
+      <div class="pub-side-ad-icon">🧾</div>
+      <div class="pub-side-ad-title">نظام نقاط البيع</div>
+      <div class="pub-side-ad-desc">إدارة مبيعاتك ومخزونك وطلباتك من مكان واحد بسهولة تامة</div>
+      <div class="pub-side-ad-cta">جرّب الآن ←</div>
+    </div>
+  </a>
+  <div class="pub-side-ad pub-side-ad-right pub-side-ad-split" id="pubSideAdRight">
+    <span class="pub-side-ad-badge">إعلان</span>
+    <button type="button" class="pub-side-ad-close" data-side-ad-close aria-label="إغلاق الإعلان">✕</button>
+    <a class="pub-side-ad-half ad-half-radio" href="https://magziko.github.io/Radio/" target="_blank" rel="noopener">
+      <div class="pub-side-ad-icon">📻</div>
+      <div class="pub-side-ad-title">راديو أونلاين</div>
+      <div class="pub-side-ad-desc">استمع لبثنا المباشر في أي وقت</div>
+      <div class="pub-side-ad-cta">استمع الآن ←</div>
+    </a>
+    <div class="pub-side-ad-divider"></div>
+    <a class="pub-side-ad-half ad-half-quran" href="https://magziko.github.io/equran/" target="_blank" rel="noopener">
+      <div class="pub-side-ad-icon">📖</div>
+      <div class="pub-side-ad-title">القرآن الكريم</div>
+      <div class="pub-side-ad-desc">تصفح واستمع للقرآن الكريم أونلاين</div>
+      <div class="pub-side-ad-cta">افتح الآن ←</div>
+    </a>
+  </div>
+  <div class="pub-mobile-ad-bar" id="pubMobileAdBar">
+    <span class="pub-mobile-ad-badge">إعلان</span>
+    <button type="button" class="pub-mobile-ad-close" data-side-ad-close aria-label="إغلاق الإعلان">✕</button>
+    <div class="pub-mobile-ad-track" id="pubMobileAdTrack">
+      <a class="pub-mobile-ad-slide" href="https://magziko.github.io/Pos/index.html" target="_blank" rel="noopener">
+        <span class="pub-mobile-ad-icon">🧾</span>
+        <span class="pub-mobile-ad-text"><strong>نظام نقاط البيع</strong> — إدارة مبيعاتك بسهولة</span>
+        <span class="pub-mobile-ad-cta">جرّب</span>
+      </a>
+      <a class="pub-mobile-ad-slide" href="https://magziko.github.io/Radio/" target="_blank" rel="noopener">
+        <span class="pub-mobile-ad-icon">📻</span>
+        <span class="pub-mobile-ad-text"><strong>راديو أونلاين</strong> — استمع للبث المباشر</span>
+        <span class="pub-mobile-ad-cta">استمع</span>
+      </a>
+      <a class="pub-mobile-ad-slide" href="https://magziko.github.io/equran/" target="_blank" rel="noopener">
+        <span class="pub-mobile-ad-icon">📖</span>
+        <span class="pub-mobile-ad-text"><strong>القرآن الكريم</strong> — تصفح واستمع أونلاين</span>
+        <span class="pub-mobile-ad-cta">افتح</span>
+      </a>
+    </div>
+  </div>
   <div class="pub-topbar">
     <div class="pub-lang-btn" id="pubLangBtn">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 12h18" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3c2.4 2.4 3.8 5.6 3.8 9s-1.4 6.6-3.8 9c-2.4-2.4-3.8-5.6-3.8-9S9.6 5.4 12 3z" fill="none" stroke="currentColor" stroke-width="2"/></svg>
@@ -9433,6 +9582,85 @@ document.addEventListener('click', (e)=>{
 });
 
 boot();
+</script>
+<script>
+// === تفعيل الإعلانات الجانبية (كمبيوتر) والشريط السفلي (موبايل/تابلت) في شاشة المنيو ===
+(function(){
+  var CLOSE_DELAY_MS = 6000; // زر الإغلاق يظهر بعد 6 ثواني حتى يقرأ الزائر الإعلان
+  var ROTATE_MS = 4500; // مدة تبديل الشرائح في شريط الموبايل
+
+  function initSideAds(){
+    var closeBtns = document.querySelectorAll('[data-side-ad-close]');
+    if(closeBtns.length){
+      setTimeout(function(){
+        closeBtns.forEach(function(btn){ btn.classList.add('pub-side-ad-close-visible'); });
+      }, CLOSE_DELAY_MS);
+      closeBtns.forEach(function(btn){
+        btn.addEventListener('click', function(e){
+          e.preventDefault();
+          e.stopPropagation();
+          var ad = btn.closest('.pub-side-ad, .pub-mobile-ad-bar');
+          if(!ad) return;
+          ad.classList.add('pub-side-ad-hidden');
+          if(ad.classList.contains('pub-mobile-ad-bar')){
+            document.body.classList.remove('pub-mobile-ad-open');
+          }
+        });
+      });
+    }
+
+    var mobileBar = document.getElementById('pubMobileAdBar');
+    if(mobileBar){
+      document.body.classList.add('pub-mobile-ad-open');
+      var slides = mobileBar.querySelectorAll('.pub-mobile-ad-slide');
+      if(slides.length){
+        var idx = 0;
+        slides[0].classList.add('active');
+        if(slides.length > 1){
+          setInterval(function(){
+            slides[idx].classList.remove('active');
+            idx = (idx + 1) % slides.length;
+            slides[idx].classList.add('active');
+          }, ROTATE_MS);
+        }
+      }
+    }
+  }
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', initSideAds);
+  } else {
+    initSideAds();
+  }
+})();
+
+// === كارت إعلان هادئ لنظام نقاط البيع في لوحة تحكم المتجر (بدون إلحاح، يُقفل نهائيًا بعد الإغلاق) ===
+(function(){
+  var STORAGE_KEY = 'magPosRailAdDismissed';
+  function initRailAd(){
+    var card = document.getElementById('railAdCard');
+    if(!card) return;
+    try{
+      if(localStorage.getItem(STORAGE_KEY) === '1'){
+        card.classList.add('rail-ad-hidden');
+        return;
+      }
+    }catch(e){}
+    var closeBtn = document.getElementById('railAdCloseBtn');
+    if(closeBtn){
+      closeBtn.addEventListener('click', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        card.classList.add('rail-ad-hidden');
+        try{ localStorage.setItem(STORAGE_KEY, '1'); }catch(err){}
+      });
+    }
+  }
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', initRailAd);
+  } else {
+    initRailAd();
+  }
+})();
 </script>
 </body>
 </html>

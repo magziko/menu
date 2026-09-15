@@ -922,6 +922,7 @@ body.pub-design-dark .pub-more-menu{ background:#2A2825; border-color:#3A352D; }
         <div class="dash-menu-dropdown">
           <button class="link-btn" id="viewStatsBtn">الإحصائيات</button>
           <button class="link-btn" id="reportsBtn">التقارير</button>
+          <button class="link-btn" id="dailyCloseBtn">📊 تقفيل اليوم</button>
         </div>
       </div>
 
@@ -937,6 +938,8 @@ body.pub-design-dark .pub-more-menu{ background:#2A2825; border-color:#3A352D; }
           <div class="dash-menu-divider"></div>
           <button class="link-btn" id="importExcelBtn">📥 استيراد من إكسيل</button>
           <button class="link-btn" id="exportExcelBtn">📤 تصدير إلى إكسيل</button>
+          <div class="dash-menu-divider"></div>
+          <button class="link-btn" id="addonGroupsBtn">🧩 الإضافات والمتغيرات</button>
         </div>
       </div>
 
@@ -946,6 +949,8 @@ body.pub-design-dark .pub-more-menu{ background:#2A2825; border-color:#3A352D; }
           <button class="link-btn" id="customersBtn">العملاء</button>
           <button class="link-btn" id="deliveryZonesBtn">مناطق التوصيل</button>
           <button class="link-btn" id="driversBtn">🚴 السائقين</button>
+          <button class="link-btn" id="couponsBtn">🏷️ أكواد الخصم</button>
+          <button class="link-btn" id="winbackBtn">🎯 العملاء غير النشطين</button>
         </div>
       </div>
 
@@ -1135,6 +1140,38 @@ body.pub-design-dark .pub-more-menu{ background:#2A2825; border-color:#3A352D; }
 <div class="toast" id="toast"></div>
 
 <script>
+/* =====================================================================
+   ⚠️ حادثة مهمة (سبتمبر 2026) — منيو العملاء والمناطق اختفت فجأة
+   =====================================================================
+   المشكلة: جدول `items` كان ناقصه GRANT SELECT لدور anon، وجدول
+   `delivery_zones` معندوش RLS policy تسمح بالقراءة العامة. النتيجة:
+   العملاء يفتحوا رابط المنيو ويشوفوا فئات فاضية من الأصناف، وشاشة
+   الطلب توصيل تظهر خانة نص حر بدل قائمة المناطق (لأن pubZones فاضية).
+
+   الحل المطبّق حاليًا في قاعدة البيانات (مشروع Supabase: vinpjtrxwqlmwppggbqy):
+   - دالة public.check_and_fix_public_menu_access() بتتأكد إن anon
+     عندها SELECT + policy قراءة عامة على: categories, items,
+     delivery_zones, item_sizes, item_addons, addon_groups,
+     addon_group_options, item_addon_groups, item_addon_option_prices.
+   - مجدولة عبر pg_cron كل 15 دقيقة (job: check_and_fix_public_menu_access_job)
+     وبتسجل أي إصلاح في جدول system_health_log.
+   - البانر اللي بيظهر في الداشبورد (دالة checkPublicMenuHealthAlert
+     تحت في نفس الملف) بيقرا من system_health_log وينبّه صاحب المطعم
+     لو حصل إصلاح تلقائي مؤخرًا.
+
+   قواعد إلزامية لأي تعديل مستقبلي على قاعدة البيانات (لأي حد بيشتغل
+   على المشروع ده، من أي حساب أو أداة):
+   1) ممنوع عمل DROP ثم CREATE لأي جدول موجود بالفعل — التعديل يكون
+      دايمًا بـ ALTER TABLE، عشان الـ GRANTs والـ RLS policies بتتصفر
+      تلقائيًا مع أي جدول جديد حتى لو بنفس الاسم.
+   2) أي جدول جديد هيتقرأ من صفحة المنيو العامة (يعني من anon) لازم
+      يتضاف فورًا داخل مصفوفة critical_tables في
+      check_and_fix_public_menu_access() في نفس وقت إنشائه.
+   3) بعد أي تعديل في RLS أو GRANTs، شغّل الدالة يدويًا فورًا:
+      SELECT public.check_and_fix_public_menu_access();
+      بدل انتظار الجدولة كل 15 دقيقة.
+   ===================================================================== */
+
 /* ================= Supabase config ================= */
 const SUPABASE_URL = 'https://vinpjtrxwqlmwppggbqy.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_V9nPBwlDN28N3ImfS4NnGg_M4VbvJa4';
@@ -1152,7 +1189,8 @@ const ACCOUNT_LEVEL_FIELDS = ['subscription_tier','feature_plan','subscription_e
   'restriction_print_disabled','restriction_stats_disabled','restriction_reports_disabled','restriction_share_disabled',
   'restriction_delivery_zones_disabled','restriction_drivers_disabled','restriction_extra_channels_disabled',
   'restriction_multi_wallet_disabled','restriction_stats_charts_disabled','restriction_customers_disabled',
-  'restriction_settings_disabled','restriction_notif_settings_disabled','restriction_delete_disabled','restriction_excel_disabled'];
+  'restriction_settings_disabled','restriction_notif_settings_disabled','restriction_delete_disabled','restriction_excel_disabled',
+  'restriction_status_wa_disabled','restriction_coupons_disabled','restriction_daily_report_disabled','restriction_winback_disabled'];
 // حد أقصى لعدد الفروع حسب الباقة السعرية — STARTER فرع واحد فقط، PRO بلا حدود
 function maxBranchesForTier(tier){ return tier === 'pro' ? Infinity : 1; }
 // حد أقصى لعدد حسابات الكاشير حسب الباقة — STARTER حساب واحد، PRO حسابين (نفس الحد المطبّق فعليًا في قاعدة البيانات)
@@ -1175,6 +1213,10 @@ function mirrorAccountOntoBranches(){
 let categories = [];
 let items = [];
 let itemSizes = {}; // item_id -> [ { id, size_name, size_name_en, price } ]
+let itemAddons = {}; // item_id -> [ { id, name, name_en, price } ] — إضافات اختيارية متاحة لأي صنف بغض النظر عن طريقة تسعيره (النظام القديم البسيط، لسه شغال لأي بيانات قديمة)
+let addonGroups = []; // [{ id, name, name_en, selection_type, position, options:[{id,name,name_en,price,position}] }] — مجموعات إضافات/متغيرات قابلة لإعادة الاستخدام على مستوى المتجر كله
+let itemAddonGroupLinks = {}; // item_id -> [group_id, ...] المجموعات المربوطة بكل صنف
+let itemOptionPriceOverrides = {}; // item_id -> { option_id: price } تخصيص سعر مختلف لخيار معيّن في صنف معيّن (اختياري)
 let selectedCategoryId = null;
 let previewCategoryId = null;
 let pendingImage = null;
@@ -2106,7 +2148,6 @@ function applyGranularRestrictionsUI(){
   const restrictions = {
     viewOrdersBtn: restaurant.restriction_orders_disabled || menuOnly,
     viewStatsBtn: restaurant.restriction_stats_disabled,
-    reportsBtn: restaurant.restriction_reports_disabled,
     publicLinkSplitBtn: restaurant.restriction_share_disabled,
     showQrBtn: restaurant.restriction_share_disabled,
     showTablesQrBtn: restaurant.restriction_share_disabled || menuOnly,
@@ -2144,6 +2185,10 @@ function setFeatureLockBadge(btnId, locked, lockedTooltip){
 }
 function applyTierLockBadgesUI(){
   setFeatureLockBadge('driversBtn', !!restaurant.restriction_drivers_disabled, '🔒 شاشة السائقين متاحة في باقة PRO فقط');
+  setFeatureLockBadge('couponsBtn', !!restaurant.restriction_coupons_disabled, '🔒 أكواد الخصم للعملاء متاحة في باقة PRO فقط');
+  setFeatureLockBadge('reportsBtn', !!restaurant.restriction_reports_disabled, '🔒 التقارير (أكتر الأصناف مبيعًا، أوقات الذروة، العملاء، والتصدير) متاحة في باقة PRO فقط');
+  setFeatureLockBadge('dailyCloseBtn', !!restaurant.restriction_daily_report_disabled, '🔒 تقرير تقفيل اليوم متاح في باقة PRO فقط');
+  setFeatureLockBadge('winbackBtn', !!restaurant.restriction_winback_disabled, '🔒 شاشة العملاء غير النشطين متاحة في باقة PRO فقط');
 }
 
 // شاشة الكاشير المبسّطة — تُفتح للحسابات الفرعية ذات الصلاحية المحدودة (عرض الطلبات وتحديث حالتها فقط)
@@ -2174,6 +2219,7 @@ async function openDashboard(){
   setupNotificationPermission();
   show('dashboardScreen');
   document.getElementById('adminPanelBtn').classList.toggle('hidden', !isSuperAdmin);
+  checkPublicMenuHealthAlert().catch(()=>{});
   await checkSubscriptionExpiry();
   if(restaurant.account_suspended){ showAccountSuspendedBlock(); return; }
   await checkDemoExpiry();
@@ -2184,6 +2230,7 @@ async function openDashboard(){
   applyFeaturePlanUI();
   applyGranularRestrictionsUI();
   applyTierLockBadgesUI();
+  maybeShowDailyCloseReminder();
   migrateLegacyImages().catch(()=>{});
   maybeRunAutoDailyBackup().catch(()=>{});
 }
@@ -2714,6 +2761,41 @@ function showAccountSuspendedPublicScreen(rest){
 }
 
 
+// تنبيه لصاحب المطعم لو نظام الحماية التلقائي (في قاعدة البيانات) اضطر يصلّح صلاحية وصول العملاء للمنيو
+// (زي مشكلة اختفاء الأصناف/المناطق اللي حصلت قبل كده) — بيظهر مرة واحدة فقط لكل إصلاح جديد
+async function checkPublicMenuHealthAlert(){
+  try{
+    const { data, error } = await sb.from('system_health_log')
+      .select('id, created_at, status, details')
+      .eq('check_name', 'public_menu_access')
+      .order('id', { ascending:false })
+      .limit(5);
+    if(error || !data || !data.length) return;
+    const lastFix = data.find(r=> r.status === 'fixed');
+    if(!lastFix) return;
+    const lastSeenId = Number(localStorage.getItem('lastSeenHealthFixId') || 0);
+    if(lastFix.id <= lastSeenId) return;
+    const ageMs = Date.now() - new Date(lastFix.created_at).getTime();
+    if(ageMs > 3 * 24 * 60 * 60 * 1000) return; // نتجاهل إصلاحات قديمة (أكتر من 3 أيام)
+
+    const banner = document.createElement('div');
+    banner.id = 'healthFixBanner';
+    banner.style.cssText = 'position:fixed; bottom:16px; left:16px; right:16px; max-width:480px; margin:0 auto; z-index:9999; background:#1f8a4c; color:#fff; padding:14px 16px; border-radius:10px; box-shadow:0 4px 16px rgba(0,0,0,.25); font-family:var(--body); font-size:13.5px; line-height:1.6; display:flex; gap:10px; align-items:flex-start;';
+    const when = new Date(lastFix.created_at).toLocaleString('ar-EG');
+    banner.innerHTML = `
+      <div style="flex:1;">
+        <b>✅ تم اكتشاف وإصلاح مشكلة صلاحيات في المنيو تلقائيًا</b><br>
+        حصل ده بتاريخ ${when} — النظام رجّع صلاحية ظهور الأصناف/المناطق للعملاء بنفسه. تقدر تفتح رابط منيوك للتأكد إن كل حاجة ظاهرة تمام.
+      </div>
+      <button type="button" id="healthFixBannerClose" style="background:none; border:none; color:#fff; font-size:18px; cursor:pointer; line-height:1;">✕</button>`;
+    document.body.appendChild(banner);
+    banner.querySelector('#healthFixBannerClose').addEventListener('click', ()=>{
+      localStorage.setItem('lastSeenHealthFixId', String(lastFix.id));
+      banner.remove();
+    });
+  }catch(e){ /* تنبيه إضافي فقط - لا يجب أن يعطّل تحميل الداشبورد لو فشل */ }
+}
+
 function showTrialExpiredBanner(){
   const overlay = document.createElement('div');
   overlay.className = 'trial-overlay';
@@ -2772,6 +2854,40 @@ async function refreshData(){
     (sizesData || []).forEach(s=>{
       if(!itemSizes[s.item_id]) itemSizes[s.item_id] = [];
       itemSizes[s.item_id].push(s);
+    });
+  }
+  itemAddons = {};
+  const allItemIds = items.map(i=>i.id);
+  if(allItemIds.length){
+    const { data: addonsData } = await sb.from('item_addons').select('*').in('item_id', allItemIds).order('position');
+    (addonsData || []).forEach(a=>{
+      if(!itemAddons[a.item_id]) itemAddons[a.item_id] = [];
+      itemAddons[a.item_id].push(a);
+    });
+  }
+
+  // تحميل مجموعات الإضافات/المتغيرات القابلة لإعادة الاستخدام + خياراتها + الربط بالأصناف + تخصيصات السعر لكل صنف
+  const { data: groupsData } = await sb.from('addon_groups').select('*').eq('restaurant_id', restaurant.id).order('position');
+  addonGroups = groupsData || [];
+  const groupIds = addonGroups.map(g=>g.id);
+  if(groupIds.length){
+    const { data: optionsData } = await sb.from('addon_group_options').select('*').in('group_id', groupIds).order('position');
+    addonGroups.forEach(g=> g.options = (optionsData || []).filter(o=> o.group_id === g.id));
+  } else {
+    addonGroups.forEach(g=> g.options = []);
+  }
+  itemAddonGroupLinks = {};
+  itemOptionPriceOverrides = {};
+  if(allItemIds.length){
+    const { data: linksData } = await sb.from('item_addon_groups').select('item_id,group_id').in('item_id', allItemIds).order('position');
+    (linksData || []).forEach(l=>{
+      if(!itemAddonGroupLinks[l.item_id]) itemAddonGroupLinks[l.item_id] = [];
+      itemAddonGroupLinks[l.item_id].push(l.group_id);
+    });
+    const { data: overridesData } = await sb.from('item_addon_option_prices').select('item_id,option_id,price').in('item_id', allItemIds);
+    (overridesData || []).forEach(o=>{
+      if(!itemOptionPriceOverrides[o.item_id]) itemOptionPriceOverrides[o.item_id] = {};
+      itemOptionPriceOverrides[o.item_id][o.option_id] = Number(o.price);
     });
   }
   if(!selectedCategoryId || !categories.find(c=>c.id===selectedCategoryId)){
@@ -3330,6 +3446,303 @@ document.getElementById('driversBtn').addEventListener('click', async ()=>{
   });
 });
 
+// شاشة إدارة أكواد الخصم الخاصة بعملاء المتجر (ميزة PRO) — يديرها صاحب المتجر، ويستخدمها العميل في شاشة الطلب العامة
+// شاشة "الإضافات والمتغيرات": مجموعات إعادة استخدام (زي "الإضافات الإضافية"، "درجة الحرارة") تتسجل مرة واحدة
+// وبعدين تترط بأي عدد من الأصناف من شاشة الصنف نفسها، بدل تكرار كتابتها في كل صنف لوحده
+document.getElementById('addonGroupsBtn').addEventListener('click', async ()=>{
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.innerHTML = `
+    <div class="modal">
+      <h3>🧩 الإضافات والمتغيرات</h3>
+      <p style="font-size:12.5px; color:var(--stone); margin:-6px 0 12px; line-height:1.7;">سجّل مجموعة مرة واحدة (زي "الإضافات الإضافية" أو "الحجم") وبعدين اربطها بأي عدد من الأصناف من شاشة تعديل الصنف — بدل ما تكتبها من الأول في كل صنف.</p>
+      <div class="zone-add-row" style="flex-wrap:wrap;">
+        <input type="text" id="newGroupName" placeholder="اسم المجموعة (مثال: الإضافات الإضافية)" style="flex:1; min-width:180px;">
+        <select id="newGroupType" style="padding:8px; border-radius:8px; border:1.5px solid var(--line); background:var(--paper); color:var(--ink); font-family:var(--body);">
+          <option value="multiple">إضافة (اختيار متعدد اختياري)</option>
+          <option value="single">متغيّر (اختيار واحد إجباري، زي الحجم)</option>
+        </select>
+        <button type="button" class="btn-confirm" id="addGroupBtn" style="white-space:nowrap;">+ مجموعة جديدة</button>
+      </div>
+      <div id="addonGroupsListWrap" style="margin-top:14px;"></div>
+      <div class="modal-actions">
+        <button class="btn-cancel" id="addonGroupsCloseBtn">إغلاق</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.querySelector('#addonGroupsCloseBtn').addEventListener('click', ()=> overlay.remove());
+  overlay.addEventListener('click', (e)=>{ if(e.target===overlay) overlay.remove(); });
+
+  function renderGroupsList(){
+    const wrap = overlay.querySelector('#addonGroupsListWrap');
+    if(!addonGroups.length){ wrap.innerHTML = `<div class="orders-empty">لا توجد مجموعات إضافات بعد — أضف أول مجموعة أعلاه</div>`; return; }
+    wrap.innerHTML = addonGroups.map(g=>{
+      const typeLabel = g.selection_type === 'single' ? 'متغيّر (اختيار واحد)' : 'إضافة (اختيار متعدد)';
+      const optionsHtml = (g.options || []).map(o=>`
+        <div class="zone-row" data-option-id="${o.id}" style="padding:6px 10px;">
+          <span class="zone-name" style="flex:1;">${escapeHtml(o.name)}</span>
+          <span style="font-weight:700; margin-inline-end:8px;">${Number(o.price).toFixed(2)} ${getRestaurantCurrency(restaurant)}</span>
+          <button type="button" data-action="deleteOption" style="background:none; border:1px solid var(--line); border-radius:6px; padding:4px 10px; cursor:pointer; color:var(--stone); font-size:12px;">حذف</button>
+        </div>`).join('');
+      return `
+      <div class="zone-row" data-group-id="${g.id}" style="flex-direction:column; align-items:stretch; gap:8px; padding:12px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <div style="flex:1;">
+            <span class="zone-name" style="font-weight:800;">${escapeHtml(g.name)}</span>
+            <span style="display:block; font-size:11.5px; color:var(--stone); margin-top:2px;">${typeLabel} · ${(g.options||[]).length} خيار</span>
+          </div>
+          <button type="button" data-action="deleteGroup" style="background:none; border:1px solid var(--line); border-radius:6px; padding:8px 12px; cursor:pointer; color:var(--stone);">حذف المجموعة</button>
+        </div>
+        <div class="options-list">${optionsHtml}</div>
+        <div class="zone-add-row" style="flex-wrap:wrap;">
+          <input type="text" class="new-option-name" placeholder="اسم الخيار (مثال: جبنة إضافية)" style="flex:1; min-width:140px;">
+          <input type="number" class="new-option-price" placeholder="السعر" min="0" step="0.01" style="width:90px;">
+          <button type="button" data-action="addOption" style="white-space:nowrap;">+ إضافة خيار</button>
+        </div>
+      </div>`;
+    }).join('');
+
+    wrap.querySelectorAll('[data-action="deleteGroup"]').forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        const groupId = btn.closest('[data-group-id]').dataset.groupId;
+        if(!confirm('حذف المجموعة هيشيلها من كل الأصناف المربوطة بيها. متأكد؟')) return;
+        const { error } = await sb.from('addon_groups').delete().eq('id', groupId);
+        if(error){ toast('تعذر الحذف'); return; }
+        await refreshData();
+        renderGroupsList();
+      });
+    });
+    wrap.querySelectorAll('[data-action="deleteOption"]').forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        const optionId = btn.closest('[data-option-id]').dataset.optionId;
+        const { error } = await sb.from('addon_group_options').delete().eq('id', optionId);
+        if(error){ toast('تعذر الحذف'); return; }
+        await refreshData();
+        renderGroupsList();
+      });
+    });
+    wrap.querySelectorAll('[data-action="addOption"]').forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        const row = btn.closest('.zone-row');
+        const groupId = row.dataset.groupId;
+        const nameInput = row.querySelector('.new-option-name');
+        const priceInput = row.querySelector('.new-option-price');
+        const oName = nameInput.value.trim();
+        const oPrice = parseFloat(priceInput.value);
+        if(!oName){ nameInput.focus(); return; }
+        if(isNaN(oPrice) || oPrice < 0){ toast('أدخل سعر صحيح'); priceInput.focus(); return; }
+        const group = addonGroups.find(g=> g.id === groupId);
+        const { error } = await sb.from('addon_group_options').insert({ group_id: groupId, name: oName, price: oPrice, position: (group.options||[]).length });
+        if(error){ toast('تعذر الإضافة'); return; }
+        await refreshData();
+        renderGroupsList();
+      });
+    });
+  }
+  renderGroupsList();
+
+  overlay.querySelector('#addGroupBtn').addEventListener('click', async ()=>{
+    const nameInput = overlay.querySelector('#newGroupName');
+    const typeSelect = overlay.querySelector('#newGroupType');
+    const name = nameInput.value.trim();
+    if(!name){ nameInput.focus(); return; }
+    const { error } = await sb.from('addon_groups').insert({ restaurant_id: restaurant.id, name, selection_type: typeSelect.value, position: addonGroups.length });
+    if(error){ toast('تعذر إضافة المجموعة'); return; }
+    nameInput.value = '';
+    toast('تمت إضافة المجموعة');
+    await refreshData();
+    renderGroupsList();
+  });
+});
+
+document.getElementById('couponsBtn').addEventListener('click', async ()=>{
+  if(restaurant.restriction_coupons_disabled){ toast('🔒 أكواد الخصم للعملاء متاحة في باقة PRO فقط'); return; }
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.innerHTML = `
+    <div class="modal">
+      <h3>🏷️ أكواد الخصم للعملاء</h3>
+      <p style="font-size:12.5px; color:var(--stone); margin:-6px 0 12px; line-height:1.7;">أنشئ كودًا يقدر العميل يكتبه في شاشة الطلب ليحصل على خصم مباشر على قيمة طلبه.</p>
+      <div class="zone-add-row" style="flex-wrap:wrap;">
+        <input type="text" id="newCouponCode" placeholder="الكود (مثال: SAVE10)" style="width:130px; direction:ltr; text-transform:uppercase;">
+        <select id="newCouponType" style="padding:8px; border-radius:8px; border:1.5px solid var(--line); background:var(--paper); color:var(--ink); font-family:var(--body);">
+          <option value="percent">نسبة %</option>
+          <option value="fixed">مبلغ ثابت</option>
+        </select>
+        <input type="number" id="newCouponValue" placeholder="القيمة" min="0.01" step="0.01" style="width:90px;">
+        <input type="number" id="newCouponMinOrder" placeholder="أقل قيمة طلب (اختياري)" min="0" step="0.01" style="width:150px;">
+        <input type="number" id="newCouponLimit" placeholder="حد الاستخدام (اختياري)" min="1" step="1" style="width:150px;">
+        <input type="date" id="newCouponExpiry" style="width:150px;">
+        <button type="button" class="btn-confirm" id="couponAddBtn" style="white-space:nowrap;">إضافة كود</button>
+      </div>
+      <div id="couponsListWrap" style="margin-top:12px;"><div class="orders-empty">جارِ التحميل...</div></div>
+      <div class="modal-actions">
+        <button class="btn-cancel" id="couponsCloseBtn">إغلاق</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.querySelector('#couponsCloseBtn').addEventListener('click', ()=> overlay.remove());
+  overlay.addEventListener('click', (e)=>{ if(e.target===overlay) overlay.remove(); });
+
+  async function renderCoupons(){
+    const wrap = overlay.querySelector('#couponsListWrap');
+    const { data: coupons, error } = await sb.from('store_coupons').select('*').eq('restaurant_id', restaurant.id).order('created_at', { ascending:false });
+    if(error){ wrap.innerHTML = `<div class="orders-empty">تعذر تحميل أكواد الخصم</div>`; return; }
+    if(!coupons || coupons.length === 0){ wrap.innerHTML = `<div class="orders-empty">لم تُضف أي أكواد خصم بعد</div>`; return; }
+    wrap.innerHTML = coupons.map(c=>{
+      const valueLabel = c.discount_type === 'percent' ? `${Number(c.discount_value)}%` : `${Number(c.discount_value)} ${getRestaurantCurrency(restaurant)}`;
+      const usageLabel = c.usage_limit ? `${c.used_count}/${c.usage_limit}` : `${c.used_count} استخدام`;
+      const expiredNote = c.expires_at && new Date(c.expires_at) < new Date(new Date().toDateString()) ? ' <span style="color:var(--danger); font-weight:700;">(منتهي)</span>' : '';
+      return `
+      <div class="zone-row" data-id="${c.id}" style="${c.is_active ? '' : 'opacity:.55;'} flex-wrap:wrap;">
+        <div style="flex:1; min-width:140px;">
+          <span class="zone-name" style="display:block; direction:ltr; text-align:right; font-family:var(--mono); font-weight:800;">${escapeHtml(c.code)}${expiredNote}</span>
+          <span style="display:block; font-size:11.5px; color:var(--stone); margin-top:2px;">خصم ${valueLabel}${c.min_order_amount ? ` · أقل طلب ${Number(c.min_order_amount)} ${getRestaurantCurrency(restaurant)}` : ''} · ${usageLabel}${c.expires_at ? ` · حتى ${c.expires_at}` : ''}</span>
+        </div>
+        <button type="button" data-action="toggleActive">${c.is_active ? 'إيقاف' : 'تفعيل'}</button>
+        <button type="button" data-action="delete">حذف</button>
+      </div>`;
+    }).join('');
+
+    wrap.querySelectorAll('[data-action="toggleActive"]').forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        const id = btn.closest('.zone-row').dataset.id;
+        const coupon = coupons.find(c=> c.id === id);
+        const { error: updErr } = await sb.from('store_coupons').update({ is_active: !coupon.is_active }).eq('id', id);
+        if(updErr){ toast('تعذر التحديث'); return; }
+        await renderCoupons();
+      });
+    });
+    wrap.querySelectorAll('[data-action="delete"]').forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        const id = btn.closest('.zone-row').dataset.id;
+        if(!confirm('هل تريد حذف كود الخصم هذا؟')) return;
+        const { error: delErr } = await sb.from('store_coupons').delete().eq('id', id);
+        if(delErr){ toast('تعذر الحذف'); return; }
+        await renderCoupons();
+      });
+    });
+  }
+  await renderCoupons();
+
+  overlay.querySelector('#couponAddBtn').addEventListener('click', async ()=>{
+    const codeInput = overlay.querySelector('#newCouponCode');
+    const typeInput = overlay.querySelector('#newCouponType');
+    const valueInput = overlay.querySelector('#newCouponValue');
+    const minOrderInput = overlay.querySelector('#newCouponMinOrder');
+    const limitInput = overlay.querySelector('#newCouponLimit');
+    const expiryInput = overlay.querySelector('#newCouponExpiry');
+    const code = codeInput.value.trim().toUpperCase();
+    const discount_type = typeInput.value;
+    const discount_value = parseFloat(valueInput.value);
+    if(!code){ codeInput.focus(); return; }
+    if(!discount_value || discount_value <= 0){ toast('أدخل قيمة خصم صحيحة'); valueInput.focus(); return; }
+    if(discount_type === 'percent' && discount_value > 100){ toast('نسبة الخصم لا يمكن أن تتجاوز 100%'); return; }
+    const btn = overlay.querySelector('#couponAddBtn');
+    btn.disabled = true;
+    const { error } = await sb.from('store_coupons').insert({
+      restaurant_id: restaurant.id, code, discount_type, discount_value,
+      min_order_amount: minOrderInput.value ? parseFloat(minOrderInput.value) : null,
+      usage_limit: limitInput.value ? parseInt(limitInput.value) : null,
+      expires_at: expiryInput.value || null,
+    });
+    btn.disabled = false;
+    if(error){ toast(error.code === '23505' ? 'يوجد كود بنفس الاسم بالفعل' : 'تعذر إضافة الكود'); return; }
+    codeInput.value=''; valueInput.value=''; minOrderInput.value=''; limitInput.value=''; expiryInput.value='';
+    toast('تمت إضافة كود الخصم');
+    await renderCoupons();
+  });
+});
+
+// شاشة "العملاء غير النشطين" (Win-back، ميزة PRO): تعرض عملاء customer_order_stats الذين لم يطلبوا خلال مدة يحددها صاحب المتجر بنفسه،
+// مع زرار واتساب جاهز لكل عميل لرسالة استرجاع، واختياريًا تضمين أحد أكواد الخصم النشطة (نفس نظام store_coupons)
+document.getElementById('winbackBtn').addEventListener('click', async ()=>{
+  if(restaurant.restriction_winback_disabled){ toast('🔒 شاشة العملاء غير النشطين متاحة في باقة PRO فقط'); return; }
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.innerHTML = `
+    <div class="modal">
+      <h3>🎯 العملاء غير النشطين</h3>
+      <p style="font-size:12.5px; color:var(--stone); margin:-6px 0 12px; line-height:1.7;">عملاء سبق أن طلبوا من متجرك، لكن لم يطلبوا خلال المدة التي تحددها.</p>
+      <div class="zone-add-row" style="flex-wrap:wrap; align-items:center;">
+        <label style="font-size:13px; white-space:nowrap;">اعتبر العميل غير نشط بعد</label>
+        <input type="number" id="winbackDaysInput" min="1" step="1" value="${restaurant.winback_days || 30}" style="width:70px;">
+        <label style="font-size:13px; white-space:nowrap;">يوم بدون طلب</label>
+        <button type="button" class="btn-confirm" id="winbackDaysSaveBtn" style="white-space:nowrap;">حفظ</button>
+        <select id="winbackCouponSelect" style="padding:8px; border-radius:8px; border:1.5px solid var(--line); background:var(--paper); color:var(--ink); font-family:var(--body); margin-inline-start:auto;">
+          <option value="">بدون كود خصم في الرسالة</option>
+        </select>
+      </div>
+      <div id="winbackListWrap" style="margin-top:14px;"><div class="orders-empty">جارِ التحميل...</div></div>
+      <div class="modal-actions">
+        <button class="btn-cancel" id="winbackCloseBtn">إغلاق</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.querySelector('#winbackCloseBtn').addEventListener('click', ()=> overlay.remove());
+  overlay.addEventListener('click', (e)=>{ if(e.target===overlay) overlay.remove(); });
+
+  overlay.querySelector('#winbackDaysSaveBtn').addEventListener('click', async ()=>{
+    const daysInput = overlay.querySelector('#winbackDaysInput');
+    const days = parseInt(daysInput.value);
+    if(!days || days < 1){ toast('أدخل عدد أيام صحيح'); return; }
+    const { error } = await sb.from('restaurants').update({ winback_days: days }).eq('id', restaurant.id);
+    if(error){ toast('تعذر الحفظ'); return; }
+    restaurant.winback_days = days;
+    toast('تم الحفظ');
+    await renderWinbackList();
+  });
+
+  const { data: activeCoupons } = await sb.from('store_coupons').select('code,discount_type,discount_value').eq('restaurant_id', restaurant.id).eq('is_active', true);
+  const couponSelect = overlay.querySelector('#winbackCouponSelect');
+  (activeCoupons || []).forEach(c=>{
+    const opt = document.createElement('option');
+    opt.value = c.code;
+    opt.textContent = `${c.code} (${c.discount_type === 'percent' ? c.discount_value + '%' : c.discount_value + ' ' + getRestaurantCurrency(restaurant)})`;
+    couponSelect.appendChild(opt);
+  });
+
+  async function renderWinbackList(){
+    const wrap = overlay.querySelector('#winbackListWrap');
+    const cutoff = new Date(Date.now() - (restaurant.winback_days || 30) * 24 * 3600 * 1000).toISOString();
+    const { data: lapsed, error } = await sb.from('customer_order_stats')
+      .select('customer_phone,customer_name,orders_count,orders_total,last_order_at')
+      .eq('restaurant_id', restaurant.id)
+      .lt('last_order_at', cutoff)
+      .order('last_order_at', { ascending: true });
+    if(error){ wrap.innerHTML = `<div class="orders-empty">تعذر تحميل بيانات العملاء</div>`; return; }
+    if(!lapsed || lapsed.length === 0){ wrap.innerHTML = `<div class="orders-empty">لا يوجد عملاء غير نشطين حاليًا 🎉 جميع عملائك يطلبون بانتظام</div>`; return; }
+    const now = Date.now();
+    wrap.innerHTML = `<div style="font-size:12.5px; color:var(--stone); margin-bottom:8px;">${lapsed.length} عميل غير نشط</div>` + lapsed.map(c=>{
+      const daysAgo = Math.floor((now - new Date(c.last_order_at).getTime()) / (24*3600*1000));
+      return `
+      <div class="zone-row" data-phone="${escapeHtml(c.customer_phone)}" style="flex-wrap:wrap;">
+        <div style="flex:1; min-width:140px;">
+          <span class="zone-name" style="display:block;">${escapeHtml(c.customer_name || 'بدون اسم')}</span>
+          <span style="display:block; font-size:11.5px; color:var(--stone); margin-top:2px;">آخر طلب من ${daysAgo} يوم · ${c.orders_count} طلب سابق · إجمالي ${Number(c.orders_total).toFixed(2)} ${getRestaurantCurrency(restaurant)}</span>
+        </div>
+        <button type="button" class="o-wa-btn" data-action="winbackWa">📲 استرجاع</button>
+      </div>`;
+    }).join('');
+
+    wrap.querySelectorAll('[data-action="winbackWa"]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const row = btn.closest('.zone-row');
+        const phone = row.dataset.phone;
+        const c = lapsed.find(x=> x.customer_phone === phone);
+        const digits = toEgyptWaDigits(phone);
+        if(!digits){ toast('رقم الهاتف غير صالح'); return; }
+        const selectedCode = couponSelect.value;
+        let msg = `مرحبًا ${c.customer_name || ''} 👋\nنفتقدك في ${restaurant.name}! لم تطلب منّا منذ فترة.`;
+        if(selectedCode) msg += `\n\nخصيصًا لك، استخدم كود "${selectedCode}" في طلبك الجاي وهتاخد خصم 🎁`;
+        msg += `\n\nمستنيينك تطلب تاني قريب 🌟`;
+        window.open(`https://wa.me/${digits}?text=${encodeURIComponent(msg)}`, '_blank');
+      });
+    });
+  }
+  await renderWinbackList();
+});
+
 document.getElementById('customersBtn').addEventListener('click', async ()=>{
   const overlay = document.createElement('div');
   overlay.className = 'overlay';
@@ -3390,6 +3803,7 @@ document.getElementById('customersBtn').addEventListener('click', async ()=>{
   }
 
   async function loadCustomers(){
+    extraPhonesCache = null; // إبطال الذاكرة المؤقتة لأرقام الهاتف الإضافية لأن قائمة العملاء تغيّرت
     const { data, error } = await sb.from('customers').select('*').eq('restaurant_id', restaurant.id).order('created_at', { ascending:false });
     if(error){ allCustomers = []; return false; }
     allCustomers = data || [];
@@ -3611,6 +4025,93 @@ document.getElementById('customersBtn').addEventListener('click', async ()=>{
   }
 
   // دمج عميلين لهما نفس الهوية الفعلية في سجل واحد — الأرقام والعناوين تتوحّد تلقائيًا
+  // كشف تلقائي للعملاء المرشّحين للدمج: نفس الاسم برقمين مختلفين، أو رقم هاتف واحد مسجّل لدى عميلين
+  // أدوات مشتركة لتطبيع الاسم/رقم الهاتف وكشف تطابق عميل موجود، تُستخدم في كشف التكرار الجماعي (شاشة الدمج)
+  // وأيضًا وقت تسجيل عميل جديد فعليًا (سواء من زر "إضافة عميل" اليدوي أو من قائمة "عملاء جدد من الطلبات")
+  const normalizeName = (n)=> String(n || '').trim().replace(/\s+/g, ' ').toLowerCase();
+  const normalizePhone = (p)=> String(p || '').replace(/[^\d]/g,'').replace(/^(?:0020|20)/, '').replace(/^0/, '');
+  let extraPhonesCache = null; // customer_id -> [phone, ...] — تُعاد تعبئته عند كل loadCustomers()
+  async function getExtraPhonesMap(){
+    if(extraPhonesCache) return extraPhonesCache;
+    extraPhonesCache = {};
+    if(!allCustomers.length) return extraPhonesCache;
+    try{
+      const { data } = await sb.from('customer_phones').select('customer_id,phone').in('customer_id', allCustomers.map(c=> c.id));
+      (data || []).forEach(row=>{
+        if(!extraPhonesCache[row.customer_id]) extraPhonesCache[row.customer_id] = [];
+        extraPhonesCache[row.customer_id].push(row.phone);
+      });
+    }catch(e){ /* عند الفشل، يستمر الكشف بالأرقام الرئيسية فقط */ }
+    return extraPhonesCache;
+  }
+  // يبحث عن عميل موجود بالفعل يطابق الاسم أو رقم الهاتف (بما في ذلك الأرقام الإضافية)، لاستخدامه فور محاولة تسجيل عميل جديد
+  async function findExistingMatchFor(name, phone, excludeCustomerId){
+    const nPhone = normalizePhone(phone);
+    const nName = normalizeName(name);
+    const extraPhonesMap = await getExtraPhonesMap();
+    let nameMatch = null;
+    for(const c of allCustomers){
+      if(c.id === excludeCustomerId) continue;
+      const customerPhones = [c.phone, ...(extraPhonesMap[c.id] || [])].map(normalizePhone);
+      if(nPhone && customerPhones.includes(nPhone)){
+        return { customer: c, reason: 'نفس رقم الهاتف' };
+      }
+      if(!nameMatch && nName && normalizeName(c.name) === nName){
+        nameMatch = { customer: c, reason: 'نفس الاسم' };
+      }
+    }
+    return nameMatch;
+  }
+
+  async function findDuplicateCandidates(){
+    const pairs = new Map(); // "idA|idB" -> { a, b, reasons:Set }
+    const addPair = (a, b, reason)=>{
+      if(!a || !b || a.id === b.id) return;
+      const key = [a.id, b.id].sort().join('|');
+      if(!pairs.has(key)) pairs.set(key, { a, b, reasons: new Set() });
+      pairs.get(key).reasons.add(reason);
+    };
+
+    // 1) تطابق الاسم
+    const byName = {};
+    allCustomers.forEach(c=>{
+      const n = normalizeName(c.name);
+      if(!n) return;
+      if(!byName[n]) byName[n] = [];
+      byName[n].push(c);
+    });
+    Object.values(byName).forEach(group=>{
+      for(let i=0; i<group.length; i++){
+        for(let j=i+1; j<group.length; j++) addPair(group[i], group[j], 'نفس الاسم');
+      }
+    });
+
+    // 2) تطابق رقم الهاتف — يشمل الأرقام الإضافية المسجّلة في جدول الأرقام، وليس الرقم الرئيسي فقط
+    const phoneOwners = {}; // رقم مُطبَّع -> [عميل]
+    const registerPhone = (customer, rawPhone)=>{
+      const p = normalizePhone(rawPhone);
+      if(p.length < 8) return;
+      if(!phoneOwners[p]) phoneOwners[p] = [];
+      if(!phoneOwners[p].some(x=> x.id === customer.id)) phoneOwners[p].push(customer);
+    };
+    allCustomers.forEach(c=> registerPhone(c, c.phone));
+    const extraPhonesMap = await getExtraPhonesMap();
+    Object.entries(extraPhonesMap).forEach(([customerId, phones])=>{
+      const owner = allCustomers.find(c=> c.id === customerId);
+      if(owner) phones.forEach(p=> registerPhone(owner, p));
+    });
+    Object.values(phoneOwners).forEach(owners=>{
+      for(let i=0; i<owners.length; i++){
+        for(let j=i+1; j<owners.length; j++) addPair(owners[i], owners[j], 'نفس رقم الهاتف');
+      }
+    });
+
+    // الأولوية لتطابق رقم الهاتف لأنه مؤشر أقوى على أنهما نفس الشخص فعلًا
+    return [...pairs.values()]
+      .map(p=> ({ ...p, reasons: [...p.reasons] }))
+      .sort((x, y)=> (y.reasons.includes('نفس رقم الهاتف') ? 1 : 0) - (x.reasons.includes('نفس رقم الهاتف') ? 1 : 0));
+  }
+
   function openMergeCustomersModal(){
     if(allCustomers.length < 2){ toast('يلزم وجود عميلين على الأقل لإجراء الدمج'); return; }
     const mergeOverlay = document.createElement('div');
@@ -3619,8 +4120,11 @@ document.getElementById('customersBtn').addEventListener('click', async ()=>{
     mergeOverlay.innerHTML = `
       <div class="modal">
         <h3>دمج عملاء مكررين</h3>
+        <div id="duplicateSuggestionsWrap" style="margin-bottom:14px;">
+          <div class="orders-empty" style="text-align:right; padding:0 0 8px; font-size:12px;">جارٍ البحث عن التكرارات...</div>
+        </div>
         <div class="orders-empty" style="text-align:right; padding:0 0 12px; font-size:12px;">
-          اختر العميلين اللذين هما فعليًا نفس الشخص. ستُجمع جميع أرقامه وعناوينه في سجل واحد، وسيُحذف العميل الآخر نهائيًا.
+          أو اختر العميلين يدويًا. ستُجمع جميع أرقامه وعناوينه في سجل واحد، وسيُحذف العميل الآخر نهائيًا.
         </div>
         <div style="display:flex; flex-direction:column; gap:3px; margin-bottom:10px;">
           <label style="font-size:12px; color:var(--stone);">العميل الذي سيبقى (الأساسي)</label>
@@ -3642,6 +4146,40 @@ document.getElementById('customersBtn').addEventListener('click', async ()=>{
     if(allCustomers.length > 1) mergeOverlay.querySelector('#mergeAwaySelect').selectedIndex = 1;
     mergeOverlay.querySelector('#mergeCancelBtn').addEventListener('click', ()=> mergeOverlay.remove());
     mergeOverlay.addEventListener('click', (e)=>{ if(e.target===mergeOverlay) mergeOverlay.remove(); });
+
+    async function renderDuplicateSuggestions(){
+      const wrap = mergeOverlay.querySelector('#duplicateSuggestionsWrap');
+      const candidates = await findDuplicateCandidates();
+      if(!candidates.length){
+        wrap.innerHTML = `<div class="orders-empty" style="text-align:right; padding:0 0 8px; font-size:12px;">✅ لم يُعثر على عملاء مكررين (بتطابق الاسم أو رقم الهاتف).</div>`;
+        return;
+      }
+      wrap.innerHTML = `
+        <div style="font-weight:700; font-size:13px; margin-bottom:8px;">🔍 تكرارات محتملة (${candidates.length})</div>
+        ${candidates.map((p, idx)=>{
+          const isPhoneMatch = p.reasons.includes('نفس رقم الهاتف');
+          return `
+          <div class="zone-row" data-cand-index="${idx}" style="flex-wrap:wrap; ${isPhoneMatch ? 'border-inline-start:3px solid var(--ember);' : ''}">
+            <div style="flex:1; min-width:150px;">
+              <span style="display:block; font-size:12.5px;">${escapeHtml(p.a.name)} — <span style="direction:ltr; display:inline-block;">${escapeHtml(p.a.phone)}</span></span>
+              <span style="display:block; font-size:12.5px;">${escapeHtml(p.b.name)} — <span style="direction:ltr; display:inline-block;">${escapeHtml(p.b.phone)}</span></span>
+              <span style="display:block; font-size:11px; color:${isPhoneMatch ? 'var(--ember)' : 'var(--stone)'}; margin-top:3px;">${escapeHtml(p.reasons.join(' + '))}</span>
+            </div>
+            <button type="button" data-action="selectCandidate" style="white-space:nowrap;">اختيار للدمج</button>
+          </div>`;
+        }).join('')}`;
+      wrap.querySelectorAll('[data-action="selectCandidate"]').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          const idx = parseInt(btn.closest('[data-cand-index]').dataset.candIndex);
+          const pair = candidates[idx];
+          mergeOverlay.querySelector('#mergeKeepSelect').value = pair.a.id;
+          mergeOverlay.querySelector('#mergeAwaySelect').value = pair.b.id;
+          mergeOverlay.querySelector('#mergeConfirmBtn').scrollIntoView({ behavior:'smooth', block:'nearest' });
+        });
+      });
+    }
+    renderDuplicateSuggestions();
+
     mergeOverlay.querySelector('#mergeConfirmBtn').addEventListener('click', async ()=>{
       const keepId = mergeOverlay.querySelector('#mergeKeepSelect').value;
       const awayId = mergeOverlay.querySelector('#mergeAwaySelect').value;
@@ -3654,9 +4192,16 @@ document.getElementById('customersBtn').addEventListener('click', async ()=>{
       const { error } = await sb.rpc('merge_customers', { p_keep_id: keepId, p_merge_id: awayId });
       if(error){ toast('تعذر تنفيذ الدمج'); btn.disabled = false; return; }
       toast('تم دمج العملاء بنجاح');
-      mergeOverlay.remove();
       await loadCustomers();
       renderCustomers();
+      // تحديث قوائم الاختيار والتكرارات المتبقية للسماح بدمج عدة حالات متتالية دون إعادة فتح النافذة
+      const refreshedOptions = allCustomers.map(c=> `<option value="${c.id}">${escapeHtml(c.name)} — ${escapeHtml(c.phone)}</option>`).join('');
+      mergeOverlay.querySelector('#mergeKeepSelect').innerHTML = refreshedOptions;
+      mergeOverlay.querySelector('#mergeAwaySelect').innerHTML = refreshedOptions;
+      if(allCustomers.length > 1) mergeOverlay.querySelector('#mergeAwaySelect').selectedIndex = 1;
+      btn.disabled = false;
+      if(allCustomers.length < 2){ mergeOverlay.remove(); return; }
+      await renderDuplicateSuggestions();
     });
   }
 
@@ -3771,16 +4316,41 @@ document.getElementById('customersBtn').addEventListener('click', async ()=>{
     if(currentPending.length === 0){ section.style.display = 'none'; return; }
     section.style.display = 'block';
     countLabel.textContent = `(${currentPending.length})`;
-    pendingWrap.innerHTML = currentPending.map(p=> `
-      <div class="zone-row" data-phone="${escapeHtml(p.customer_phone)}" style="background:var(--paper-dim);">
+
+    // كشف فوري وقت العرض: هل هذا العميل المرشَّح يشبه عميلًا مسجَّلًا بالفعل (نفس رقم إضافي أو نفس الاسم)؟
+    // بدل ما ينتظر صاحب المتجر يكتشف التكرار بنفسه لاحقًا من شاشة الدمج
+    const pendingMatches = {};
+    for(const p of currentPending){
+      pendingMatches[p.customer_phone] = await findExistingMatchFor(p.customer_name, p.customer_phone);
+    }
+
+    pendingWrap.innerHTML = currentPending.map(p=>{
+      const match = pendingMatches[p.customer_phone];
+      return `
+      <div class="zone-row" data-phone="${escapeHtml(p.customer_phone)}" style="background:var(--paper-dim); flex-wrap:wrap;">
         <div style="flex:1; min-width:120px;">
           <span class="zone-name" style="display:block;">${escapeHtml(p.customer_name || 'بدون اسم')} <span style="font-size:10.5px; font-weight:400; color:var(--stone);">(${p.orders_count} طلب)</span></span>
           ${p.last_address ? `<span style="display:block; font-size:11.5px; color:var(--stone); margin-top:2px;">📍 ${escapeHtml(p.last_address)}</span>` : ''}
+          ${match ? `<span style="display:block; font-size:11.5px; color:var(--ember); margin-top:3px; font-weight:700;">⚠️ يُحتمل أنه العميل "${escapeHtml(match.customer.name)}" المسجَّل بالفعل (${escapeHtml(match.reason)})</span>` : ''}
         </div>
         <span class="zone-fee" style="direction:ltr;">${escapeHtml(p.customer_phone)}</span>
-        <button type="button" data-action="confirmPending" style="border-color:var(--basil); color:var(--basil);">✅ إضافة</button>
+        ${match
+          ? `<button type="button" data-action="mergeIntoExisting" data-existing-id="${match.customer.id}" style="border-color:var(--ember); color:var(--ember);">🔀 دمج مع "${escapeHtml(match.customer.name)}"</button>
+             <button type="button" data-action="confirmPending">➕ إضافة كعميل منفصل</button>`
+          : `<button type="button" data-action="confirmPending" style="border-color:var(--basil); color:var(--basil);">✅ إضافة</button>`}
         <button type="button" data-action="dismissPending">تجاهل</button>
-      </div>`).join('');
+      </div>`;
+    }).join('');
+
+    async function addPendingAsCustomer(p){
+      const { data: upserted, error } = await sb.from('customers').upsert(
+        { restaurant_id: restaurant.id, name: p.customer_name || 'بدون اسم', phone: p.customer_phone, address: p.last_address || null },
+        { onConflict: 'restaurant_id,phone' }
+      ).select('id').maybeSingle();
+      if(error) return { error };
+      if(upserted){ await ensureDefaultAddress(upserted.id, p.last_address); await ensureDefaultPhone(upserted.id, p.customer_phone); }
+      return { data: upserted };
+    }
 
     pendingWrap.querySelectorAll('[data-action="confirmPending"]').forEach(btn=>{
       btn.addEventListener('click', async ()=>{
@@ -3788,13 +4358,27 @@ document.getElementById('customersBtn').addEventListener('click', async ()=>{
         const phone = row.dataset.phone;
         const p = currentPending.find(x=> x.customer_phone === phone);
         btn.disabled = true;
-        const { data: upserted, error } = await sb.from('customers').upsert(
-          { restaurant_id: restaurant.id, name: p.customer_name || 'بدون اسم', phone: p.customer_phone, address: p.last_address || null },
-          { onConflict: 'restaurant_id,phone' }
-        ).select('id').maybeSingle();
+        const { error } = await addPendingAsCustomer(p);
         if(error){ toast('تعذر إضافة العميل'); btn.disabled = false; return; }
-        if(upserted){ await ensureDefaultAddress(upserted.id, p.last_address); await ensureDefaultPhone(upserted.id, p.customer_phone); }
         toast('تمت إضافة العميل بنجاح');
+        await loadCustomers();
+        renderCustomers();
+        await loadAndRenderPendingCustomers();
+      });
+    });
+    // دمج تلقائي: يضيف العميل المرشَّح كعميل جديد مؤقتًا ثم يدمجه فورًا داخل العميل الموجود المطابَق، بضغطة واحدة
+    pendingWrap.querySelectorAll('[data-action="mergeIntoExisting"]').forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        const row = btn.closest('.zone-row');
+        const phone = row.dataset.phone;
+        const p = currentPending.find(x=> x.customer_phone === phone);
+        const existingId = btn.dataset.existingId;
+        btn.disabled = true;
+        const { data: newCust, error } = await addPendingAsCustomer(p);
+        if(error || !newCust){ toast('تعذر تنفيذ الدمج'); btn.disabled = false; return; }
+        const { error: mergeErr } = await sb.rpc('merge_customers', { p_keep_id: existingId, p_merge_id: newCust.id });
+        if(mergeErr){ toast('أُضيف العميل لكن تعذر دمجه تلقائيًا — يمكنك دمجه يدويًا من "🔀 دمج عملاء"'); }
+        else toast('تم الدمج مع العميل الموجود بنجاح');
         await loadCustomers();
         renderCustomers();
         await loadAndRenderPendingCustomers();
@@ -3840,23 +4424,63 @@ document.getElementById('customersBtn').addEventListener('click', async ()=>{
 
   overlay.querySelector('#customersSearchInput').addEventListener('input', renderCustomers);
 
-  overlay.querySelector('#customersExportBtn').addEventListener('click', ()=>{
+  overlay.querySelector('#customersExportBtn').addEventListener('click', async ()=>{
     const q = overlay.querySelector('#customersSearchInput').value.trim().toLowerCase();
     const list = q ? allCustomers.filter(c=> (c.name||'').toLowerCase().includes(q) || (c.phone||'').includes(q)) : allCustomers;
     if(!list.length){ toast('لا يوجد عملاء لتصديرهم'); return; }
-    const header = ['اسم العميل','رقم الهاتف','العنوان','تاريخ التسجيل'];
-    const rows = [header];
-    list.forEach(c=>{
-      const d = c.created_at ? new Date(c.created_at).toLocaleString('ar-EG', { dateStyle:'medium', timeStyle:'short' }) : '';
-      rows.push([c.name || '', c.phone || '', c.address || '', d]);
-    });
-    const ws = XLSX.utils.aoa_to_sheet(rows);
-    ws['!cols'] = [{ wch:22 },{ wch:16 },{ wch:30 },{ wch:20 }];
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'العملاء');
-    const dateTag = new Date().toISOString().slice(0,10);
-    XLSX.writeFile(wb, `${restaurant.slug || 'customers'}-عملاء-${dateTag}.xlsx`);
-    toast(`تم تصدير ${list.length} عميل بنجاح`);
+    const exportBtn = overlay.querySelector('#customersExportBtn');
+    const originalLabel = exportBtn.textContent;
+    exportBtn.disabled = true;
+    exportBtn.textContent = '⏳ جارٍ التجهيز...';
+    try{
+      // جلب جميع الأرقام والعناوين المسجلة لكل عميل (وليس الرقم والعنوان الرئيسي فقط)
+      const ids = list.map(c=> c.id);
+      const [{ data: allPhones }, { data: allAddresses }] = await Promise.all([
+        sb.from('customer_phones').select('customer_id,label,phone,is_default').in('customer_id', ids).order('is_default', { ascending:false }).order('created_at', { ascending:true }),
+        sb.from('customer_addresses').select('customer_id,label,address,is_default').in('customer_id', ids).order('is_default', { ascending:false }).order('created_at', { ascending:true })
+      ]);
+      const phonesByCustomer = {};
+      (allPhones || []).forEach(p=>{
+        if(!phonesByCustomer[p.customer_id]) phonesByCustomer[p.customer_id] = [];
+        phonesByCustomer[p.customer_id].push(p);
+      });
+      const addressesByCustomer = {};
+      (allAddresses || []).forEach(a=>{
+        if(!addressesByCustomer[a.customer_id]) addressesByCustomer[a.customer_id] = [];
+        addressesByCustomer[a.customer_id].push(a);
+      });
+
+      const header = ['اسم العميل','الهاتف الرئيسي','أرقام الهاتف الإضافية','العنوان الرئيسي','العناوين الإضافية','تاريخ التسجيل'];
+      const rows = [header];
+      list.forEach(c=>{
+        const d = c.created_at ? new Date(c.created_at).toLocaleString('ar-EG', { dateStyle:'medium', timeStyle:'short' }) : '';
+        // الصفوف مرتبة بحيث يأتي الرئيسي أولًا، لذا يُؤخذ الأول كرئيسي والباقي كإضافي مع إظهار وصف كل رقم/عنوان إن وُجد
+        const phones = phonesByCustomer[c.id] || [];
+        const addresses = addressesByCustomer[c.id] || [];
+        const formatExtra = (arr, key)=> arr.slice(1).map(x=> x.label ? `${x.label}: ${x[key]}` : x[key]).join(' | ');
+        rows.push([
+          c.name || '',
+          phones.length ? phones[0].phone : (c.phone || ''),
+          formatExtra(phones, 'phone'),
+          addresses.length ? addresses[0].address : (c.address || ''),
+          formatExtra(addresses, 'address'),
+          d
+        ]);
+      });
+      const ws = XLSX.utils.aoa_to_sheet(rows);
+      ws['!cols'] = [{ wch:22 },{ wch:16 },{ wch:30 },{ wch:30 },{ wch:40 },{ wch:20 }];
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'العملاء');
+      const dateTag = new Date().toISOString().slice(0,10);
+      XLSX.writeFile(wb, `${restaurant.slug || 'customers'}-عملاء-${dateTag}.xlsx`);
+      toast(`تم تصدير ${list.length} عميل بنجاح`);
+    }catch(e){
+      console.error('customers export error:', e);
+      toast('تعذر تصدير بيانات العملاء، يرجى المحاولة مرة أخرى');
+    }finally{
+      exportBtn.disabled = false;
+      exportBtn.textContent = originalLabel;
+    }
   });
 
   overlay.querySelector('#customerAddBtn').addEventListener('click', async ()=>{
@@ -3868,6 +4492,9 @@ document.getElementById('customersBtn').addEventListener('click', async ()=>{
     const address = addressInput.value.trim();
     if(!name){ nameInput.focus(); return; }
     if(phone.length < 8){ phoneInput.focus(); return; }
+    // كشف فوري وقت التسجيل: هل يوجد عميل مسجَّل بالفعل بنفس رقم الهاتف (بما في ذلك أرقامه الإضافية) أو بنفس الاسم؟
+    const match = await findExistingMatchFor(name, phone);
+    if(match && !confirm(`⚠️ يوجد بالفعل عميل مشابه: "${match.customer.name}" — ${match.customer.phone} (${match.reason}).\nهل تريد المتابعة وإضافته كعميل منفصل رغم ذلك؟`)) return;
     const btn = overlay.querySelector('#customerAddBtn');
     btn.disabled = true;
     const { data: upserted, error } = await sb.from('customers').upsert({ restaurant_id: restaurant.id, name, phone, address: address || null }, { onConflict: 'restaurant_id,phone' }).select('id').maybeSingle();
@@ -3908,14 +4535,34 @@ document.getElementById('customersBtn').addEventListener('click', async ()=>{
       rows = rows.slice(1);
     }
 
+    // الأعمدة المدعومة: الاسم، الهاتف الرئيسي، أرقام إضافية، العنوان الرئيسي، عناوين إضافية
+    // الأعمدة الإضافية اختيارية لضمان التوافق مع الملفات المُصدَّرة سابقًا (اسم + هاتف فقط)
+    const splitMulti = (v)=> String(v ?? '').split('|').map(s=> s.trim()).filter(Boolean);
+    const parseLabelled = (entry)=>{
+      const sepIdx = entry.indexOf(':');
+      if(sepIdx === -1) return { label: null, value: entry.trim() };
+      return { label: entry.slice(0, sepIdx).trim() || null, value: entry.slice(sepIdx + 1).trim() };
+    };
+
     const byPhone = new Map();
     rows.forEach(r=>{
       const name = String(r[0] ?? '').trim();
       const phone = String(r[1] ?? '').replace(/[^\d]/g,'');
       if(!name || phone.length < 8) return;
-      byPhone.set(phone, { restaurant_id: restaurant.id, name, phone });
+      const extraPhones = splitMulti(r[2]).map(parseLabelled)
+        .map(p=> ({ label: p.label, phone: p.value.replace(/[^\d]/g,'') }))
+        .filter(p=> p.phone.length >= 8 && p.phone !== phone);
+      const mainAddress = String(r[3] ?? '').trim();
+      const extraAddresses = splitMulti(r[4]).map(parseLabelled)
+        .map(a=> ({ label: a.label, address: a.value }))
+        .filter(a=> a.address);
+      byPhone.set(phone, {
+        record: { restaurant_id: restaurant.id, name, phone, address: mainAddress || null },
+        extraPhones, mainAddress, extraAddresses
+      });
     });
-    const parsed = [...byPhone.values()];
+    const parsedEntries = [...byPhone.values()];
+    const parsed = parsedEntries.map(e=> e.record);
 
     if(parsed.length === 0){
       toast('لم يتم العثور على صفوف صالحة (اسم، رقم هاتف)');
@@ -3926,8 +4573,63 @@ document.getElementById('customersBtn').addEventListener('click', async ()=>{
     const importBtn = overlay.querySelector('#customersImportBtn');
     importBtn.disabled = true;
     const { error } = await sb.from('customers').upsert(parsed, { onConflict: 'restaurant_id,phone' });
+    if(error){ importBtn.disabled = false; toast('حدث خطأ أثناء الاستيراد'); return; }
+
+    // إضافة الأرقام والعناوين المتعددة لكل عميل بعد حفظه (تُتجاهل أي قيمة مسجلة مسبقًا لتفادي التكرار)
+    try{
+      const importedPhones = parsed.map(p=> p.phone);
+      const { data: savedCustomers } = await sb.from('customers').select('id,phone').eq('restaurant_id', restaurant.id).in('phone', importedPhones);
+      const idByPhone = {};
+      (savedCustomers || []).forEach(c=> idByPhone[c.phone] = c.id);
+      const customerIds = Object.values(idByPhone);
+
+      const [{ data: existingPhones }, { data: existingAddresses }] = await Promise.all([
+        sb.from('customer_phones').select('customer_id,phone').in('customer_id', customerIds),
+        sb.from('customer_addresses').select('customer_id,address').in('customer_id', customerIds)
+      ]);
+      const existingPhoneSet = new Set((existingPhones || []).map(p=> `${p.customer_id}|${p.phone}`));
+      const existingAddressSet = new Set((existingAddresses || []).map(a=> `${a.customer_id}|${a.address}`));
+
+      const phoneRows = [];
+      const addressRows = [];
+      parsedEntries.forEach(entry=>{
+        const customerId = idByPhone[entry.record.phone];
+        if(!customerId) return;
+        // الرقم الرئيسي يُسجَّل كافتراضي إذا لم يكن للعميل أي رقم مسجل بالفعل
+        const hasAnyPhone = (existingPhones || []).some(p=> p.customer_id === customerId);
+        if(!hasAnyPhone && !existingPhoneSet.has(`${customerId}|${entry.record.phone}`)){
+          phoneRows.push({ customer_id: customerId, label: 'الرئيسي', phone: entry.record.phone, is_default: true });
+          existingPhoneSet.add(`${customerId}|${entry.record.phone}`);
+        }
+        entry.extraPhones.forEach(p=>{
+          const key = `${customerId}|${p.phone}`;
+          if(existingPhoneSet.has(key)) return;
+          existingPhoneSet.add(key);
+          phoneRows.push({ customer_id: customerId, label: p.label, phone: p.phone, is_default: false });
+        });
+
+        const hasAnyAddress = (existingAddresses || []).some(a=> a.customer_id === customerId);
+        if(entry.mainAddress && !hasAnyAddress && !existingAddressSet.has(`${customerId}|${entry.mainAddress}`)){
+          addressRows.push({ customer_id: customerId, label: 'الرئيسي', address: entry.mainAddress, is_default: true });
+          existingAddressSet.add(`${customerId}|${entry.mainAddress}`);
+        }
+        entry.extraAddresses.forEach(a=>{
+          const key = `${customerId}|${a.address}`;
+          if(existingAddressSet.has(key)) return;
+          existingAddressSet.add(key);
+          addressRows.push({ customer_id: customerId, label: a.label, address: a.address, is_default: false });
+        });
+      });
+
+      if(phoneRows.length) await sb.from('customer_phones').insert(phoneRows);
+      if(addressRows.length) await sb.from('customer_addresses').insert(addressRows);
+    }catch(err){
+      // فشل حفظ البيانات الإضافية لا يُلغي استيراد العملاء الأساسي الذي تم بنجاح
+      console.error('extra phones/addresses import error:', err);
+      toast('تم استيراد العملاء، لكن تعذر حفظ بعض الأرقام أو العناوين الإضافية');
+    }
+
     importBtn.disabled = false;
-    if(error){ toast('حدث خطأ أثناء الاستيراد'); return; }
     await loadCustomers();
     renderCustomers();
     await loadAndRenderPendingCustomers();
@@ -4031,6 +4733,21 @@ async function openOrdersOverlay(){
   (allDriversList || []).forEach(d=> driversById[d.id] = d);
 
   const STATUS_LABELS = { pending:'قيد الانتظار', preparing:'قيد التجهيز', delivered:'تم التسليم', cancelled:'ملغي' };
+
+  // رسائل واتساب جاهزة تُرسل للعميل عند تغيير حالة طلبه (ميزة PRO) — يفتح واتساب برسالة معبأة مسبقًا ليضغط صاحب المتجر إرسال فقط
+  const STATUS_WA_MESSAGES = {
+    preparing: (o)=> `مرحبًا ${o.customer_name || ''} 👋\nطلبك رقم #${o.order_number ?? ''} من ${restaurant.name || 'المتجر'} الآن قيد التجهيز 👨‍🍳\nسيصلك قريبًا إن شاء الله.`,
+    delivered: (o)=> `مرحبًا ${o.customer_name || ''} 👋\nطلبك رقم #${o.order_number ?? ''} من ${restaurant.name || 'المتجر'} تم تسليمه ✅\nنتمنالك بالهنا والشفا، ومنتظرين طلبك تاني 🌟`,
+    cancelled: (o)=> `مرحبًا ${o.customer_name || ''} 👋\nنأسف، طلبك رقم #${o.order_number ?? ''} من ${restaurant.name || 'المتجر'} تم إلغاؤه ❌\nإذا كنت بحاجة لمزيد من التفاصيل أو ترغب في تقديم طلب جديد، فنحن في خدمتك.`,
+  };
+  function sendStatusWaToCustomer(o, newStatus){
+    if(restaurant.restriction_status_wa_disabled) return; // متاحة في باقة PRO فقط
+    const builder = STATUS_WA_MESSAGES[newStatus];
+    if(!builder || !o) return;
+    const digits = toEgyptWaDigits(o.customer_phone);
+    if(!digits) return;
+    window.open(`https://wa.me/${digits}?text=${encodeURIComponent(builder(o))}`, '_blank');
+  }
 
   // تعبئة فلتر الطاولات بأرقام الطاولات الفعلية الموجودة في الطلبات، وإظهاره فقط لو فيه طلبات طاولات أصلًا
   const tableFilterSelect = overlay.querySelector('#ordersTableFilter');
@@ -4142,6 +4859,7 @@ async function openOrdersOverlay(){
         ${itemsListHtml}
         ${totalsHtml}
         ${o.notes ? `<div class="o-notes">📝 ${escapeHtml(o.notes)}</div>` : ''}
+        ${o.coupon_code ? `<div class="o-notes" style="color:var(--basil);">🏷️ كوبون: ${escapeHtml(o.coupon_code)} (- ${Number(o.discount_amount||0).toFixed(2)} ${getRestaurantCurrency(restaurant)})</div>` : ''}
         <div class="o-time" style="margin-top:6px;">🕒 ${time}</div>
         ${prepHtml}
         <select class="status-select" data-action="statusSelect" ${(status==='delivered' || status==='cancelled') ? 'disabled title="لا يمكن تغيير حالة الطلب بعد أن أصبح نهائيًا"' : ''}>
@@ -4151,6 +4869,7 @@ async function openOrdersOverlay(){
           <option value="cancelled" ${status==='cancelled' ? 'selected' : ''}>ملغي</option>
         </select>
         ${(status==='delivered' || status==='cancelled') ? `<div class="o-time" style="margin-top:2px; font-size:11px;">لا يمكن تغيير الحالة بعد أن أصبحت نهائية</div>` : ''}
+        ${!restaurant.restriction_status_wa_disabled ? `<div class="o-time" style="margin-top:2px; font-size:10.5px; color:var(--basil);">📲 سيتم فتح واتساب تلقائيًا لإرسال إشعار للعميل بالحالة الجديدة عند التغيير</div>` : `<div class="o-time" style="margin-top:2px; font-size:10.5px;">🔒 إشعار العميل بواتساب عند تغيير الحالة متاح في باقة PRO فقط</div>`}
         ${o.order_type !== 'pickup' ? `
         <div style="display:flex; align-items:center; gap:6px; margin-top:8px; flex-wrap:wrap;">
           <select class="status-select" data-action="driverSelect" style="width:auto; flex:1; min-width:120px;">
@@ -4207,10 +4926,14 @@ async function openOrdersOverlay(){
       select.addEventListener('change', async ()=>{
         const newStatus = select.value;
         select.disabled = true;
-        const { error: updErr } = await sb.from('orders').update({ status: newStatus }).eq('id', orderId);
+        // تسجيل وقت التسليم الفعلي عند الوصول لحالة "تم التسليم" فقط — يُستخدم لاحقًا لحساب متوسط وقت التجهيز الحقيقي (الميزة الذكية لتقدير الوقت)
+        const updatePayload = { status: newStatus };
+        if(newStatus === 'delivered') updatePayload.delivered_at = new Date().toISOString();
+        const { error: updErr } = await sb.from('orders').update(updatePayload).eq('id', orderId);
         if(updErr){ toast('تعذر تحديث حالة الطلب'); select.disabled = false; return; }
         const orderObj = orders.find(o=> o.id === orderId);
         if(orderObj) orderObj.status = newStatus;
+        sendStatusWaToCustomer(orderObj, newStatus);
         refreshNewOrdersCount();
         const badge = row.querySelector('.status-badge');
         badge.className = `status-badge ${newStatus}`;
@@ -5064,6 +5787,10 @@ async function openAdminPanel(){
             ${perm('restriction_settings_disabled', '⚙️', 'منع الوصول لإعدادات المطعم بالكامل')}
             ${perm('restriction_notif_settings_disabled', '📵', 'منع تعديل رقم واتساب التنبيهات')}
             ${perm('restriction_delete_disabled', '🗑️', 'منع حذف الأصناف أو الفئات')}
+            ${perm('restriction_status_wa_disabled', '📦', 'منع إشعار العميل بواتساب عند تغيير حالة الطلب')}
+            ${perm('restriction_coupons_disabled', '🏷️', 'منع أكواد الخصم للعملاء')}
+            ${perm('restriction_daily_report_disabled', '📊', 'منع تقرير تقفيل اليوم')}
+            ${perm('restriction_winback_disabled', '🎯', 'منع شاشة العملاء غير النشطين')}
           </div>
         </div>
 
@@ -5215,8 +5942,8 @@ async function openAdminPanel(){
       const confirmMsg = `⚠️ تحذير نهائي — هتستبدل بيانات "${rName}" الحالية بالكامل\n\n`
         + `تاريخ النسخة الاحتياطية: ${exportedDate}\n\n`
         + `الملف يحتوي على:\n`
-        + `• ${fileCounts.categories} فئة، ${fileCounts.items} صنف (الحالي دلوقتي: ${currentCounts.categories} فئة)\n`
-        + `• ${fileCounts.orders} طلب (الحالي دلوقتي: ${currentCounts.orders} طلب)\n`
+        + `• ${fileCounts.categories} فئة، ${fileCounts.items} صنف (الحالي الآن: ${currentCounts.categories} فئة)\n`
+        + `• ${fileCounts.orders} طلب (الحالي الآن: ${currentCounts.orders} طلب)\n`
         + `• ${fileCounts.zones} منطقة توصيل، ${fileCounts.customers} عميل\n\n`
         + `سيتم مسح جميع البيانات الحالية واستبدالها بالكامل بمحتوى الملف، ولا يمكن التراجع عن ذلك بعد إتمام العملية.\n\n`
         + `هل أنت متأكد من رغبتك في المتابعة؟`;
@@ -5267,7 +5994,7 @@ async function openAdminPanel(){
     });
   });
 
-  const CLIENT_PERM_FIELDS = ['restriction_prices_disabled','restriction_images_disabled','restriction_orders_disabled','restriction_print_disabled','restriction_stats_disabled','restriction_reports_disabled','restriction_share_disabled','restriction_delivery_zones_disabled','restriction_drivers_disabled','restriction_extra_channels_disabled','restriction_multi_wallet_disabled','restriction_stats_charts_disabled','restriction_customers_disabled','restriction_settings_disabled','restriction_notif_settings_disabled','restriction_delete_disabled'];
+  const CLIENT_PERM_FIELDS = ['restriction_prices_disabled','restriction_images_disabled','restriction_orders_disabled','restriction_print_disabled','restriction_stats_disabled','restriction_reports_disabled','restriction_share_disabled','restriction_delivery_zones_disabled','restriction_drivers_disabled','restriction_extra_channels_disabled','restriction_multi_wallet_disabled','restriction_stats_charts_disabled','restriction_customers_disabled','restriction_settings_disabled','restriction_notif_settings_disabled','restriction_delete_disabled','restriction_status_wa_disabled','restriction_coupons_disabled','restriction_daily_report_disabled','restriction_winback_disabled'];
 
   wrap.querySelectorAll('.admin-lock-all-btn, .admin-unlock-all-btn').forEach(btn=>{
     btn.addEventListener('click', async (e)=>{
@@ -5355,6 +6082,11 @@ async function openAdminPanel(){
           restriction_extra_channels_disabled: !isPro,
           restriction_multi_wallet_disabled: !isPro,
           restriction_stats_charts_disabled: !isPro,
+          restriction_status_wa_disabled: !isPro,
+          restriction_coupons_disabled: !isPro,
+          restriction_reports_disabled: !isPro,
+          restriction_daily_report_disabled: !isPro,
+          restriction_winback_disabled: !isPro,
         };
         tierSelect.disabled = true;
         const { error: updErr } = await sb.from('accounts').update(updatePayload).eq('id', accId);
@@ -6348,8 +7080,58 @@ document.getElementById('viewStatsBtn').addEventListener('click', async ()=>{
   }
 });
 
+// تقرير تقفيل اليوم (ميزة PRO): يجمع إحصائيات اليوم (عدد الطلبات، الإيراد، أكتر صنف مبيعًا)
+// ويفتح واتساب برسالة جاهزة لرقم المتجر نفسه، ليقدر صاحب المتجر يحفظها أو يحوّلها لفريقه بضغطة واحدة
+document.getElementById('dailyCloseBtn').addEventListener('click', async ()=>{
+  if(restaurant.restriction_daily_report_disabled){ toast('🔒 تقرير تقفيل اليوم متاح في باقة PRO فقط'); return; }
+  const btn = document.getElementById('dailyCloseBtn');
+  const originalText = btn.textContent;
+  btn.textContent = '⏳ جارِ تجهيز التقرير...';
+  btn.disabled = true;
+  try{
+    const todayStr = new Date().toLocaleDateString('en-CA', { timeZone:'Africa/Cairo' });
+
+    // إجمالي الطلبات والإيراد من جدول order_hourly_stats الموجود بالفعل (مُحدَّث تلقائيًا مع كل طلب)
+    const { data: hourRows } = await sb.from('order_hourly_stats').select('orders_count,orders_total').eq('restaurant_id', restaurant.id).eq('day', todayStr);
+    const ordersCount = (hourRows || []).reduce((s,r)=> s + Number(r.orders_count || 0), 0);
+    const revenue = (hourRows || []).reduce((s,r)=> s + Number(r.orders_total || 0), 0);
+
+    // أكتر صنف مبيعًا اليوم تحديدًا (مش كل الوقت زي get_top_items): نجيب طلبات اليوم غير الملغاة ثم أصنافها
+    const dayOf = (iso)=> new Date(iso).toLocaleDateString('en-CA', { timeZone:'Africa/Cairo' });
+    const { data: recentOrders } = await sb.from('orders').select('id,created_at,status')
+      .eq('restaurant_id', restaurant.id)
+      .gte('created_at', new Date(Date.now() - 26*3600*1000).toISOString()); // نافذة 26 ساعة كافية لتغطية يوم كامل بتوقيت القاهرة مع هامش أمان
+    const todayOrderIds = (recentOrders || []).filter(o=> o.status !== 'cancelled' && dayOf(o.created_at) === todayStr).map(o=> o.id);
+
+    let topItemLine = '';
+    if(todayOrderIds.length){
+      const { data: todayItems } = await sb.from('order_items').select('item_id,quantity').in('order_id', todayOrderIds);
+      const qtyByItem = {};
+      (todayItems || []).forEach(oi=>{ if(oi.item_id) qtyByItem[oi.item_id] = (qtyByItem[oi.item_id] || 0) + Number(oi.quantity || 0); });
+      const topEntry = Object.entries(qtyByItem).sort((a,b)=> b[1]-a[1])[0];
+      if(topEntry){
+        const topItem = items.find(i=> i.id === topEntry[0]);
+        if(topItem) topItemLine = `\nأكتر صنف مبيعًا: ${tName(topItem.name, topItem.name_en)} (${topEntry[1]} قطعة)`;
+      }
+    }
+
+    const dateLabel = new Date().toLocaleDateString('ar-EG', { timeZone:'Africa/Cairo', weekday:'long', day:'numeric', month:'long', year:'numeric' });
+    const msg = `📊 تقفيل يوم ${dateLabel} — ${restaurant.name}\n\nعدد الطلبات: ${ordersCount}\nإجمالي الإيراد: ${revenue.toFixed(2)} ${getRestaurantCurrency(restaurant)}${topItemLine}\n\nتم إعداده تلقائيًا بواسطة منيو m@g`;
+
+    const digits = toEgyptWaDigits(restaurant.phone);
+    if(!digits){ toast('لا يوجد رقم واتساب مسجل للمتجر لإرسال التقرير عليه'); return; }
+    window.open(`https://wa.me/${digits}?text=${encodeURIComponent(msg)}`, '_blank');
+  } catch(e){
+    console.error('daily close report error:', e);
+    toast('تعذر تجهيز تقرير اليوم، حاول مرة أخرى');
+  } finally {
+    btn.textContent = originalText;
+    btn.disabled = false;
+  }
+});
+
 document.getElementById('reportsBtn').addEventListener('click', async ()=>{
-  if(restaurant.restriction_reports_disabled){ toast('التقارير غير متاحة في نسختك الحالية'); return; }
+  if(restaurant.restriction_reports_disabled){ toast('🔒 التقارير متاحة في باقة PRO فقط'); return; }
   const overlay = document.createElement('div');
   overlay.className = 'overlay';
   overlay.innerHTML = `
@@ -6383,6 +7165,16 @@ document.getElementById('reportsBtn').addEventListener('click', async ()=>{
       </span>
     </h3>
     <div id="salesTrendWrap"></div>
+    <h3 style="margin-top:20px; display:flex; justify-content:space-between; align-items:center;">
+      <span>💰 هامش الربح</span>
+      <select id="profitPeriod" style="font-size:11px; padding:4px 8px; border-radius:999px; border:1px solid var(--line); background:var(--paper-dim); color:var(--stone);">
+        <option value="7">آخر 7 أيام</option>
+        <option value="30" selected>آخر 30 يومًا</option>
+        <option value="90">آخر 90 يومًا</option>
+        <option value="0">كل الوقت</option>
+      </select>
+    </h3>
+    <div id="profitSummaryWrap" class="orders-empty">جارِ التحميل...</div>
     <h3 style="margin-top:20px;">تقرير المبيعات التفصيلي</h3>
     <div style="display:flex; gap:8px; align-items:end; flex-wrap:wrap; margin-bottom:10px;">
       <div style="display:flex; flex-direction:column; gap:3px;">
@@ -6456,6 +7248,66 @@ document.getElementById('reportsBtn').addEventListener('click', async ()=>{
       renderTrend(btn.dataset.metric);
     });
   });
+
+  // هامش الربح: يعتمد على سعر التكلفة الحالي المسجَّل لكل صنف (وليس سعر التكلفة وقت البيع نفسه، لأنه غير مُسجَّل تاريخيًا)
+  const profitWrap = overlay.querySelector('#profitSummaryWrap');
+  async function renderProfitSummary(days){
+    profitWrap.innerHTML = 'جارِ التحميل...';
+    let ordersQuery = sb.from('orders').select('id').eq('restaurant_id', restaurant.id).neq('status', 'cancelled');
+    if(days > 0){
+      ordersQuery = ordersQuery.gte('created_at', new Date(Date.now() - days*24*3600*1000).toISOString());
+    }
+    const { data: ordersInRange, error: ordersErr } = await ordersQuery;
+    if(ordersErr || !ordersInRange || !ordersInRange.length){
+      profitWrap.innerHTML = `<div class="orders-empty">لا توجد بيانات كافية في هذه الفترة</div>`;
+      return;
+    }
+    const orderIds = ordersInRange.map(o=> o.id);
+    // تُقسَّم على دفعات لتفادي تجاوز الحد الأقصى لطول الاستعلام مع عدد كبير من الطلبات
+    const chunkSize = 300;
+    const soldLines = [];
+    for(let i=0; i<orderIds.length; i+=chunkSize){
+      const chunk = orderIds.slice(i, i+chunkSize);
+      const { data } = await sb.from('order_items').select('item_id,quantity,price').in('order_id', chunk);
+      if(data) soldLines.push(...data);
+    }
+    const costByItemId = {};
+    items.forEach(it=>{ if(it.cost_price != null) costByItemId[it.id] = Number(it.cost_price); });
+    let revenue = 0, cost = 0, totalQty = 0, costedQty = 0;
+    soldLines.forEach(oi=>{
+      const qty = Number(oi.quantity || 0);
+      revenue += Number(oi.price || 0) * qty;
+      totalQty += qty;
+      const c = oi.item_id ? costByItemId[oi.item_id] : undefined;
+      if(c != null){ cost += c * qty; costedQty += qty; }
+    });
+    const profit = revenue - cost;
+    const marginPct = revenue > 0 ? (profit / revenue * 100) : 0;
+    const coverage = totalQty > 0 ? Math.round(costedQty / totalQty * 100) : 0;
+    profitWrap.innerHTML = `
+      <div class="orders-list">
+        <div class="order-row" style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="o-name" style="font-weight:700;">الإيراد</span>
+          <span class="o-time" style="text-align:left; margin:0;">${revenue.toFixed(2)} ${getRestaurantCurrency(restaurant)}</span>
+        </div>
+        <div class="order-row" style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="o-name" style="font-weight:700;">التكلفة</span>
+          <span class="o-time" style="text-align:left; margin:0;">${cost.toFixed(2)} ${getRestaurantCurrency(restaurant)}</span>
+        </div>
+        <div class="order-row" style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="o-name" style="font-weight:700;">صافي الربح</span>
+          <span class="o-time" style="text-align:left; margin:0; color:var(--basil); font-weight:700;">${profit.toFixed(2)} ${getRestaurantCurrency(restaurant)}</span>
+        </div>
+        <div class="order-row" style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="o-name" style="font-weight:700;">هامش الربح</span>
+          <span class="o-time" style="text-align:left; margin:0;">${marginPct.toFixed(1)}%</span>
+        </div>
+      </div>
+      ${coverage < 100 ? `<div class="orders-empty" style="text-align:right; padding-top:10px; font-size:11.5px;">⚠️ سعر التكلفة مسجَّل حاليًا لِـ ${coverage}% فقط من الكمية المباعة في هذه الفترة؛ الأصناف بلا سعر تكلفة مسجَّل غير محتسَبة ضمن التكلفة أعلاه. أضف سعر التكلفة من شاشة تعديل الصنف لزيادة دقة الحساب.</div>` : ''}
+    `;
+  }
+  renderProfitSummary(30);
+  overlay.querySelector('#profitPeriod').addEventListener('change', (e)=> renderProfitSummary(parseInt(e.target.value)));
 
   // تقرير المبيعات التفصيلي — فترة تاريخ مخصصة (من — إلى)
   const salesReportWrap = overlay.querySelector('#salesReportWrap');
@@ -7135,8 +7987,8 @@ function openBackupModal(){
     const confirmMsg = `⚠️ تحذير نهائي — هتستبدل بيانات ${entityLabel} الحالية بالكامل\n\n`
       + `تاريخ النسخة الاحتياطية: ${exportedDate}\n\n`
       + `الملف يحتوي على:\n`
-      + `• ${fileCounts.categories} فئة، ${fileCounts.items} صنف (الحالي دلوقتي: ${currentCounts.categories} فئة)\n`
-      + `• ${fileCounts.orders} طلب (الحالي دلوقتي: ${currentCounts.orders} طلب)\n`
+      + `• ${fileCounts.categories} فئة، ${fileCounts.items} صنف (الحالي الآن: ${currentCounts.categories} فئة)\n`
+      + `• ${fileCounts.orders} طلب (الحالي الآن: ${currentCounts.orders} طلب)\n`
       + `• ${fileCounts.zones} منطقة توصيل، ${fileCounts.customers} عميل\n\n`
       + `سيتم مسح جميع البيانات الحالية واستبدالها بالكامل بمحتوى الملف، ولا يمكن التراجع عن ذلك إلا في حال توفر نسخة احتياطية أخرى.\n\n`
       + `هل أنت متأكد من رغبتك في المتابعة؟`;
@@ -8351,6 +9203,23 @@ document.getElementById('importExcelInput').addEventListener('change', async (e)
   const isDetailedFormat = firstRowNormalized[0] === 'الفئة'
     && DETAILED_IMPORT_HEADERS.every(h => firstRowNormalized.includes(h));
 
+  // "الإضافات والأسعار" عمود اختياري (اتضاف لاحقًا) — نكشف عن مكانه بشكل مستقل بدل إضافته لقائمة DETAILED_IMPORT_HEADERS،
+  // عشان ملفات مُصدَّرة قديمة من غير هذا العمود تفضل تتعرف كصيغة تفصيلية كاملة برضه (توافق رجعي)
+  const addonsColIdx = firstRowNormalized.indexOf('الإضافات والأسعار');
+  function parseAddonsText(text){
+    return parseSizesText(text).map(s=> ({ name: s.size_name, price: s.price }));
+  }
+  // "مجموعات الإضافات والمتغيرات" عمود اختياري كمان — أسماء مجموعات جاهزة (مفصولة بـ |) بيتم البحث عنها في المجموعات
+  // الموجودة بالفعل بنفس الاسم (لازم تكون اتعملت مسبقًا من شاشة "الإضافات والمتغيرات")؛ أي اسم مش موجود يُتجاهل بصمت
+  const groupsColIdx = firstRowNormalized.indexOf('مجموعات الإضافات والمتغيرات');
+  function parseGroupNames(text){
+    const raw = String(text ?? '').trim();
+    if(!raw) return [];
+    return raw.split('|').map(s=> s.trim()).filter(Boolean)
+      .map(name=> (addonGroups.find(g=> g.name === name) || {}).id)
+      .filter(Boolean);
+  }
+
   const parsed = [];
 
   if(isDetailedFormat){
@@ -8362,6 +9231,8 @@ document.getElementById('importExcelInput').addEventListener('change', async (e)
       if(!catName || !itemName) return;
       const pricing_type = pricingTypeValueFromLabel(r[colIdx['طريقة التسعير']]);
       const sizes = pricing_type === 'sizes' ? parseSizesText(r[colIdx['الأحجام والأسعار']]) : [];
+      const addons = addonsColIdx !== -1 ? parseAddonsText(r[addonsColIdx]) : [];
+      const groupIds = groupsColIdx !== -1 ? parseGroupNames(r[groupsColIdx]) : [];
       let price = parseFloat(r[colIdx['السعر']]);
       if(pricing_type === 'sizes'){
         if(sizes.length === 0) return; // لازم حجم واحد على الأقل بسعره
@@ -8388,6 +9259,8 @@ document.getElementById('importExcelInput').addEventListener('change', async (e)
         weight_sale_mode: pricing_type === 'weight' ? weightSaleModeValueFromLabel(r[colIdx['طريقة الطلب بالوزن']]) : 'both',
         min_weight_grams,
         sizes,
+        addons,
+        groupIds,
         description: String(r[colIdx['الوصف']] ?? '').trim(),
         is_available: isAvailableValueFromLabel(r[colIdx['الحالة']]),
         image_url: (()=>{ const raw = String(r[colIdx['رابط الصورة']] ?? '').trim(); return /^https?:\/\//i.test(raw) ? raw : null; })()
@@ -8406,7 +9279,7 @@ document.getElementById('importExcelInput').addEventListener('change', async (e)
       if(!catName || !itemName || isNaN(price) || price < 0) return;
       parsed.push({
         catName, itemName, name_en: null, pricing_type: 'unit', price, old_price: null,
-        weight_sale_mode: 'both', min_weight_grams: null, sizes: [], description: '',
+        weight_sale_mode: 'both', min_weight_grams: null, sizes: [], addons: [], groupIds: [], description: '',
         is_available: true, image_url: null
       });
     });
@@ -8536,6 +9409,22 @@ async function runImport(parsed, uniqueCats){
     } else if(existing){
       await sb.from('item_sizes').delete().eq('item_id', itemId);
     }
+
+    // مزامنة الإضافات (بنفس أسلوب حذف-ثم-إدراج المتبع مع الأحجام)
+    await sb.from('item_addons').delete().eq('item_id', itemId);
+    if(p.addons && p.addons.length){
+      const addonRowsToInsert = p.addons.map((a, idx)=>({ item_id: itemId, name: a.name, price: a.price, position: idx }));
+      const { error: addonErr } = await sb.from('item_addons').insert(addonRowsToInsert);
+      if(addonErr) throw addonErr;
+    }
+
+    // ربط مجموعات الإضافات/المتغيرات المذكورة بالاسم في عمود "مجموعات الإضافات والمتغيرات" (بدون المساس بأي تخصيص سعر سابق للصنف)
+    await sb.from('item_addon_groups').delete().eq('item_id', itemId);
+    if(p.groupIds && p.groupIds.length){
+      const groupLinkRows = p.groupIds.map((gId, idx)=>({ item_id: itemId, group_id: gId, position: idx }));
+      const { error: groupLinkErr } = await sb.from('item_addon_groups').insert(groupLinkRows);
+      if(groupLinkErr) throw groupLinkErr;
+    }
   }
 }
 
@@ -8577,6 +9466,8 @@ document.getElementById('exportExcelBtn').addEventListener('click', ()=>{
     'طريقة الطلب بالوزن',
     'أقل وزن مسموح (جرام)',
     'الأحجام والأسعار',
+    'الإضافات والأسعار',
+    'مجموعات الإضافات والمتغيرات',
     'الوصف',
     'الحالة',
     'رابط الصورة'
@@ -8592,6 +9483,14 @@ document.getElementById('exportExcelBtn').addEventListener('click', ()=>{
       const sizesText = sizes.length
         ? sizes.map(s=> `${s.size_name}: ${s.price}`).join(' | ')
         : '';
+      const addons = itemAddons[item.id] || [];
+      const addonsText = addons.length
+        ? addons.map(a=> `${a.name}: ${a.price}`).join(' | ')
+        : '';
+      const linkedGroupNames = (itemAddonGroupLinks[item.id] || [])
+        .map(gId=> (addonGroups.find(g=> g.id === gId) || {}).name)
+        .filter(Boolean)
+        .join(' | ');
       const isWeightType = item.pricing_type === 'weight';
       rows.push([
         safeExcelText(cat.name),
@@ -8603,6 +9502,8 @@ document.getElementById('exportExcelBtn').addEventListener('click', ()=>{
         isWeightType ? weightSaleModeLabelAr(item.weight_sale_mode) : '',
         isWeightType && item.min_weight_grams != null ? item.min_weight_grams : '',
         safeExcelText(sizesText),
+        safeExcelText(addonsText),
+        safeExcelText(linkedGroupNames),
         safeExcelText(item.description || ''),
         (item.is_available !== false) ? 'متاح' : 'غير متاح',
         exportableImageUrl(item.image_url)
@@ -8617,7 +9518,7 @@ document.getElementById('exportExcelBtn').addEventListener('click', ()=>{
   ws['!cols'] = [
     { wch: 18 }, { wch: 26 }, { wch: 22 }, { wch: 14 },
     { wch: 12 }, { wch: 14 }, { wch: 16 }, { wch: 16 },
-    { wch: 30 }, { wch: 34 }, { wch: 10 }, { wch: 40 }
+    { wch: 30 }, { wch: 30 }, { wch: 28 }, { wch: 34 }, { wch: 10 }, { wch: 40 }
   ];
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'المنيو');
@@ -8777,6 +9678,7 @@ function buildItemCard(item){
         <span class="item-price">${formatItemPriceLabel(item)}</span>
       </div>
       ${item.description ? `<div class="item-desc">${escapeHtml(item.description)}</div>` : ''}
+      ${(itemAddons[item.id] || []).length ? `<div style="font-size:11px; color:var(--basil); margin-top:2px;">🧂 ${(itemAddons[item.id] || []).length} إضافة متاحة</div>` : ''}
       <div class="item-tools">
         <button data-action="edit">تعديل</button>
         <button data-action="toggleAvailability">${isAvailable ? 'إخفاء مؤقتًا (نفذت الكمية)' : 'إظهار مرة أخرى'}</button>
@@ -9398,6 +10300,34 @@ async function collectRestaurantBackup(restaurantId){
     itemSizes = data || [];
   }
 
+  let itemAddonsBackup = [];
+  if(itemIds.length){
+    const { data, error } = await sb.from('item_addons').select('*').in('item_id', itemIds);
+    if(error) throw error;
+    itemAddonsBackup = data || [];
+  }
+
+  // مجموعات الإضافات/المتغيرات القابلة لإعادة الاستخدام + خياراتها + الربط بالأصناف + تخصيصات الأسعار لكل صنف
+  const { data: addonGroupsBackup, error: groupsBackupErr } = await sb.from('addon_groups').select('*').eq('restaurant_id', restaurantId);
+  if(groupsBackupErr) throw groupsBackupErr;
+  const groupIdsBackup = (addonGroupsBackup || []).map(g=>g.id);
+  let addonGroupOptionsBackup = [];
+  if(groupIdsBackup.length){
+    const { data, error } = await sb.from('addon_group_options').select('*').in('group_id', groupIdsBackup);
+    if(error) throw error;
+    addonGroupOptionsBackup = data || [];
+  }
+  let itemAddonGroupsBackup = [];
+  let itemAddonOptionPricesBackup = [];
+  if(itemIds.length){
+    const { data: linksData, error: linksErr } = await sb.from('item_addon_groups').select('*').in('item_id', itemIds);
+    if(linksErr) throw linksErr;
+    itemAddonGroupsBackup = linksData || [];
+    const { data: pricesData, error: pricesErr } = await sb.from('item_addon_option_prices').select('*').in('item_id', itemIds);
+    if(pricesErr) throw pricesErr;
+    itemAddonOptionPricesBackup = pricesData || [];
+  }
+
   const { data: zones, error: zonesErr } = await sb.from('delivery_zones').select('*').eq('restaurant_id', restaurantId);
   if(zonesErr) throw zonesErr;
 
@@ -9437,6 +10367,11 @@ async function collectRestaurantBackup(restaurantId){
     categories: cats || [],
     items,
     item_sizes: itemSizes,
+    item_addons: itemAddonsBackup,
+    addon_groups: addonGroupsBackup || [],
+    addon_group_options: addonGroupOptionsBackup,
+    item_addon_groups: itemAddonGroupsBackup,
+    item_addon_option_prices: itemAddonOptionPricesBackup,
     delivery_zones: zones || [],
     orders: orders || [],
     order_items: orderItems,
@@ -9478,7 +10413,7 @@ async function maybeRunAutoDailyBackup(){
     if(!restaurant || !restaurant.id) return;
     const key = `mag_last_auto_backup_${restaurant.id}`;
     const today = new Date().toISOString().slice(0,10);
-    if(localStorage.getItem(key) === today) return; // اتعملت النهاردة بالفعل
+    if(localStorage.getItem(key) === today) return; // تمت اليوم بالفعل
     await downloadRestaurantBackup(restaurant.id, restaurant.slug);
     localStorage.setItem(key, today);
     toast('📦 تم تنزيل نسخة احتياطية تلقائية لليوم');
@@ -9486,6 +10421,21 @@ async function maybeRunAutoDailyBackup(){
     // لا يوقف فشل النسخة التلقائية استخدام لوحة التحكم أبدًا
     console.warn('auto backup failed', e);
   }
+}
+
+// تذكير لطيف (مرة واحدة يوميًا، بعد وقت معين، وبدون إلحاح) لصاحب متجر PRO بإرسال تقرير تقفيل اليوم
+// — بيظهر toast قابل للنقر بدل ما يعتمد على إن صاحب المتجر يفتكر يدوس على الزرار بنفسه
+function maybeShowDailyCloseReminder(){
+  try{
+    if(!restaurant || !restaurant.id || restaurant.restriction_daily_report_disabled) return;
+    const cairoHour = Number(new Date().toLocaleString('en-US', { timeZone:'Africa/Cairo', hour:'2-digit', hour12:false }));
+    if(cairoHour < 21) return; // يظهر بس من الساعة 9 مساءً بتوقيت القاهرة فصاعدًا
+    const key = `mag_daily_close_reminder_${restaurant.id}`;
+    const todayStr = new Date().toLocaleDateString('en-CA', { timeZone:'Africa/Cairo' });
+    if(localStorage.getItem(key) === todayStr) return; // تم عرضه اليوم بالفعل
+    localStorage.setItem(key, todayStr);
+    toast('📊 تقرير تقفيل اليوم جاهز — من "التقارير والإحصائيات"');
+  }catch(e){ /* تذكير اختياري فقط، أي خطأ فيه لا يوقف باقي لوحة التحكم */ }
 }
 
 async function migrateLegacyImages(){
@@ -9593,10 +10543,23 @@ function openItemModal(existing){
         <label>السعر قبل الخصم (اختياري) — اتركه فارغًا إذا لا يوجد خصم</label>
         <input type="number" id="itemOldPrice" step="0.01" value="${existing && existing.old_price != null && pricingType!=='sizes' ? existing.old_price : ''}" placeholder="0.00">
       </div>
+      <div class="field" id="costPriceFieldWrap">
+        <label>💰 سعر التكلفة (اختياري وخاص) — لحساب هامش الربح الفعلي في التقارير، ولا يظهر للعميل مطلقًا</label>
+        <input type="number" id="itemCostPrice" min="0" step="0.01" value="${existing && existing.cost_price != null ? existing.cost_price : ''}" placeholder="0.00">
+      </div>
       <div class="field" id="sizesFieldWrap">
         <label>الأحجام والأسعار</label>
         <div id="sizesRowsWrap"></div>
         <button type="button" class="add-btn" id="addSizeRowBtn" style="margin-top:8px; margin-bottom:0;">+ إضافة حجم</button>
+      </div>
+      <div class="field">
+        <label>🧂 إضافات خاصة بهذا الصنف فقط (اختياري) — في حال الرغبة بإضافة غير مدرجة ضمن أي مجموعة عامة</label>
+        <div id="addonsRowsWrap"></div>
+        <button type="button" class="add-btn" id="addAddonRowBtn" style="margin-top:8px; margin-bottom:0;">+ إضافة</button>
+      </div>
+      <div class="field" id="addonGroupsFieldWrap">
+        <label>🧩 مجموعات الإضافات والمتغيرات (اختياري) — اختر أي مجموعات جاهزة من "الإضافات والمتغيرات" لربطها بهذا الصنف</label>
+        <div id="itemAddonGroupsWrap"></div>
       </div>
       <div class="field">
         <label>الوصف (اختياري)</label>
@@ -9617,8 +10580,62 @@ function openItemModal(existing){
   const priceLabel = overlay.querySelector('#itemPriceLabel');
   const pricingTypeSelect = overlay.querySelector('#itemPricingType');
   const sizesRowsWrap = overlay.querySelector('#sizesRowsWrap');
+  const addonsRowsWrap = overlay.querySelector('#addonsRowsWrap');
+  const existingAddons = existing ? (itemAddons[existing.id] || []) : [];
 
   const pricesLocked = !!restaurant.restriction_prices_disabled;
+
+  function addAddonRow(name, nameEn, price){
+    const row = document.createElement('div');
+    row.className = 'zone-add-row';
+    row.style.marginTop = '8px';
+    row.innerHTML = `
+      <input type="text" class="addon-name-input" placeholder="اسم الإضافة (مثال: جبنة إضافية)" value="${name ? escapeHtml(name) : ''}" style="flex:1;">
+      <input type="number" class="addon-price-input" placeholder="السعر" step="0.01" min="0" value="${price != null ? price : ''}" style="width:100px;" ${pricesLocked ? 'disabled title="تعديل الأسعار غير متاح في نسختك الحالية"' : ''}>
+      <button type="button" data-action="removeAddon" style="background:none; border:1px solid var(--line); border-radius:6px; padding:9px 12px; cursor:pointer; color:var(--stone);">حذف</button>
+    `;
+    row.querySelector('[data-action="removeAddon"]').addEventListener('click', ()=> row.remove());
+    addonsRowsWrap.appendChild(row);
+  }
+  existingAddons.forEach(a=> addAddonRow(a.name, a.name_en, a.price));
+  overlay.querySelector('#addAddonRowBtn').addEventListener('click', ()=> addAddonRow('', '', null));
+
+  // ربط مجموعات الإضافات/المتغيرات الجاهزة بهذا الصنف، مع إمكانية تخصيص سعر مختلف لكل خيار في الصنف ده تحديدًا
+  const itemAddonGroupsWrap = overlay.querySelector('#itemAddonGroupsWrap');
+  const linkedGroupIds = existing ? (itemAddonGroupLinks[existing.id] || []) : [];
+  const existingOverrides = existing ? (itemOptionPriceOverrides[existing.id] || {}) : {};
+  if(!addonGroups.length){
+    itemAddonGroupsWrap.innerHTML = `<div class="orders-empty" style="padding:10px 0;">لا توجد مجموعات إضافات بعد — يمكنك إنشاؤها من "الإضافات والمتغيرات" في القائمة العلوية</div>`;
+  } else {
+    itemAddonGroupsWrap.innerHTML = addonGroups.map(g=>{
+      const isChecked = linkedGroupIds.includes(g.id);
+      const typeLabel = g.selection_type === 'single' ? 'متغيّر (اختيار واحد)' : 'إضافة (اختيار متعدد)';
+      const optionsHtml = (g.options || []).map(o=>{
+        const overridePrice = existingOverrides[o.id] != null ? existingOverrides[o.id] : o.price;
+        return `
+        <div style="display:flex; align-items:center; gap:8px; padding:4px 0 4px 20px;">
+          <span style="flex:1; font-size:13px;">${escapeHtml(o.name)}</span>
+          <span style="font-size:11px; color:var(--stone);">افتراضي: ${Number(o.price).toFixed(2)}</span>
+          <input type="number" class="option-price-override" data-option-id="${o.id}" data-default-price="${o.price}" value="${overridePrice}" min="0" step="0.01" style="width:90px;" ${pricesLocked ? 'disabled' : ''}>
+        </div>`;
+      }).join('');
+      return `
+      <div class="addon-group-attach-row" data-group-id="${g.id}" style="border:1px solid var(--line); border-radius:10px; padding:10px; margin-top:8px;">
+        <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+          <input type="checkbox" class="group-attach-checkbox" data-group-id="${g.id}" ${isChecked ? 'checked' : ''}>
+          <span style="font-weight:700;">${escapeHtml(g.name)}</span>
+          <span style="font-size:11.5px; color:var(--stone);">(${typeLabel} · ${(g.options||[]).length} خيار)</span>
+        </label>
+        <div class="group-options-prices" style="${isChecked ? '' : 'display:none;'} margin-top:6px;">${optionsHtml}</div>
+      </div>`;
+    }).join('');
+    itemAddonGroupsWrap.querySelectorAll('.group-attach-checkbox').forEach(cb=>{
+      cb.addEventListener('change', ()=>{
+        const pricesDiv = cb.closest('.addon-group-attach-row').querySelector('.group-options-prices');
+        pricesDiv.style.display = cb.checked ? '' : 'none';
+      });
+    });
+  }
 
   function addSizeRow(sizeName, sizeNameEn, price){
     const row = document.createElement('div');
@@ -9717,6 +10734,12 @@ function openItemModal(existing){
 
     let price = 0;
     let old_price = null;
+    let cost_price = null;
+    const costPriceRaw = overlay.querySelector('#itemCostPrice').value.trim();
+    if(costPriceRaw !== ''){
+      const parsedCost = parseFloat(costPriceRaw);
+      if(!isNaN(parsedCost) && parsedCost >= 0) cost_price = parsedCost;
+    }
     let sizesToSave = [];
     const weight_sale_mode = pricing_type === 'weight' ? overlay.querySelector('#itemWeightSaleMode').value : 'both';
     let min_weight_grams = null;
@@ -9790,14 +10813,14 @@ function openItemModal(existing){
     }
     let itemId = existing ? existing.id : null;
     if(existing){
-      const { error } = await sb.from('items').update({ name, name_en, price, old_price, description, image_url: finalImageUrl, pricing_type, weight_sale_mode, min_weight_grams }).eq('id', existing.id);
+      const { error } = await sb.from('items').update({ name, name_en, price, old_price, cost_price, description, image_url: finalImageUrl, pricing_type, weight_sale_mode, min_weight_grams }).eq('id', existing.id);
       if(error){ toast('تعذر الحفظ'); btn.disabled=false; return; }
       if(originalItemImageUrl && originalItemImageUrl !== finalImageUrl){
         await deleteStorageFileFromUrl(originalItemImageUrl); // امسح الصورة القديمة بعد نجاح الحفظ فقط
       }
     } else {
       const newPos = items.filter(i=>i.category_id===selectedCategoryId).length;
-      const { data, error } = await sb.from('items').insert({ category_id: selectedCategoryId, name, name_en, price, old_price, description, image_url: finalImageUrl, pricing_type, weight_sale_mode, min_weight_grams, position: newPos }).select().single();
+      const { data, error } = await sb.from('items').insert({ category_id: selectedCategoryId, name, name_en, price, old_price, cost_price, description, image_url: finalImageUrl, pricing_type, weight_sale_mode, min_weight_grams, position: newPos }).select().single();
       if(error){ toast('تعذر الإضافة'); btn.disabled=false; return; }
       itemId = data.id;
     }
@@ -9809,6 +10832,49 @@ function openItemModal(existing){
       if(sizeErr){ toast(`تم حفظ ${biz(restaurant.business_type,'itemDef')} لكن تعذر حفظ الأحجام`); overlay.remove(); await refreshData(); return; }
     } else if(existing){
       await sb.from('item_sizes').delete().eq('item_id', itemId);
+    }
+
+    // حفظ الإضافات (مستقلة تمامًا عن طريقة التسعير) — نفس أسلوب حذف-ثم-إدراج المستخدم مع الأحجام
+    const addonRows = addonsRowsWrap.querySelectorAll('.zone-add-row');
+    const addonsToSave = [];
+    for(const row of addonRows){
+      const aName = row.querySelector('.addon-name-input').value.trim();
+      const aPrice = parseFloat(row.querySelector('.addon-price-input').value);
+      if(!aName || isNaN(aPrice) || aPrice < 0) continue;
+      addonsToSave.push({ name: aName, price: aPrice });
+    }
+    await sb.from('item_addons').delete().eq('item_id', itemId);
+    if(addonsToSave.length){
+      const addonRowsToInsert = addonsToSave.map((a, idx)=>({ item_id: itemId, name: a.name, price: a.price, position: idx }));
+      const { error: addonErr } = await sb.from('item_addons').insert(addonRowsToInsert);
+      if(addonErr){ toast(`تم حفظ ${biz(restaurant.business_type,'itemDef')} لكن تعذر حفظ الإضافات`); overlay.remove(); await refreshData(); return; }
+    }
+
+    // حفظ ربط مجموعات الإضافات/المتغيرات المختارة + أي أسعار مخصصة لخيارات هذا الصنف تحديدًا (تختلف عن السعر الافتراضي للمجموعة)
+    const checkedGroupBoxes = [...itemAddonGroupsWrap.querySelectorAll('.group-attach-checkbox:checked')];
+    const selectedGroupIds = checkedGroupBoxes.map(cb=> cb.dataset.groupId);
+    await sb.from('item_addon_groups').delete().eq('item_id', itemId);
+    if(selectedGroupIds.length){
+      const linkRows = selectedGroupIds.map((gId, idx)=>({ item_id: itemId, group_id: gId, position: idx }));
+      const { error: linkErr } = await sb.from('item_addon_groups').insert(linkRows);
+      if(linkErr){ toast(`تم حفظ ${biz(restaurant.business_type,'itemDef')} لكن تعذر ربط مجموعات الإضافات`); overlay.remove(); await refreshData(); return; }
+    }
+    // نحفظ فقط الأسعار المخصصة اللي فعلًا مختلفة عن السعر الافتراضي، وفقط للمجموعات المختارة
+    await sb.from('item_addon_option_prices').delete().eq('item_id', itemId);
+    const overridesToSave = [];
+    checkedGroupBoxes.forEach(cb=>{
+      const row = cb.closest('.addon-group-attach-row');
+      row.querySelectorAll('.option-price-override').forEach(inp=>{
+        const overridePrice = parseFloat(inp.value);
+        const defaultPrice = parseFloat(inp.dataset.defaultPrice);
+        if(!isNaN(overridePrice) && overridePrice >= 0 && overridePrice !== defaultPrice){
+          overridesToSave.push({ item_id: itemId, option_id: inp.dataset.optionId, price: overridePrice });
+        }
+      });
+    });
+    if(overridesToSave.length){
+      const { error: overrideErr } = await sb.from('item_addon_option_prices').insert(overridesToSave);
+      if(overrideErr){ toast(`تم حفظ ${biz(restaurant.business_type,'itemDef')} لكن تعذر حفظ تخصيصات الأسعار`); overlay.remove(); await refreshData(); return; }
     }
 
     overlay.remove();
@@ -10089,6 +11155,59 @@ async function loadPublic(slug){
       pubItemSizes[s.item_id].push(s);
     });
   }
+  let pubItemAddons = {};
+  const allPubItemIds = pubItems.map(i=>i.id);
+  if(allPubItemIds.length){
+    const { data: addonsData } = await sb.from('item_addons').select('*').in('item_id', allPubItemIds).order('position');
+    (addonsData || []).forEach(a=>{
+      if(!pubItemAddons[a.item_id]) pubItemAddons[a.item_id] = [];
+      pubItemAddons[a.item_id].push(a);
+    });
+  }
+
+  // مجموعات الإضافات/المتغيرات القابلة لإعادة الاستخدام (تُعرض بجانب الإضافات الخاصة بالصنف نفسه، إن وُجدت)
+  let pubAddonGroups = [];
+  let pubItemAddonGroupLinks = {};
+  let pubItemOptionPriceOverrides = {};
+  const { data: pubGroupsData } = await sb.from('addon_groups').select('*').eq('restaurant_id', rest.id).order('position');
+  pubAddonGroups = pubGroupsData || [];
+  const pubGroupIds = pubAddonGroups.map(g=>g.id);
+  if(pubGroupIds.length){
+    const { data: pubOptionsData } = await sb.from('addon_group_options').select('*').in('group_id', pubGroupIds).order('position');
+    pubAddonGroups.forEach(g=> g.options = (pubOptionsData || []).filter(o=> o.group_id === g.id));
+  }
+  if(allPubItemIds.length){
+    const { data: pubLinksData } = await sb.from('item_addon_groups').select('item_id,group_id').in('item_id', allPubItemIds).order('position');
+    (pubLinksData || []).forEach(l=>{
+      if(!pubItemAddonGroupLinks[l.item_id]) pubItemAddonGroupLinks[l.item_id] = [];
+      pubItemAddonGroupLinks[l.item_id].push(l.group_id);
+    });
+    const { data: pubOverridesData } = await sb.from('item_addon_option_prices').select('item_id,option_id,price').in('item_id', allPubItemIds);
+    (pubOverridesData || []).forEach(o=>{
+      if(!pubItemOptionPriceOverrides[o.item_id]) pubItemOptionPriceOverrides[o.item_id] = {};
+      pubItemOptionPriceOverrides[o.item_id][o.option_id] = Number(o.price);
+    });
+  }
+  // تجميع كل "أقسام" الاختيار الخاصة بصنف معيّن في شكل واحد موحّد: مجموعات مرتبطة (متغيّر/إضافة) + إضافات الصنف الخاصة به نفسه
+  function getItemModifierSections(itemId){
+    const sections = [];
+    (pubItemAddonGroupLinks[itemId] || []).forEach(gId=>{
+      const group = pubAddonGroups.find(g=> g.id === gId);
+      if(!group || !(group.options||[]).length) return;
+      const overrides = pubItemOptionPriceOverrides[itemId] || {};
+      sections.push({
+        key: `group-${group.id}`,
+        title: group.name, title_en: group.name_en,
+        type: group.selection_type, // 'single' | 'multiple'
+        options: group.options.map(o=> ({ id: o.id, name: o.name, name_en: o.name_en, price: overrides[o.id] != null ? overrides[o.id] : Number(o.price) }))
+      });
+    });
+    const flatAddons = pubItemAddons[itemId] || [];
+    if(flatAddons.length){
+      sections.push({ key: `flat-${itemId}`, title: null, title_en: null, type: 'multiple', options: flatAddons.map(a=> ({ id: a.id, name: a.name, name_en: a.name_en, price: Number(a.price) })) });
+    }
+    return sections;
+  }
   const pubZones = zonesRes.data || [];
   // إذا فشل تحميل مناطق التوصيل (مشكلة شبكة مؤقتة)، تتم إعادة المحاولة بدلًا من افتراض أن المطعم ليس له مناطق أصلًا
   let zonesLoadFailed = !!zonesRes.error;
@@ -10142,7 +11261,7 @@ async function loadPublic(slug){
     try{
       const toStore = {};
       Object.entries(cart).forEach(([key,c])=>{
-        toStore[key] = { itemId: c.item.id, variantLabel: c.variantLabel || null, unitPrice: c.unitPrice, qty: c.qty, weightGrams: c.weightGrams || null, note: c.note || null };
+        toStore[key] = { itemId: c.item.id, variantLabel: c.variantLabel || null, unitPrice: c.unitPrice, qty: c.qty, weightGrams: c.weightGrams || null, note: c.note || null, addons: c.addons || [] };
       });
       localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(toStore));
     }catch(e){}
@@ -10172,7 +11291,18 @@ async function loadPublic(slug){
         } else if(item.pricing_type === 'unit'){
           unitPrice = Number(item.price);
         }
-        restored[key] = { item, variantLabel, unitPrice, qty, weightGrams: v.weightGrams || null, note: v.note || null };
+        // إعادة التحقق من الإضافات المحفوظة مقابل قائمة إضافات الصنف الحالية (تُسقط أي إضافة اتحذفت، وتحدّث سعرها لو اتغيّر)
+        // إعادة التحقق من الإضافات/المتغيرات المحفوظة مقابل كل الأقسام الحالية المرتبطة بالصنف (مجموعات + إضافات خاصة به)،
+        // فتُسقط أي خيار اتحذف أو اتشال ربطه، وتُحدَّث أسعار الباقي (تشمل أي تخصيص سعر لهذا الصنف تحديدًا)
+        const liveOptionsForItem = getItemModifierSections(v.itemId).flatMap(sec=> sec.options);
+        const restoredAddons = (v.addons || []).map(sa=> liveOptionsForItem.find(la=> la.id === sa.id)).filter(Boolean);
+        const addonsTotal = restoredAddons.reduce((s,a)=> s + Number(a.price), 0);
+        unitPrice += addonsTotal;
+        if(restoredAddons.length){
+          const addonsLabelText = restoredAddons.map(a=> tName(a.name, a.name_en)).join('، ');
+          variantLabel = [variantLabel, `+ ${addonsLabelText}`].filter(Boolean).join(' — ');
+        }
+        restored[key] = { item, variantLabel, unitPrice, qty, weightGrams: v.weightGrams || null, note: v.note || null, addons: restoredAddons };
       });
       cart = restored;
     }catch(e){}
@@ -10570,15 +11700,21 @@ async function loadPublic(slug){
           <button class="add-to-cart-btn" data-action="addSize" data-item-id="${i.id}">${lang==='en' ? '+ Add' : '+ أضف'}</button>` : '';
         cartLinesHtml = itemCartLinesHtml(i.id);
       } else {
-        const qty = cart[i.id] ? cart[i.id].qty : 0;
+        const itemHasAddons = getItemModifierSections(i.id).length > 0;
         priceLine = `${oldPriceSpan}${getRestaurantCurrency(rest)} ${Number(i.price).toFixed(2)}${discountBadge}`;
-        controlHtml = qty > 0 ? `
-          <div class="qty-stepper">
-            <button class="qty-btn" data-action="dec" data-item-id="${i.id}">−</button>
-            <span class="qty-val">${qty}</span>
-            <button class="qty-btn" data-action="inc" data-item-id="${i.id}">+</button>
-          </div>
-        ` : `<button class="add-to-cart-btn" data-action="add" data-item-id="${i.id}">${lang==='en' ? '+ Add' : '+ أضف'}</button>`;
+        if(itemHasAddons){
+          controlHtml = `<button class="add-to-cart-btn" data-action="addUnit" data-item-id="${i.id}">${lang==='en' ? '+ Add' : '+ أضف'}</button>`;
+          cartLinesHtml = itemCartLinesHtml(i.id);
+        } else {
+          const qty = cart[i.id] ? cart[i.id].qty : 0;
+          controlHtml = qty > 0 ? `
+            <div class="qty-stepper">
+              <button class="qty-btn" data-action="dec" data-item-id="${i.id}">−</button>
+              <span class="qty-val">${qty}</span>
+              <button class="qty-btn" data-action="inc" data-item-id="${i.id}">+</button>
+            </div>
+          ` : `<button class="add-to-cart-btn" data-action="add" data-item-id="${i.id}">${lang==='en' ? '+ Add' : '+ أضف'}</button>`;
+        }
       }
       return `${headerHtml}
       <div class="pub-item" data-id="${i.id}">
@@ -10640,6 +11776,74 @@ async function loadPublic(slug){
       body.appendChild(frag);
     }
 
+    // منتقي الإضافات/المتغيرات — يعرض كل الأقسام المرتبطة بالصنف (مجموعات + إضافات خاصة به):
+    // أقسام "متغيّر" تظهر كاختيار واحد إجباري (radio)، وأقسام "إضافة" تظهر كاختيار متعدد اختياري (checkbox)
+    function openAddonsPickerModal(item, onConfirm){
+      const sections = getItemModifierSections(item.id);
+      const pOverlay = document.createElement('div');
+      pOverlay.className = 'overlay';
+      pOverlay.innerHTML = `
+        <div class="modal">
+          <h3>${escapeHtml(tName(item.name, item.name_en))}</h3>
+          <div id="addonsPickerList">
+            ${sections.map(sec=>`
+              <div class="addon-picker-section" data-section-key="${sec.key}" data-section-type="${sec.type}" style="margin-bottom:14px;">
+                ${sec.title ? `<div style="font-weight:800; font-size:13.5px; margin-bottom:6px;">${escapeHtml(tName(sec.title, sec.title_en))}${sec.type==='single' ? (lang==='en' ? ' (required)' : ' (إجباري)') : ''}</div>` : (sec.type!=='multiple' ? '' : (sections.length>1 ? `<div style="font-weight:800; font-size:13.5px; margin-bottom:6px;">${lang==='en'?'Extras':'إضافات'}</div>` : ''))}
+                ${sec.options.map((o,idx)=>`
+                  <label style="display:flex; align-items:center; gap:8px; padding:9px 0; border-bottom:1px solid var(--line); cursor:pointer;">
+                    <input type="${sec.type==='single' ? 'radio' : 'checkbox'}" name="sec-${sec.key}" class="sec-option-input" data-section-key="${sec.key}" data-option-id="${o.id}">
+                    <span style="flex:1;">${escapeHtml(tName(o.name, o.name_en))}</span>
+                    <span style="font-weight:700; white-space:nowrap;">+${Number(o.price).toFixed(2)} ${getRestaurantCurrency(rest)}</span>
+                  </label>`).join('')}
+              </div>`).join('')}
+          </div>
+          <div class="modal-actions">
+            <button class="btn-cancel" id="addonsPickerCancel">${lang==='en' ? 'Cancel' : 'إلغاء'}</button>
+            <button class="btn-confirm" id="addonsPickerConfirm">${lang==='en' ? 'Add to cart' : 'أضف للسلة'}</button>
+          </div>
+        </div>`;
+      document.body.appendChild(pOverlay);
+      pOverlay.querySelector('#addonsPickerCancel').addEventListener('click', ()=> pOverlay.remove());
+      pOverlay.addEventListener('click', (e)=>{ if(e.target===pOverlay) pOverlay.remove(); });
+      pOverlay.querySelector('#addonsPickerConfirm').addEventListener('click', ()=>{
+        // التأكد من إن كل قسم "متغيّر" (إجباري) اتم اختيار قيمة له قبل المتابعة
+        const missingRequired = sections.some(sec=> sec.type==='single' && !pOverlay.querySelector(`input[name="sec-${sec.key}"]:checked`));
+        if(missingRequired){
+          toast(lang==='en' ? 'Please choose a required option' : 'من فضلك اختر الخيار الإجباري أولًا');
+          return;
+        }
+        const checkedInputs = [...pOverlay.querySelectorAll('.sec-option-input:checked')];
+        const selectedAddons = [];
+        checkedInputs.forEach(inp=>{
+          const sec = sections.find(s=> s.key === inp.dataset.sectionKey);
+          const opt = sec && sec.options.find(o=> o.id === inp.dataset.optionId);
+          if(opt) selectedAddons.push(opt);
+        });
+        pOverlay.remove();
+        onConfirm(selectedAddons);
+      });
+    }
+    // إضافة صنف للسلة مع مراعاة الإضافات/المتغيرات: يفتح المنتقي أولًا لو الصنف عنده أي أقسام، وإلا يضيف مباشرة
+    // baseKey: مفتاح الصنف الأساسي (itemId أو itemId:sizeId أو itemId:grams) — يُلحق به تعريف الاختيارات المختارة ليبقى كل توليفة سطر سلة منفصل
+    function addToCartRespectingAddons(item, baseKey, variantLabel, baseUnitPrice, weightGrams, triggerEl){
+      const sections = getItemModifierSections(item.id);
+      const finalize = (selectedAddons)=>{
+        const addonsTotal = selectedAddons.reduce((s,a)=> s + Number(a.price), 0);
+        const addonIdsKey = selectedAddons.map(a=>a.id).sort().join(',');
+        const key = addonIdsKey ? `${baseKey}::addons:${addonIdsKey}` : baseKey;
+        const unitPrice = baseUnitPrice + addonsTotal;
+        const addonsLabelText = selectedAddons.map(a=> tName(a.name, a.name_en)).join('، ');
+        const combinedLabel = [variantLabel, addonsLabelText ? `+ ${addonsLabelText}` : ''].filter(Boolean).join(' — ');
+        if(cart[key]){ cart[key].qty += 1; }
+        else { cart[key] = { item, variantLabel: combinedLabel || null, unitPrice, weightGrams: weightGrams || null, qty: 1, addons: selectedAddons }; }
+        flyToCart(triggerEl);
+        showAddedToast(tName(item.name, item.name_en));
+        renderPublicBody();
+      };
+      if(sections.length){ openAddonsPickerModal(item, finalize); }
+      else { finalize([]); }
+    }
+
     // unit items: simple add/inc/dec by item id
     body.querySelectorAll('[data-action="add"]').forEach(btn=>{
       btn.addEventListener('click', (e)=>{
@@ -10651,6 +11855,16 @@ async function loadPublic(slug){
         flyToCart(card ? (card.querySelector('img') || card) : btn);
         showAddedToast(tName(item.name, item.name_en));
         renderPublicBody();
+      });
+    });
+    // unit items with addons defined: always go through the addons picker (even with zero selected, to keep one consistent flow)
+    body.querySelectorAll('[data-action="addUnit"]').forEach(btn=>{
+      btn.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        const itemId = btn.dataset.itemId;
+        const item = pubItems.find(x=>x.id===itemId);
+        const card = btn.closest('.pub-item');
+        addToCartRespectingAddons(item, itemId, null, Number(item.price), null, card ? (card.querySelector('img') || card) : btn);
       });
     });
     body.querySelectorAll('[data-action="inc"]').forEach(btn=>{
@@ -10681,14 +11895,10 @@ async function loadPublic(slug){
         const item = pubItems.find(x=>x.id===itemId);
         const sel = body.querySelector(`[data-weight-select="${itemId}"]`);
         const grams = parseInt(sel.value);
-        const key = `${itemId}:${grams}`;
+        const baseKey = `${itemId}:${grams}`;
         const unitPrice = Number(item.price) * grams / 1000;
-        if(cart[key]){ cart[key].qty += 1; }
-        else { cart[key] = { item, variantLabel: weightLabel(grams), unitPrice, weightGrams: grams, qty: 1 }; }
         const card = btn.closest('.pub-item');
-        flyToCart(card ? (card.querySelector('img') || card) : btn);
-        showAddedToast(tName(item.name, item.name_en));
-        renderPublicBody();
+        addToCartRespectingAddons(item, baseKey, weightLabel(grams), unitPrice, grams, card ? (card.querySelector('img') || card) : btn);
       });
     });
     // weight items: toggle between "by weight" and "by price" input modes
@@ -10752,14 +11962,10 @@ async function loadPublic(slug){
           input.focus();
           return;
         }
-        const key = `${itemId}:${grams}`;
+        const baseKey = `${itemId}:${grams}`;
         const unitPrice = pricePerKg * grams / 1000;
-        if(cart[key]){ cart[key].qty += 1; }
-        else { cart[key] = { item, variantLabel: weightLabel(grams), unitPrice, weightGrams: grams, qty: 1 }; }
         const card = btn.closest('.pub-item');
-        flyToCart(card ? (card.querySelector('img') || card) : btn);
-        showAddedToast(tName(item.name, item.name_en));
-        renderPublicBody();
+        addToCartRespectingAddons(item, baseKey, weightLabel(grams), unitPrice, grams, card ? (card.querySelector('img') || card) : btn);
       });
     });
     // sizes items: add with selected size
@@ -10772,13 +11978,9 @@ async function loadPublic(slug){
         const sizeId = sel.value;
         const sizeObj = (pubItemSizes[itemId] || []).find(s=>s.id===sizeId);
         if(!sizeObj) return;
-        const key = `${itemId}:${sizeId}`;
-        if(cart[key]){ cart[key].qty += 1; }
-        else { cart[key] = { item, variantLabel: sizeObj.size_name, unitPrice: Number(sizeObj.price), qty: 1 }; }
+        const baseKey = `${itemId}:${sizeId}`;
         const card = btn.closest('.pub-item');
-        flyToCart(card ? (card.querySelector('img') || card) : btn);
-        showAddedToast(tName(item.name, item.name_en));
-        renderPublicBody();
+        addToCartRespectingAddons(item, baseKey, sizeObj.size_name, Number(sizeObj.price), null, card ? (card.querySelector('img') || card) : btn);
       });
     });
     body.querySelectorAll('.pub-item').forEach(row=>{
@@ -10955,6 +12157,7 @@ async function loadPublic(slug){
     }
     let paymentProofFile = null;
     const subtotal = cartSubtotal();
+    let appliedCoupon = null; // { code, discount_type, discount_value, discount_amount } — يُملأ بعد التحقق الناجح من redeem_store_coupon
     const overlay = document.createElement('div');
     overlay.className = 'overlay';
     overlay.innerHTML = `
@@ -10962,6 +12165,15 @@ async function loadPublic(slug){
         <h3>${lang==='en' ? 'Complete your order' : 'إتمام الطلب'}</h3>
         ${renderOrderSteps(3)}
         <div id="ordSummaryWrap"></div>
+        ${!rest.restriction_coupons_disabled ? `
+        <div class="field" id="ordCouponField">
+          <label>${lang==='en' ? 'Discount code (optional)' : 'كود الخصم (اختياري)'}</label>
+          <div style="display:flex; gap:8px;">
+            <input type="text" id="ordCouponInput" placeholder="${lang==='en' ? 'e.g. SAVE10' : 'مثال: SAVE10'}" style="flex:1; min-width:0; direction:ltr; text-transform:uppercase;">
+            <button type="button" class="pay-copy-btn" id="ordCouponApplyBtn" style="white-space:nowrap;">${lang==='en' ? 'Apply' : 'تطبيق'}</button>
+          </div>
+          <div id="ordCouponMsg" style="font-size:11.5px; margin-top:6px;"></div>
+        </div>` : ''}
         ${dineInTable ? `
         <div class="field">
           <div style="background:var(--paper-dim); border:1.5px dashed var(--basil); border-radius:10px; padding:10px 14px; text-align:center; font-weight:800; font-family:var(--display); color:var(--basil-dark);">
@@ -11103,9 +12315,13 @@ async function loadPublic(slug){
       if(paymentMethod === 'online' && rest.min_delivery_order_online != null) return Number(rest.min_delivery_order_online);
       return rest.min_delivery_order != null ? Number(rest.min_delivery_order) : null;
     }
+    function currentDiscount(){
+      return appliedCoupon ? Number(appliedCoupon.discount_amount) : 0;
+    }
     function renderSummary(){
       const fee = currentDeliveryFee();
-      const total = subtotal + fee;
+      const discount = currentDiscount();
+      const total = Math.max(0, subtotal - discount) + fee;
       const minOrder = currentMinOrder();
       const showMinOrderNote = orderType === 'delivery' && minOrder != null && subtotal < minOrder;
       overlay.querySelector('#ordSummaryWrap').innerHTML = `
@@ -11116,6 +12332,7 @@ async function loadPublic(slug){
           </div>
           <input type="text" class="cart-item-note" data-cart-key="${key}" value="${escapeHtml(c.note || '')}" placeholder="${lang==='en' ? `Note for this ${biz(rest.business_type,'itemEn')} (optional)` : `ملاحظة على ${biz(rest.business_type,'itemDef')} (اختياري)`}" style="width:100%; margin:2px 0 10px; padding:6px 8px; border:1px solid var(--line); border-radius:6px; font-family:var(--body); font-size:12px; background:#fff; color:var(--ink);">`).join('')}
         <div class="cart-summary-row"><span>${lang==='en' ? 'Subtotal' : 'المجموع الفرعي'}</span><span>${subtotal.toFixed(2)} ${getRestaurantCurrency(rest)}</span></div>
+        ${discount > 0 ? `<div class="cart-summary-row" style="color:var(--basil);"><span>${lang==='en' ? `Discount (${appliedCoupon.code})` : `خصم (${appliedCoupon.code})`}</span><span>- ${discount.toFixed(2)} ${getRestaurantCurrency(rest)}</span></div>` : ''}
         <div class="cart-summary-row"><span>${lang==='en' ? 'Delivery fee' : 'رسوم التوصيل'}</span><span>${isUnlistedZoneSelected() ? (computeDefaultUnlistedFee() != null ? `${fee.toFixed(2)} ${getRestaurantCurrency(rest)} ${lang==='en' ? '(estimated)' : '(تقديرية)'}` : (lang==='en' ? 'To be confirmed' : 'يحددها المطعم')) : fee.toFixed(2) + ' ' + getRestaurantCurrency(rest)}</span></div>
         <div class="cart-summary-row total"><span>${lang==='en' ? 'Total' : 'الإجمالي'}</span><span>${total.toFixed(2)} ${getRestaurantCurrency(rest)}${isUnlistedZoneSelected() ? (lang==='en' ? (computeDefaultUnlistedFee() != null ? ' (est.)' : ' + delivery') : (computeDefaultUnlistedFee() != null ? ' (تقديري)' : ' + التوصيل')) : ''}</span></div>
         ${showMinOrderNote ? `<div class="orders-empty" style="color:#a33; font-weight:700; padding-top:6px;">${lang==='en'
@@ -11130,6 +12347,44 @@ async function loadPublic(slug){
       });
     }
     renderSummary();
+
+    // تطبيق كود الخصم: يستدعي الدالة الآمنة redeem_store_coupon التي تتحقق وتستبدل الكود ذريًا من جهة السيرفر
+    const couponApplyBtn = overlay.querySelector('#ordCouponApplyBtn');
+    if(couponApplyBtn){
+      couponApplyBtn.addEventListener('click', async ()=>{
+        const input = overlay.querySelector('#ordCouponInput');
+        const msgEl = overlay.querySelector('#ordCouponMsg');
+        const code = input.value.trim();
+        if(!code){ input.focus(); return; }
+        couponApplyBtn.disabled = true;
+        msgEl.style.color = 'var(--stone)';
+        msgEl.textContent = lang==='en' ? 'Checking...' : 'جارِ التحقق...';
+        const { data, error } = await sb.rpc('redeem_store_coupon', { p_restaurant_id: rest.id, p_code: code, p_subtotal: subtotal });
+        couponApplyBtn.disabled = false;
+        if(error || !data || !data.ok){
+          appliedCoupon = null;
+          const reason = data && data.reason;
+          const reasonMsg = {
+            not_found: lang==='en' ? 'Invalid discount code' : 'كود الخصم غير صحيح',
+            expired: lang==='en' ? 'This code has expired' : 'انتهت صلاحية هذا الكود',
+            limit_reached: lang==='en' ? 'This code has reached its usage limit' : 'تم استنفاد عدد مرات استخدام هذا الكود',
+            min_order: lang==='en' ? `Minimum order for this code is ${data && data.min_order_amount} ${getRestaurantCurrency(rest)}` : `أقل قيمة طلب لهذا الكود ${data && data.min_order_amount} ${getRestaurantCurrency(rest)}`,
+            not_available: lang==='en' ? 'Discount codes are not available for this store' : 'أكواد الخصم غير متاحة لهذا المتجر',
+          }[reason] || (lang==='en' ? 'Could not apply this code' : 'تعذر تطبيق هذا الكود');
+          msgEl.style.color = 'var(--danger)';
+          msgEl.textContent = reasonMsg;
+          renderSummary();
+          return;
+        }
+        appliedCoupon = { code: data.code, discount_type: data.discount_type, discount_value: data.discount_value, discount_amount: data.discount_amount };
+        msgEl.style.color = 'var(--basil)';
+        msgEl.textContent = lang==='en' ? `Code applied — you saved ${Number(data.discount_amount).toFixed(2)} ${getRestaurantCurrency(rest)}` : `تم تطبيق الكود — وفّرت ${Number(data.discount_amount).toFixed(2)} ${getRestaurantCurrency(rest)}`;
+        input.disabled = true;
+        couponApplyBtn.disabled = true;
+        couponApplyBtn.textContent = lang==='en' ? 'Applied ✓' : 'تم التطبيق ✓';
+        renderSummary();
+      });
+    }
 
     const optionalToggle = overlay.querySelector('#ordOptionalToggle');
     const optionalWrap = overlay.querySelector('#ordOptionalWrap');
@@ -11352,6 +12607,7 @@ async function loadPublic(slug){
       const restName = tName(rest.name, rest.name_en);
       if(lang==='en'){
         let msg = `New order — ${restName}\nDate/time: ${dateTimeStr}\n\n${lines}\n\nSubtotal: ${subtotal.toFixed(2)} ${getRestaurantCurrency(rest)}`;
+        if(appliedCoupon) msg += `\nDiscount (${appliedCoupon.code}): - ${Number(appliedCoupon.discount_amount).toFixed(2)} ${getRestaurantCurrency(rest)}`;
         if(orderType==='delivery') msg += `\nDelivery fee${area ? ' ('+area+')' : ''}: ${fee.toFixed(2)} ${getRestaurantCurrency(rest)}`;
         msg += `\nTotal: ${total.toFixed(2)} ${getRestaurantCurrency(rest)}`;
         msg += `\n\nOrder type: ${typeLabel}\nName: ${customer_name}\nPhone: ${customer_phone}`;
@@ -11363,6 +12619,7 @@ async function loadPublic(slug){
         return msg;
       }
       let msg = `طلب جديد — ${restName}\nالتاريخ والوقت: ${dateTimeStr}\n\n${lines}\n\nالمجموع الفرعي: ${subtotal.toFixed(2)} ${getRestaurantCurrency(rest)}`;
+      if(appliedCoupon) msg += `\nخصم (${appliedCoupon.code}): - ${Number(appliedCoupon.discount_amount).toFixed(2)} ${getRestaurantCurrency(rest)}`;
       if(orderType==='delivery') msg += `\nرسوم التوصيل${area ? ' ('+area+')' : ''}: ${fee.toFixed(2)} ${getRestaurantCurrency(rest)}`;
       msg += `\nالإجمالي: ${total.toFixed(2)} ${getRestaurantCurrency(rest)}`;
       msg += `\n\nنوع الطلب: ${typeLabel}\nالاسم: ${customer_name}\nالهاتف: ${customer_phone}`;
@@ -11432,7 +12689,8 @@ async function loadPublic(slug){
         return;
       }
       const fee = delivery_fee != null ? Number(delivery_fee) : 0;
-      const total = subtotal + fee;
+      const discount = currentDiscount();
+      const total = Math.max(0, subtotal - discount) + fee;
 
       if(canPayOnline && paymentMethod === 'online' && !((typeof onlinePayOption === 'number' && getWalletsList()[onlinePayOption]) || (onlinePayOption==='instapay' && rest.instapay_account))){
         toast(lang==='en' ? 'Please choose a payment option' : 'يرجى اختيار وسيلة الدفع');
@@ -11459,15 +12717,26 @@ async function loadPublic(slug){
           orderPaymentDetail = rest.instapay_account || null;
         }
       }
+      // تقدير وقت التجهيز الذكي: متوسط وقت التجهيز الفعلي لنفس ساعة اليوم من الطلبات السابقة، مع رجوع تدريجي للرقم الافتراضي اليدوي عند نقص البيانات
+      let smartPrepMinutes = rest.default_prep_minutes || 20;
+      try{
+        const cairoHour = Number(new Date().toLocaleString('en-US', { timeZone:'Africa/Cairo', hour:'2-digit', hour12:false }));
+        const { data: smartMinutesData } = await sb.rpc('get_smart_prep_minutes', { p_restaurant_id: rest.id, p_hour: cairoHour });
+        if(smartMinutesData) smartPrepMinutes = smartMinutesData;
+      }catch(e){ /* عند فشل الاستدعاء، يُستخدم الرقم الافتراضي اليدوي بدلًا منه */ }
+      const estimatedReadyAt = new Date(Date.now() + smartPrepMinutes*60000).toISOString();
       const orderPayload = {
         id: newOrderId,
         restaurant_id: rest.id, customer_name, customer_phone, secondary_phone,
         order_type: orderType, city, area, address, notes, zone_id, delivery_fee,
         table_number: dineInTable || null,
         subtotal, total,
+        coupon_code: appliedCoupon ? appliedCoupon.code : null,
+        discount_amount: appliedCoupon ? discount : null,
         payment_method: orderPaymentMethod,
         payment_detail: orderPaymentDetail,
-        payment_status: isOnlinePayment ? 'unpaid' : null
+        payment_status: isOnlinePayment ? 'unpaid' : null,
+        estimated_ready_at: estimatedReadyAt
       };
       const { error } = await sb.from('orders').insert(orderPayload);
       if(error){
@@ -11505,7 +12774,9 @@ async function loadPublic(slug){
         order_id: orderRow.id, item_id: c.item.id,
         item_name: c.variantLabel ? `${c.item.name} (${c.variantLabel})` : c.item.name,
         variant_label: c.variantLabel, price: c.unitPrice, quantity: c.qty, item_note: c.note || null,
-        weight_grams: c.weightGrams || null
+        weight_grams: c.weightGrams || null,
+        addons_label: (c.addons && c.addons.length) ? c.addons.map(a=> tName(a.name, a.name_en)).join('، ') : null,
+        addons_total: (c.addons && c.addons.length) ? c.addons.reduce((s,a)=> s + Number(a.price), 0) : null
       }));
       if(cartLines.length){
         await sb.from('order_items').insert(cartLines);
@@ -11534,11 +12805,11 @@ async function loadPublic(slug){
           openOrderChannel(orderChannels[0].id, orderMsgText);
         }
       }
-      showOrderSuccessModal(orderRow, orderChannels, orderMsgText, isOnlinePayment, paymentProofFile);
+      showOrderSuccessModal(orderRow, orderChannels, orderMsgText, isOnlinePayment, paymentProofFile, smartPrepMinutes);
     });
   }
 
-  function showOrderSuccessModal(orderRow, channels, orderMsgText, isOnlinePayment, paymentProofFile){
+  function showOrderSuccessModal(orderRow, channels, orderMsgText, isOnlinePayment, paymentProofFile, smartPrepMinutes){
     const orderId = orderRow.id;
     const orderNumberHtml = orderRow.order_number != null
       ? `<div class="orders-empty" style="padding:0 0 10px; font-size:20px; font-weight:800; color:var(--ember); font-family:var(--mono); direction:ltr;">#${orderRow.order_number}</div>`
@@ -11572,6 +12843,10 @@ async function loadPublic(slug){
         <h3>${lang==='en' ? 'Order sent! ✅' : 'تم إرسال طلبك بنجاح! ✅'}</h3>
         ${orderNumberHtml}
         <div class="orders-empty" style="padding:0 0 14px;">${statusMsg}</div>
+        <div class="insight-card" style="text-align:${lang==='en' ? 'left' : 'right'};">
+          <span class="insight-icon">⏱️</span>
+          <span>${lang==='en' ? `Estimated preparation time: around ${smartPrepMinutes} minutes` : `الوقت المتوقع للتجهيز: نحو ${smartPrepMinutes} دقيقة`}</span>
+        </div>
         ${isOnlinePayment ? `<div class="insight-card warning" style="text-align:${lang==='en' ? 'left' : 'right'};">
           <span class="insight-icon">💳</span>
           <span>${lang==='en' ? 'Please complete the transfer if you haven\'t already. Your order will be confirmed once the payment is verified.' : 'برجاء إتمام التحويل إن لم يكن قد تم بعد. سيتم تأكيد طلبك بعد التحقق من الدفع.'}</span>

@@ -659,6 +659,16 @@ body.pub-mobile-ad-open .pub-order-btn{ bottom:calc(22px + 58px); }
 .modal-actions{display:flex; flex-wrap:wrap; gap:10px; margin-top:18px;}
 .modal-actions button, .modal-actions a{ min-width:120px; }
 .modal-actions button{ flex:1; padding:11px; border-radius:8px; border:none; font-family:var(--body); font-weight:800; font-size:14px; cursor:pointer; }
+/* موديل بأزرار عائمة (ثابتة) أسفل الشاشة — لا تختفي مع السكرول، مستخدم حاليًا في شاشة إتمام الطلب */
+.modal.modal-floating-footer{ display:flex; flex-direction:column; padding:0; overflow:hidden; }
+.modal-floating-footer .modal-scroll{ overflow-y:auto; padding:22px 22px 4px; flex:1; min-height:0; }
+.modal-floating-footer .modal-actions{ margin:0; padding:14px 22px calc(14px + env(safe-area-inset-bottom,0px)); box-shadow:0 -6px 16px rgba(0,0,0,.09); background:#fff; position:relative; z-index:2; flex-direction:column; align-items:stretch; gap:8px; }
+.ord-footer-total{ display:flex; justify-content:space-between; align-items:baseline; font-family:var(--display); font-weight:800; font-size:15px; color:var(--ink); }
+.ord-footer-total .ord-footer-total-amount{ font-size:17px; color:var(--basil-dark,var(--ink)); }
+.ord-footer-buttons{ display:flex; gap:10px; }
+/* تظليل الحقول الإجبارية الفارغة عند الضغط على تأكيد الطلب دون تعبئتها */
+.field-error{ border-color:var(--danger,#a33) !important; box-shadow:0 0 0 3px rgba(163,51,51,.15) !important; }
+.field-error-box{ border:1.5px solid var(--danger,#a33) !important; box-shadow:0 0 0 3px rgba(163,51,51,.15) !important; border-radius:8px; }
 .btn-cancel{background:var(--paper-dim); color:var(--ink);}
 .btn-danger{background:var(--danger); color:#fff;}
 .btn-confirm{background:var(--basil); color:#fff;}
@@ -12158,10 +12168,18 @@ async function loadPublic(slug){
     let paymentProofFile = null;
     const subtotal = cartSubtotal();
     let appliedCoupon = null; // { code, discount_type, discount_value, discount_amount } — يُملأ بعد التحقق الناجح من redeem_store_coupon
+    // يتحقق من أن رقم الهاتف مصري صحيح الصيغة (01 متبوعًا بـ 0/1/2/5 ثم 8 أرقام)، مع تجاهل الفراغات والشرطات وبادئة +20
+    function isValidEgyptPhone(raw){
+      if(!raw) return false;
+      let p = raw.replace(/[\s\-()]/g,'');
+      p = p.replace(/^\+?20/,'0').replace(/^00?20/,'0');
+      return /^01[0125]\d{8}$/.test(p);
+    }
     const overlay = document.createElement('div');
     overlay.className = 'overlay';
     overlay.innerHTML = `
-      <div class="modal">
+      <div class="modal modal-floating-footer">
+        <div class="modal-scroll">
         <h3>${lang==='en' ? 'Complete your order' : 'إتمام الطلب'}</h3>
         ${renderOrderSteps(3)}
         <div id="ordSummaryWrap"></div>
@@ -12263,12 +12281,62 @@ async function loadPublic(slug){
           <label>${lang==='en' ? 'Website' : 'الموقع الإلكتروني'}</label>
           <input type="text" id="ordWebsite" name="website" tabindex="-1" autocomplete="off">
         </div>
-        <div class="modal-actions">
-          <button class="btn-cancel" id="ordCancel">${lang==='en' ? 'Cancel' : 'إلغاء'}</button>
-          <button class="btn-confirm btn-confirm-final" id="ordConfirm">${lang==='en' ? 'Confirm order' : 'تأكيد الطلب'}</button>
+        </div>
+        <div class="modal-actions" id="ordModalActions">
+          <div id="ordFooterTotal" class="ord-footer-total"></div>
+          <div class="ord-footer-buttons">
+            <button class="btn-cancel" id="ordCancel">${lang==='en' ? 'Cancel' : 'إلغاء'}</button>
+            <button class="btn-confirm btn-confirm-final" id="ordConfirm">${lang==='en' ? 'Confirm order' : 'تأكيد الطلب'}</button>
+          </div>
         </div>
       </div>`;
     document.body.appendChild(overlay);
+
+    // يزيل تظليل الخطأ عن أي حقل بمجرد أن يبدأ العميل في تعبئته/تعديله
+    overlay.addEventListener('input', (e)=>{ if(e.target.classList && e.target.classList.contains('field-error')) e.target.classList.remove('field-error'); });
+    overlay.addEventListener('change', (e)=>{ if(e.target.classList && e.target.classList.contains('field-error')) e.target.classList.remove('field-error'); });
+
+    // تنبيه فوري إذا غادر العميل حقلاً إجباريًا فارغًا أو بصيغة غير صحيحة، من غير ما ينتظر لحد ما يضغط "تأكيد الطلب"
+    function attachBlurValidation(id, isInvalid){
+      const el = overlay.querySelector(id);
+      if(!el) return;
+      el.addEventListener('blur', ()=>{ if(isInvalid(el.value.trim())) el.classList.add('field-error'); });
+    }
+    attachBlurValidation('#ordName', v => !v);
+    attachBlurValidation('#ordPhone', v => !v || !isValidEgyptPhone(v));
+    attachBlurValidation('#ordPhone2', v => !!v && !isValidEgyptPhone(v));
+    attachBlurValidation('#ordAddress', v => orderType==='delivery' && !v);
+    attachBlurValidation('#ordArea', v => orderType==='delivery' && !v);
+    attachBlurValidation('#ordOtherZoneName', v => orderType==='delivery' && isUnlistedZoneSelected() && !v);
+    attachBlurValidation('#ordZoneSelect', v => orderType==='delivery' && !v);
+
+    // تركيز تلقائي على أول حقل عند فتح الشاشة — فقط على الأجهزة التي تحتوي فأرة/لوحة مفاتيح، تجنبًا لفتح كيبورد الموبايل تلقائيًا
+    if(window.matchMedia && window.matchMedia('(pointer:fine)').matches){
+      const nameInput = overlay.querySelector('#ordName');
+      if(nameInput) setTimeout(()=> nameInput.focus(), 50);
+    }
+
+    // على الموبايل: يضمن ظهور الحقل اللي العميل بيكتب فيه فوق الكيبورد ومش مغطى بشريط الأزرار الثابت
+    overlay.addEventListener('focusin', (e)=>{
+      const t = e.target;
+      if(t && (t.tagName==='INPUT' || t.tagName==='TEXTAREA' || t.tagName==='SELECT')){
+        setTimeout(()=> t.scrollIntoView({block:'center', behavior:'smooth'}), 300);
+      }
+    });
+    // يقلّص ارتفاع الشاشة ليتوافق مع المساحة المرئية الفعلية عند ظهور كيبورد الموبايل، حتى تظل الأزرار العائمة ظاهرة دائمًا فوقه
+    if(window.visualViewport){
+      const vv = window.visualViewport;
+      const modalEl = overlay.querySelector('.modal');
+      function syncViewportForKeyboard(){
+        if(!overlay.isConnected){ vv.removeEventListener('resize', syncViewportForKeyboard); vv.removeEventListener('scroll', syncViewportForKeyboard); return; }
+        overlay.style.top = vv.offsetTop + 'px';
+        overlay.style.height = vv.height + 'px';
+        if(modalEl) modalEl.style.maxHeight = Math.round(vv.height * 0.9) + 'px';
+      }
+      vv.addEventListener('resize', syncViewportForKeyboard);
+      vv.addEventListener('scroll', syncViewportForKeyboard);
+      syncViewportForKeyboard();
+    }
 
     // يحسب رسوم توصيل تقديرية افتراضية للمنطقة غير المدرجة حسب إعداد المطعم (رقم ثابت / أعلى سعر / متوسط / منطقة معينة)
     function computeDefaultUnlistedFee(){
@@ -12339,6 +12407,10 @@ async function loadPublic(slug){
           ? `Minimum delivery order is ${minOrder} ${getRestaurantCurrency(rest)} — add ${(minOrder - subtotal).toFixed(2)} ${getRestaurantCurrency(rest)} more`
           : `أقل قيمة طلب للتوصيل ${minOrder} ${getRestaurantCurrency(rest)} — أضف ${(minOrder - subtotal).toFixed(2)} ${getRestaurantCurrency(rest)} لإتمام الطلب`}</div>` : ''}
       `;
+      const footerTotalEl = overlay.querySelector('#ordFooterTotal');
+      if(footerTotalEl){
+        footerTotalEl.innerHTML = `<span>${lang==='en' ? 'Total' : 'الإجمالي'}</span><span class="ord-footer-total-amount">${total.toFixed(2)} ${getRestaurantCurrency(rest)}${isUnlistedZoneSelected() && computeDefaultUnlistedFee() == null ? (lang==='en' ? ' + delivery' : ' + التوصيل') : ''}</span>`;
+      }
       overlay.querySelectorAll('.cart-item-note').forEach(inp=>{
         inp.addEventListener('input', ()=>{
           const key = inp.dataset.cartKey;
@@ -12631,6 +12703,14 @@ async function loadPublic(slug){
       return msg;
     }
 
+    // يتحقق من أن رقم الهاتف مصري صحيح الصيغة (01 متبوعًا بـ 0/1/2/5 ثم 8 أرقام)، مع تجاهل الفراغات والشرطات وبادئة +20
+    function isValidEgyptPhone(raw){
+      if(!raw) return false;
+      let p = raw.replace(/[\s\-()]/g,'');
+      p = p.replace(/^\+?20/,'0').replace(/^00?20/,'0');
+      return /^01[0125]\d{8}$/.test(p);
+    }
+
     overlay.querySelector('#ordCancel').addEventListener('click', ()=> overlay.remove());
     overlay.addEventListener('click', (e)=>{ if(e.target===overlay) overlay.remove(); });
     overlay.querySelector('#ordConfirm').addEventListener('click', async ()=>{
@@ -12677,7 +12757,41 @@ async function loadPublic(slug){
       }
 
       if(!customer_name || !customer_phone || (orderType==='delivery' && !area) || (orderType==='delivery' && !address)){
+        let firstErrorEl = null;
+        const markError = (el)=>{ if(!el) return; el.classList.add('field-error'); if(!firstErrorEl) firstErrorEl = el; };
+        if(!customer_name) markError(overlay.querySelector('#ordName'));
+        if(!customer_phone) markError(overlay.querySelector('#ordPhone'));
+        if(orderType==='delivery' && !area){
+          if(pubZones.length > 0){
+            markError(overlay.querySelector(unlistedZone ? '#ordOtherZoneName' : '#ordZoneSelect'));
+          } else {
+            markError(overlay.querySelector('#ordArea'));
+          }
+        }
+        if(orderType==='delivery' && !address) markError(overlay.querySelector('#ordAddress'));
         toast(lang==='en' ? 'Please fill in all required fields' : 'يرجى إدخال جميع الحقول المطلوبة');
+        if(firstErrorEl){
+          firstErrorEl.scrollIntoView({behavior:'smooth', block:'center'});
+          if(typeof firstErrorEl.focus === 'function') firstErrorEl.focus({preventScroll:true});
+        }
+        return;
+      }
+      if(customer_phone && !isValidEgyptPhone(customer_phone)){
+        const phoneEl = overlay.querySelector('#ordPhone');
+        phoneEl.classList.add('field-error');
+        toast(lang==='en' ? 'Please enter a valid phone number (e.g. 01xxxxxxxxx)' : 'رقم الهاتف غير صحيح، من فضلك تأكد منه (مثال: 01xxxxxxxxx)');
+        phoneEl.scrollIntoView({behavior:'smooth', block:'center'});
+        phoneEl.focus({preventScroll:true});
+        return;
+      }
+      if(secondary_phone && !isValidEgyptPhone(secondary_phone)){
+        const phone2El = overlay.querySelector('#ordPhone2');
+        const optWrap = overlay.querySelector('#ordOptionalWrap');
+        if(optWrap && !optWrap.classList.contains('open')){ optWrap.classList.add('open'); overlay.querySelector('#ordOptionalToggleIcon').textContent = '▾'; }
+        phone2El.classList.add('field-error');
+        toast(lang==='en' ? 'The additional phone number is not valid' : 'رقم الهاتف الإضافي غير صحيح');
+        phone2El.scrollIntoView({behavior:'smooth', block:'center'});
+        phone2El.focus({preventScroll:true});
         return;
       }
       if(orderType === 'delivery' && currentMinOrder() != null && subtotal < currentMinOrder()){
@@ -12694,6 +12808,8 @@ async function loadPublic(slug){
 
       if(canPayOnline && paymentMethod === 'online' && !((typeof onlinePayOption === 'number' && getWalletsList()[onlinePayOption]) || (onlinePayOption==='instapay' && rest.instapay_account))){
         toast(lang==='en' ? 'Please choose a payment option' : 'يرجى اختيار وسيلة الدفع');
+        const payWrap = overlay.querySelector('#ordPayOnlineWrap');
+        if(payWrap){ payWrap.classList.add('field-error-box'); payWrap.scrollIntoView({behavior:'smooth', block:'center'}); setTimeout(()=> payWrap.classList.remove('field-error-box'), 2500); }
         return;
       }
 

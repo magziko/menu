@@ -46,8 +46,9 @@ body{margin:0; font-family:var(--body); background:var(--ink); color:var(--ink);
 .hidden{display:none !important;}
 
 #authScreen{ min-height:100vh; background:var(--ink); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:30px 20px; }
-.auth-brand{ font-family:var(--display); color:var(--paper); font-size:32px; display:flex; align-items:center; gap:10px; margin-bottom:26px; }
+.auth-brand{ font-family:var(--display); color:var(--paper); font-size:32px; display:flex; align-items:center; gap:12px; margin-bottom:26px; }
 .auth-brand .dot{width:10px;height:10px;border-radius:50%;background:var(--ember);}
+.auth-brand-logo{ width:52px; height:52px; border-radius:14px; object-fit:cover; box-shadow:0 6px 18px rgba(0,0,0,.35); flex-shrink:0; }
 .auth-box{ background:#2A2825; border:1px solid #3a3733; border-radius:14px; padding:26px; width:min(380px,92vw); }
 .auth-showcase{ margin-top:22px; width:min(380px,92vw); text-align:center; }
 .auth-showcase-label{ color:var(--stone-light); font-size:12px; font-weight:700; margin-bottom:10px; }
@@ -93,8 +94,9 @@ body{margin:0; font-family:var(--body); background:var(--ink); color:var(--ink);
 @media (max-width: 980px){ .app{grid-template-columns:1fr;} }
 .topbar{ grid-column:1/-1; display:flex; align-items:center; justify-content:space-between; padding:14px 24px; background:var(--ink); border-bottom:2px solid #3a3733; gap:16px; flex-wrap:wrap; }
 .brand-group{display:flex; align-items:center; gap:14px;}
-.brand{ font-family:var(--display); color:var(--paper); font-size:24px; display:flex; align-items:center; gap:8px; }
+.brand{ font-family:var(--display); color:var(--paper); font-size:24px; display:flex; align-items:center; gap:10px; }
 .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--ember);}
+.brand-logo{ width:34px; height:34px; border-radius:9px; object-fit:cover; flex-shrink:0; box-shadow:0 3px 10px rgba(0,0,0,.3); }
 .switch-link{color:var(--stone); font-size:12px; cursor:pointer; text-decoration:underline; text-underline-offset:3px;}
 .switch-link:hover{color:var(--paper);}
 .topbar-actions{display:flex; gap:10px; flex-wrap:wrap;}
@@ -136,7 +138,10 @@ body{margin:0; font-family:var(--body); background:var(--ink); color:var(--ink);
 .rail-ad-card.rail-ad-hidden{ display:none !important; }
 .rail-ad-close{ position:absolute; top:6px; inset-inline-end:6px; width:20px; height:20px; border-radius:50%; background:transparent; border:none; color:var(--stone); font-size:11px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background-color .15s ease, color .15s ease; }
 .rail-ad-close:hover{ background:#3a3733; color:var(--paper); }
-.rail-ad-link{ display:flex; align-items:center; gap:10px; text-decoration:none; }
+/* الشرائح متراصّة فوق بعضها في نفس الخلية (grid) حتى لا يقفز ارتفاع الكارت عند التبديل */
+.rail-ad-slides{ display:grid; }
+.rail-ad-link{ grid-area:1/1; display:flex; align-items:center; gap:10px; text-decoration:none; visibility:hidden; opacity:0; transition:opacity .35s ease, visibility 0s linear .35s; }
+.rail-ad-link.active{ visibility:visible; opacity:1; transition:opacity .35s ease; }
 .rail-ad-icon{ font-size:22px; flex-shrink:0; }
 .rail-ad-text{ display:flex; flex-direction:column; gap:2px; min-width:0; }
 .rail-ad-text strong{ font-size:12.5px; font-weight:800; color:var(--paper); }
@@ -338,6 +343,7 @@ body.pub-menu-only .add-to-cart-btn{ display:none !important; }
 .pub-side-ad-left{ left:26px; background:linear-gradient(165deg, #E4E9F1 0%, #CBD5E3 100%); }
 .pub-side-ad-right{ right:26px; background:linear-gradient(160deg, #D7DEEA 0%, #C2CCDC 100%); }
 .pub-side-ad-right[data-active="quran"]{ background:linear-gradient(160deg, #D9E1D7 0%, #C4CFC1 100%); }
+.pub-side-ad-left[data-active="sentence"]{ background:linear-gradient(165deg, #EBE3D6 0%, #D9CDB8 100%); }
 .pub-side-ad-badge{ position:absolute; top:12px; inset-inline-start:14px; font-size:10px; font-weight:700; background:rgba(32,31,29,.1); color:var(--stone); padding:3px 9px; border-radius:10px; letter-spacing:.5px; z-index:5; }
 .pub-side-ad-close{
   position:absolute; top:9px; inset-inline-end:9px; width:27px; height:27px; border-radius:50%;
@@ -728,6 +734,7 @@ body.pub-design-dark .pub-logo-wrap img{ background:#F1EADC; border-radius:12px;
 body.pub-design-dark .pub-side-ad-left{ background:linear-gradient(165deg, #313A48 0%, #262D38 100%); }
 body.pub-design-dark .pub-side-ad-right{ background:linear-gradient(160deg, #2E3644 0%, #232A35 100%); }
 body.pub-design-dark .pub-side-ad-right[data-active="quran"]{ background:linear-gradient(160deg, #2D3A2C 0%, #222C21 100%); }
+body.pub-design-dark .pub-side-ad-left[data-active="sentence"]{ background:linear-gradient(165deg, #3A342B 0%, #2C2721 100%); }
 body.pub-design-dark .pub-side-ad::after{ background:radial-gradient(circle at 30% 15%, rgba(255,255,255,.06), transparent 55%); }
 
 body.pub-design-luxury{ --ember:#7A2048; --ember-dark:#5C1836; }
@@ -786,6 +793,25 @@ body.pub-design-dark .pub-tab.active{ background:linear-gradient(135deg, var(--e
 body.pub-design-dark .cart-badge{ background:#2A2825; }
 body.pub-design-dark .pub-more-menu{ background:#2A2825; border-color:#3A352D; }
 
+/* تصميم "الأقسام الجانبية" — قائمة أقسام ثابتة بجانب المنتجات بدل التبويبات الأفقية */
+body.pub-design-sidebar{ --ember:#9E1B24; --ember-dark:#6E1218; }
+body.pub-design-sidebar .pub-tab.active{ background:var(--ember); }
+@media (min-width:760px){
+  body.pub-design-sidebar #publicScreen{ max-width:1080px; margin:0 auto; }
+  body.pub-design-sidebar .pub-topbar,
+  body.pub-design-sidebar .pub-logo-wrap,
+  body.pub-design-sidebar .pub-footer{ max-width:none; }
+  body.pub-design-sidebar #pubClosedBanner,
+  body.pub-design-sidebar #pubRepeatOrderBtn{ max-width:none !important; }
+  body.pub-design-sidebar .pub-tabs-wrap{ position:sticky; top:0; float:right; width:210px; background:transparent; padding:10px 0 40px; margin:0; z-index:15; max-width:none; }
+  body.pub-design-sidebar .pub-search{ max-width:none; padding:0 0 12px; }
+  body.pub-design-sidebar .pub-tabs{ flex-direction:column; overflow:visible; max-width:none; padding:0; margin:0; gap:6px; }
+  body.pub-design-sidebar .pub-tab{ width:100%; justify-content:space-between; border-radius:8px; }
+  body.pub-design-sidebar .pub-body{ max-width:none; margin:0; padding:4px 20px 60px; margin-right:230px; overflow:hidden; }
+  body.pub-design-sidebar .pub-cat-heading{ max-width:none; }
+}
+body.pub-design-sidebar .pub-item{ border-radius:10px; }
+
 .design-picker-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:2px 0 4px; }
 @media (max-width:460px){ .design-picker-grid{ grid-template-columns:repeat(2,1fr); gap:10px; } }
 @media (max-width:340px){ .design-picker-grid{ grid-template-columns:1fr; } }
@@ -814,7 +840,7 @@ body.pub-design-dark .pub-more-menu{ background:#2A2825; border-color:#3A352D; }
 </div>
 
 <div id="authScreen" class="hidden">
-  <div class="auth-brand"><span class="dot"></span> منيو m@g</div>
+  <div class="auth-brand"><img class="auth-brand-logo" src="favicon.png" alt="منيو m@g"> منيو m@g</div>
   <div class="auth-box">
     <div class="auth-tabs">
       <div class="auth-tab active" id="tabLogin">تسجيل الدخول</div>
@@ -872,7 +898,7 @@ body.pub-design-dark .pub-more-menu{ background:#2A2825; border-color:#3A352D; }
 <div id="cashierScreen" class="hidden">
   <div class="topbar">
     <div class="brand-group">
-      <div class="brand"><span class="dot"></span> <span id="cashierRestName">منيو m@g</span></div>
+      <div class="brand"><img class="brand-logo" src="favicon.png" alt="منيو m@g" title="منيو m@g"> <span id="cashierRestName">منيو m@g</span></div>
       <span style="color:var(--stone); font-size:12px; background:#2A2825; border:1px solid #454138; border-radius:6px; padding:5px 10px;">👤 حساب كاشير</span>
     </div>
     <div class="topbar-actions">
@@ -915,7 +941,7 @@ body.pub-design-dark .pub-more-menu{ background:#2A2825; border-color:#3A352D; }
 <div class="app hidden" id="dashboardScreen">
   <div class="topbar">
     <div class="brand-group">
-      <div class="brand"><span class="dot"></span> <span id="dashRestaurantName">—</span></div>
+      <div class="brand"><img class="brand-logo" src="favicon.png" alt="منيو m@g" title="منيو m@g"> <span id="dashRestaurantName">—</span></div>
       <span id="branchSwitcherWrap" class="hidden" style="display:inline-flex; align-items:center; gap:4px;">
         <select id="branchSwitcherSelect" style="font-size:12px; padding:3px 6px; border-radius:6px; border:1px solid var(--line); background:var(--paper); color:var(--ink); max-width:140px;"></select>
         <button type="button" class="link-btn" id="addBranchBtn" title="إضافة فرع جديد" style="font-size:12px; padding:3px 8px;">+ فرع</button>
@@ -994,13 +1020,22 @@ body.pub-design-dark .pub-more-menu{ background:#2A2825; border-color:#3A352D; }
     <div id="categoryList"></div>
     <div class="rail-ad-card" id="railAdCard">
       <button type="button" class="rail-ad-close" id="railAdCloseBtn" aria-label="إغلاق">✕</button>
-      <a class="rail-ad-link" href="https://magziko.github.io/Pos/index.html" target="_blank" rel="noopener">
-        <span class="rail-ad-icon">🧾</span>
-        <span class="rail-ad-text">
-          <strong>نظام نقاط البيع</strong>
-          <span>جرّب نظام POS من نفس الفريق</span>
-        </span>
-      </a>
+      <div class="rail-ad-slides">
+        <a class="rail-ad-link active" href="https://magziko.github.io/Pos/index.html" target="_blank" rel="noopener">
+          <span class="rail-ad-icon">🧾</span>
+          <span class="rail-ad-text">
+            <strong>نظام نقاط البيع</strong>
+            <span>جرّب نظام POS من نفس الفريق</span>
+          </span>
+        </a>
+        <a class="rail-ad-link" href="https://magziko.github.io/sentence/" target="_blank" rel="noopener">
+          <span class="rail-ad-icon">🗣️</span>
+          <span class="rail-ad-text">
+            <strong>جملة واحدة كل يوم...</strong>
+            <span>واللغة أقرب مما تتخيل</span>
+          </span>
+        </a>
+      </div>
     </div>
   </div>
   <div class="main">
@@ -1043,6 +1078,12 @@ body.pub-design-dark .pub-more-menu{ background:#2A2825; border-color:#3A352D; }
       <div class="pub-side-ad-desc" id="pubAdPosDesc2">تابع فروعك ومخزونك من الموبايل في أي وقت</div>
       <div class="pub-side-ad-cta" id="pubAdPosCta2">اكتشف المزيد ←</div>
     </a>
+    <a class="pub-side-ad-slide" data-key="sentence" data-ad="sentence" href="https://magziko.github.io/sentence/" target="_blank" rel="noopener">
+      <div class="pub-side-ad-icon">🗣️</div>
+      <div class="pub-side-ad-title" id="pubAdSentenceTitle">جملة واحدة كل يوم...</div>
+      <div class="pub-side-ad-desc" id="pubAdSentenceDesc">واللغة أقرب مما تتخيل.</div>
+      <div class="pub-side-ad-cta" id="pubAdSentenceCta">ابدأ الآن ←</div>
+    </a>
   </div>
   <div class="pub-side-ad pub-side-ad-right" id="pubSideAdRight">
     <span class="pub-side-ad-badge" id="pubAdBadgeRight">إعلان</span>
@@ -1079,6 +1120,11 @@ body.pub-design-dark .pub-more-menu{ background:#2A2825; border-color:#3A352D; }
         <span class="pub-mobile-ad-text" id="pubAdQuranTextMobile"><strong>شيء جميل ينتظرك...</strong> افتح واكتشف بنفسك</span>
         <span class="pub-mobile-ad-cta" id="pubAdQuranCtaMobile">افتح</span>
       </a>
+      <a class="pub-mobile-ad-slide" data-ad="sentence" href="https://magziko.github.io/sentence/" target="_blank" rel="noopener">
+        <span class="pub-mobile-ad-icon">🗣️</span>
+        <span class="pub-mobile-ad-text" id="pubAdSentenceTextMobile"><strong>جملة واحدة كل يوم...</strong> واللغة أقرب مما تتخيل</span>
+        <span class="pub-mobile-ad-cta" id="pubAdSentenceCtaMobile">ابدأ</span>
+      </a>
     </div>
   </div>
   <div class="pub-topbar">
@@ -1090,7 +1136,7 @@ body.pub-design-dark .pub-more-menu{ background:#2A2825; border-color:#3A352D; }
       <div class="pub-icon-btn hidden" id="pubInfoBtn" title="معلومات المطعم">
         <svg viewBox="0 0 24 24"><path d="M12 21s-7-6.1-7-11.5A7 7 0 0 1 12 2.5a7 7 0 0 1 7 7C19 14.9 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.4"/></svg>
       </div>
-      <div class="pub-icon-btn" id="pubDesignBtn" title="تغيير شكل المنيو">
+      <div class="pub-icon-btn hidden" id="pubDesignBtn" title="تغيير شكل المنيو">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="8.5" cy="10" r="1.3" fill="currentColor" stroke="none"/><circle cx="15" cy="9" r="1.3" fill="currentColor" stroke="none"/><circle cx="15.5" cy="15" r="1.3" fill="currentColor" stroke="none"/><path d="M12 3a9 9 0 0 0 0 18c1.1 0 1.6-.9 1.1-1.8-.2-.4-.1-.9.3-1.1.3-.2.7-.2 1 0 1 .6 2.3.2 2.7-.9A9 9 0 0 0 12 3z"/></svg>
       </div>
       <div class="pub-more-wrap">
@@ -5275,6 +5321,8 @@ async function openAdminPanel(){
             <option value="sub_expiry_asc">الأقرب لانتهاء الاشتراك</option>
             <option value="name_asc">الاسم (أ-ي)</option>
           </select>
+          <button type="button" class="btn-export-sm" id="adminRefreshBtn" title="تحديث أرقام الزيارات والطلبات الآن">🔄 تحديث</button>
+          <span id="adminRefreshedAt" style="align-self:center; font-size:11px; opacity:.6;"></span>
           <button type="button" class="btn-export-sm" id="adminExportExcelBtn">📥 تصدير Excel</button>
         </div>
         <div class="admin-table-wrap" id="adminTableWrap"><div class="orders-empty">جارِ التحميل...</div></div>
@@ -5393,6 +5441,29 @@ async function openAdminPanel(){
   overlay.querySelector('#adminCloseBtn').addEventListener('click', ()=> overlay.remove());
   overlay.addEventListener('click', (e)=>{ if(e.target===overlay) overlay.remove(); });
 
+  // تحديث تلقائي لأرقام الزيارات/الطلبات (اليوم/أمس) كل 60 ثانية طالما اللوحة مفتوحة وتبويب المطاعم هو الظاهر،
+  // بالإضافة لزر تحديث يدوي — حتى لا تظل الأرقام ثابتة على قيمتها وقت فتح اللوحة فقط.
+  // refreshStatsOnly الفعلية تُعرَّف داخل loadRestaurantsTab وتُسنَد لهذا المتغير عند كل تحميل للتبويب
+  let refreshStatsFn = null;
+  const adminRefreshBtnEl = overlay.querySelector('#adminRefreshBtn');
+  const adminRefreshedAtEl = overlay.querySelector('#adminRefreshedAt');
+  function stampAdminRefreshedNow(){
+    if(adminRefreshedAtEl) adminRefreshedAtEl.textContent = 'آخر تحديث: ' + new Date().toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit' });
+  }
+  if(adminRefreshBtnEl){
+    adminRefreshBtnEl.addEventListener('click', async ()=>{
+      if(!refreshStatsFn) return;
+      adminRefreshBtnEl.disabled = true;
+      await refreshStatsFn();
+      adminRefreshBtnEl.disabled = false;
+    });
+  }
+  const adminAutoRefreshInterval = setInterval(()=>{
+    if(!document.body.contains(overlay)){ clearInterval(adminAutoRefreshInterval); return; }
+    const restaurantsTabActive = !tabPanels.restaurants.classList.contains('hidden');
+    if(restaurantsTabActive && refreshStatsFn) refreshStatsFn();
+  }, 60000);
+
   /* ---------------- تبديل التبويبات ---------------- */
   const tabPanels = {
     restaurants: overlay.querySelector('#adminPanelRestaurants'),
@@ -5425,7 +5496,7 @@ async function openAdminPanel(){
   });
 
   /* ================ تبويب إحصائيات الإعلانات ================ */
-  const AD_LABELS = { pos:'🧾 نظام نقاط البيع', radio:'📻 راديو القرآن', quran:'📖 موقع المصحف' };
+  const AD_LABELS = { pos:'🧾 نظام نقاط البيع', radio:'📻 راديو القرآن', quran:'📖 موقع المصحف', sentence:'🗣️ موقع تعلّم الإنجليزية' };
   function adLabelFor(key){
     if(AD_LABELS[key]) return AD_LABELS[key];
     if(key.startsWith('custom:')) return '📣 إعلان مخصص — ' + key.slice(7);
@@ -5530,33 +5601,53 @@ async function openAdminPanel(){
     (emailRows || []).forEach(row=>{ emailByOwner[row.owner_id] = row.email; });
   }catch(e){}
 
-  // يجلب زيارات المنيو لكل المطاعم دفعة واحدة (آخر 30 يومًا فقط) ويجمّعها حسب المطعم
-  const visitsCutoff = new Date(); visitsCutoff.setDate(visitsCutoff.getDate() - 30);
-  const visitsCutoffStr = visitsCutoff.toLocaleDateString('en-CA', { timeZone:'Africa/Cairo' });
-  const visitsByRestaurant = {};
-  try{
-    const { data: visitRows } = await sb.from('menu_visits_daily').select('*')
-      .in('restaurant_id', allRestaurants.map(r=> r.id))
-      .gte('day', visitsCutoffStr)
-      .order('day', { ascending:false });
-    (visitRows || []).forEach(v=>{
-      if(!visitsByRestaurant[v.restaurant_id]) visitsByRestaurant[v.restaurant_id] = [];
-      visitsByRestaurant[v.restaurant_id].push(v);
-    });
-  }catch(e){}
+  // يجلب زيارات المنيو وطلبات كل المطاعم دفعة واحدة (آخر 30 يومًا فقط) ويجمّعها حسب المطعم.
+  // دالة قابلة لإعادة الاستدعاء دوريًا حتى تبقى أرقام "اليوم/أمس" في القائمة محدّثة دون الحاجة لإغلاق اللوحة وإعادة فتحها
+  let visitsByRestaurant = {};
+  let ordersByRestaurant = {};
+  async function fetchVisitsAndOrders(){
+    const visitsCutoff = new Date(); visitsCutoff.setDate(visitsCutoff.getDate() - 30);
+    const visitsCutoffStr = visitsCutoff.toLocaleDateString('en-CA', { timeZone:'Africa/Cairo' });
+    const newVisitsByRestaurant = {};
+    try{
+      const { data: visitRows } = await sb.from('menu_visits_daily').select('*')
+        .in('restaurant_id', allRestaurants.map(r=> r.id))
+        .gte('day', visitsCutoffStr)
+        .order('day', { ascending:false });
+      (visitRows || []).forEach(v=>{
+        if(!newVisitsByRestaurant[v.restaurant_id]) newVisitsByRestaurant[v.restaurant_id] = [];
+        newVisitsByRestaurant[v.restaurant_id].push(v);
+      });
+    }catch(e){}
+    visitsByRestaurant = newVisitsByRestaurant;
 
-  // يجلب طلبات كل المطاعم دفعة واحدة (آخر 30 يومًا فقط) ويجمّعها حسب المطعم
-  // ملحوظة: يجب أن يمر عبر RPC بصلاحية أدمن (admin_list_recent_orders) لأن جدول orders محمي بـ RLS
-  // يسمح لصاحب المطعم فقط برؤية طلباته — الاستعلام المباشر كان يُرجع نتيجة فارغة لغير حساب الأدمن نفسه
-  const ordersCutoffDate = new Date(); ordersCutoffDate.setDate(ordersCutoffDate.getDate() - 30);
-  const ordersByRestaurant = {};
-  try{
-    const { data: orderRows } = await sb.rpc('admin_list_recent_orders', { p_since: ordersCutoffDate.toISOString() });
-    (orderRows || []).forEach(o=>{
-      if(!ordersByRestaurant[o.restaurant_id]) ordersByRestaurant[o.restaurant_id] = [];
-      ordersByRestaurant[o.restaurant_id].push(o);
+    // ملحوظة: يجب أن يمر عبر RPC بصلاحية أدمن (admin_list_recent_orders) لأن جدول orders محمي بـ RLS
+    // يسمح لصاحب المطعم فقط برؤية طلباته — الاستعلام المباشر كان يُرجع نتيجة فارغة لغير حساب الأدمن نفسه
+    const ordersCutoffDate = new Date(); ordersCutoffDate.setDate(ordersCutoffDate.getDate() - 30);
+    const newOrdersByRestaurant = {};
+    try{
+      const { data: orderRows } = await sb.rpc('admin_list_recent_orders', { p_since: ordersCutoffDate.toISOString() });
+      (orderRows || []).forEach(o=>{
+        if(!newOrdersByRestaurant[o.restaurant_id]) newOrdersByRestaurant[o.restaurant_id] = [];
+        newOrdersByRestaurant[o.restaurant_id].push(o);
+      });
+    }catch(e){}
+    ordersByRestaurant = newOrdersByRestaurant;
+  }
+  await fetchVisitsAndOrders();
+
+  // يعيد جلب أرقام الزيارات/الطلبات فقط، ثم يحدّث سطور الإحصائيات داخل كل صف ظاهر حاليًا في الجدول
+  // — بدون إعادة رسم الصفوف نفسها، حتى لا تُفقد حالة الفتح/الطي ولا تتكرر مستمعات الأحداث
+  async function refreshStatsOnly(){
+    await fetchVisitsAndOrders();
+    wrap.querySelectorAll('.admin-r-meta-block[data-meta-for]').forEach(block=>{
+      const r = allRestaurants.find(x=> x.id === block.dataset.metaFor);
+      if(r) block.innerHTML = statsMetaHtml(r);
     });
-  }catch(e){}
+    stampAdminRefreshedNow();
+  }
+  refreshStatsFn = refreshStatsOnly;
+
 
   function demoStatusHtml(r){
     if(!r.demo_days){ return ''; }
@@ -5622,6 +5713,18 @@ async function openAdminPanel(){
     return { today, yesterday, week: sumSince(7), month: sumSince(30), unseen };
   }
 
+  // يبني سطور إحصائيات الزيارات/الطلبات (اليوم/أمس/آخر 7 أيام) — دالة منفصلة حتى يمكن إعادة توليدها
+  // وحدها عند التحديث التلقائي دون إعادة رسم الصف كله أو فقدان حالة الفتح/الطي أو مستمعي الأحداث
+  function statsMetaHtml(r){
+    const visits = visitsSummaryFor(r.id);
+    const orders = ordersSummaryFor(r.id);
+    return `
+      <div class="admin-r-meta" style="margin-top:2px;">👁️ زيارات اليوم: ${visits.today} · أمس: ${visits.yesterday} · آخر 7 أيام: ${visits.week}</div>
+      <div class="admin-r-meta" style="margin-top:2px;">🧾 طلبات اليوم: ${orders.today} · أمس: ${orders.yesterday} · آخر 7 أيام: ${orders.week}</div>
+      ${orders.unseen > 0 ? `<div class="admin-r-meta" style="margin-top:2px; color:#e08a78;">👀 طلبات لم يفتحها المحل بعد (آخر 30 يوم): ${orders.unseen}</div>` : ''}
+      ${visits.suspendedWeek > 0 ? `<div class="admin-r-meta" style="margin-top:2px; color:#e08a78;">⚠️ محاولات دخول على منيو معلّق (آخر 7 أيام): ${visits.suspendedWeek}</div>` : ''}`;
+  }
+
   function rowHtml(r, idx){
     const created = new Date(r.created_at).toLocaleDateString('ar-EG', { day:'numeric', month:'short', year:'numeric' });
     const ownerEmail = emailByOwner[r.owner_id] || '—';
@@ -5644,10 +5747,7 @@ async function openAdminPanel(){
               <div class="admin-r-meta">/${escapeHtml(r.slug)} · انضم ${created}</div>
               ${siblingBranches.length ? `<div class="admin-r-meta" style="margin-top:2px; color:#8a6d3b;">🏢 فرع من ضمن حساب واحد اشتراكه مشترك مع: ${siblingBranches.map(s=> escapeHtml(s.name)).join('، ')} — أي تعديل هنا بيأثر عليهم كلهم</div>` : ''}
               <div class="admin-r-meta" style="direction:ltr; text-align:right; margin-top:2px;">✉️ ${escapeHtml(ownerEmail)}</div>
-              <div class="admin-r-meta" style="margin-top:2px;">👁️ زيارات اليوم: ${visits.today} · أمس: ${visits.yesterday} · آخر 7 أيام: ${visits.week}</div>
-              <div class="admin-r-meta" style="margin-top:2px;">🧾 طلبات اليوم: ${orders.today} · أمس: ${orders.yesterday} · آخر 7 أيام: ${orders.week}</div>
-              ${orders.unseen > 0 ? `<div class="admin-r-meta" style="margin-top:2px; color:#e08a78;">👀 طلبات لم يفتحها المحل بعد (آخر 30 يوم): ${orders.unseen}</div>` : ''}
-              ${visits.suspendedWeek > 0 ? `<div class="admin-r-meta" style="margin-top:2px; color:#e08a78;">⚠️ محاولات دخول على منيو معلّق (آخر 7 أيام): ${visits.suspendedWeek}</div>` : ''}
+              <div class="admin-r-meta-block" data-meta-for="${r.id}">${statsMetaHtml(r)}</div>
             </div>
           </div>
           <div class="admin-card-actions">
@@ -5828,6 +5928,7 @@ async function openAdminPanel(){
   }
 
   wrap.innerHTML = allRestaurants.map((r, idx)=>rowHtml(r, idx)).join('');
+  stampAdminRefreshedNow();
 
   function bindRowEvents(){
   wrap.querySelectorAll('.admin-reset-pw-btn').forEach(btn=>{
@@ -8410,6 +8511,16 @@ document.getElementById('restaurantSettingsBtn').addEventListener('click', async
   let pendingLogo = restaurant.logo_url || null;
   const originalLogoUrl = restaurant.logo_url || null;
   let pendingBizType = restaurant.business_type === 'store' ? 'store' : 'restaurant';
+  let pendingMenuDesign = restaurant.menu_design || 'classic';
+  const RS_DESIGN_OPTIONS = [
+    { id:'classic', nameAr:'كلاسيكي' },
+    { id:'grid', nameAr:'شبكة عصرية' },
+    { id:'dark', nameAr:'داكن أنيق' },
+    { id:'luxury', nameAr:'أنيق فاخر' },
+    { id:'minimal', nameAr:'بسيط مرتب' },
+    { id:'showcase', nameAr:'أقسام عرض' },
+    { id:'sidebar', nameAr:'أقسام جانبية' }
+  ];
   const t = () => BIZ_TERMS[pendingBizType];
   const overlay = document.createElement('div');
   overlay.className = 'overlay';
@@ -8559,6 +8670,17 @@ document.getElementById('restaurantSettingsBtn').addEventListener('click', async
         ${restaurant.restriction_notif_settings_disabled ? `<small style="color:var(--stone); margin-top:4px; display:block;">🔒 رقم استلام إشعارات الطلبات مقفول من الإدارة.</small>` : ''}
       </div>
       <div class="field">
+        <label>شكل المنيو</label>
+        <small>اختر الشكل الثابت الذي سيظهر لكل زوار المنيو (يمكن تغييره في أي وقت من هنا).</small>
+        <div class="design-picker-grid" id="rsDesignPickerGrid" style="margin-top:8px;">
+          ${RS_DESIGN_OPTIONS.map(d=>`
+            <div class="design-card${d.id===pendingMenuDesign ? ' selected' : ''}" data-rs-design-id="${d.id}" style="padding:14px 6px;">
+              <div class="design-card-check">✓</div>
+              <div class="design-card-name" style="font-size:13px;">${d.nameAr}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+      <div class="field">
         <label>الصيانة</label>
         <small>أدوات صيانة دورية، لا حاجة لاستخدامها كثيرًا</small>
         <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
@@ -8573,6 +8695,13 @@ document.getElementById('restaurantSettingsBtn').addEventListener('click', async
     </div>`;
   document.body.appendChild(overlay);
   wireEnterToConfirm(overlay, overlay.querySelector('#rsConfirm'));
+
+  overlay.querySelectorAll('#rsDesignPickerGrid .design-card').forEach(card=>{
+    card.addEventListener('click', ()=>{
+      pendingMenuDesign = card.dataset.rsDesignId;
+      overlay.querySelectorAll('#rsDesignPickerGrid .design-card').forEach(c=> c.classList.toggle('selected', c.dataset.rsDesignId===pendingMenuDesign));
+    });
+  });
 
   // إدارة قائمة المحافظ الإلكترونية (أكثر من محفظة لكل متجر)
   let pendingWallets = (Array.isArray(restaurant.wallets) && restaurant.wallets.length)
@@ -8837,7 +8966,7 @@ document.getElementById('restaurantSettingsBtn').addEventListener('click', async
         return;
       }
     }
-    const { data, error } = await sb.from('restaurants').update({ logo_url: finalLogoUrl, name, name_en, phone, messenger_username, telegram_username, address, country_code, currency_label, opening_time, closing_time, min_delivery_order, min_delivery_order_online, default_delivery_fee_mode, default_delivery_fee_amount, default_delivery_zone_id, notification_phone, notification_apikey, business_type: pendingBizType, default_prep_minutes, accept_online_payment, wallets, wallet_label: wallets[0] ? wallets[0].label : null, wallet_number: wallets[0] ? wallets[0].number : null, instapay_account }).eq('id', restaurant.id).select().single();
+    const { data, error } = await sb.from('restaurants').update({ logo_url: finalLogoUrl, name, name_en, phone, messenger_username, telegram_username, address, country_code, currency_label, opening_time, closing_time, min_delivery_order, min_delivery_order_online, default_delivery_fee_mode, default_delivery_fee_amount, default_delivery_zone_id, notification_phone, notification_apikey, business_type: pendingBizType, default_prep_minutes, accept_online_payment, wallets, wallet_label: wallets[0] ? wallets[0].label : null, wallet_number: wallets[0] ? wallets[0].number : null, instapay_account, menu_design: pendingMenuDesign }).eq('id', restaurant.id).select().single();
     if(error){ toast('تعذر الحفظ'); btn.disabled=false; return; }
     restaurant = data;
     if(originalLogoUrl && originalLogoUrl !== finalLogoUrl){
@@ -10364,7 +10493,7 @@ async function collectRestaurantBackup(restaurantId){
     'default_prep_minutes','accept_online_payment','instapay_account','wallets','wallet_label','wallet_number',
     'custom_ad_enabled','custom_ad_icon','custom_ad_title','custom_ad_title_en','custom_ad_desc','custom_ad_desc_en',
     'custom_ad_cta','custom_ad_cta_en','custom_ad_url','default_delivery_fee_mode','default_delivery_fee_amount',
-    'default_delivery_zone_id','notification_phone','notification_apikey','country_code','currency_label'];
+    'default_delivery_zone_id','notification_phone','notification_apikey','country_code','currency_label','menu_design'];
   const restaurantSettings = {};
   settingsFields.forEach(f=> restaurantSettings[f] = r[f] !== undefined ? r[f] : null);
 
@@ -11244,27 +11373,24 @@ async function loadPublic(slug){
   let weightInputMode = {}; // item_id -> 'weight' | 'price' (لأصناف البيع بالوزن)
   let isRestaurantOpenNow = true;
   const CART_STORAGE_KEY = `menuCart_${rest.id}`;
-  const DESIGN_KEY = `menuDesign_${rest.id}`;
   const MENU_DESIGNS = [
     { id:'classic', nameAr:'كلاسيكي', nameEn:'Classic', bodyClass:'', bg:'#F6F1E4', card:'#ffffff', accent:'#B8390E', line:'#E4DCC7', layout:'list' },
     { id:'grid', nameAr:'شبكة عصرية', nameEn:'Modern Grid', bodyClass:'pub-design-grid', bg:'#F6F1E4', card:'#ffffff', accent:'#1858C9', line:'#E4DCC7', layout:'grid' },
     { id:'dark', nameAr:'داكن أنيق', nameEn:'Elegant Dark', bodyClass:'pub-design-dark', bg:'#1C1A17', card:'#2A2825', accent:'#D9A441', line:'#3A352D', layout:'list' },
     { id:'luxury', nameAr:'أنيق فاخر', nameEn:'Luxury', bodyClass:'pub-design-luxury', bg:'#F6F1E4', card:'#ffffff', accent:'#7A2048', line:'#E4DCC7', layout:'list' },
     { id:'minimal', nameAr:'بسيط مرتب', nameEn:'Clean Minimal', bodyClass:'pub-design-minimal', bg:'#F6F1E4', card:'#ffffff', accent:'#127475', line:'#E4DCC7', layout:'list' },
-    { id:'showcase', nameAr:'أقسام عرض', nameEn:'Showcase Rows', bodyClass:'pub-design-showcase', bg:'#F3F0FA', card:'#ffffff', accent:'#5B3E8E', line:'#E4DCC7', layout:'shelf' }
+    { id:'showcase', nameAr:'أقسام عرض', nameEn:'Showcase Rows', bodyClass:'pub-design-showcase', bg:'#F3F0FA', card:'#ffffff', accent:'#5B3E8E', line:'#E4DCC7', layout:'shelf' },
+    { id:'sidebar', nameAr:'أقسام جانبية', nameEn:'Sidebar Menu', bodyClass:'pub-design-sidebar', bg:'#F6F1E4', card:'#ffffff', accent:'#9E1B24', line:'#E4DCC7', layout:'list' }
   ];
+  // شكل المنيو أصبح إعدادًا ثابتًا يحدده صاحب المطعم من لوحة التحكم (وليس اختيارًا مؤقتًا لكل زائر)
   function getMenuDesignId(){
-    try{ return localStorage.getItem(DESIGN_KEY) || 'classic'; }catch(e){ return 'classic'; }
+    return (rest && rest.menu_design) || 'classic';
   }
   function applyMenuDesign(){
     const id = getMenuDesignId();
     MENU_DESIGNS.forEach(d=>{ if(d.bodyClass) document.body.classList.remove(d.bodyClass); });
     const d = MENU_DESIGNS.find(x=>x.id===id) || MENU_DESIGNS[0];
     if(d.bodyClass) document.body.classList.add(d.bodyClass);
-  }
-  function setMenuDesign(id){
-    try{ localStorage.setItem(DESIGN_KEY, id); }catch(e){}
-    applyMenuDesign();
   }
 
   function saveCart(){
@@ -11500,6 +11626,11 @@ async function loadPublic(slug){
     setText('pubAdRadioCtaMobile', en ? 'Discover' : 'اكتشف', en ? 'Discover' : 'اكتشف');
     setHtml('pubAdQuranTextMobile', '<strong>شيء جميل ينتظرك...</strong> افتح واكتشف بنفسك', '<strong>Something beautiful awaits...</strong> open and discover');
     setText('pubAdQuranCtaMobile', en ? 'Open' : 'افتح', en ? 'Open' : 'افتح');
+    setText('pubAdSentenceTitle', 'جملة واحدة كل يوم...', 'One sentence a day...');
+    setText('pubAdSentenceDesc', 'واللغة أقرب مما تتخيل.', 'and the language feels closer than you think.');
+    setText('pubAdSentenceCta', en ? 'Start now →' : 'ابدأ الآن ←', en ? 'Start now →' : 'ابدأ الآن ←');
+    setHtml('pubAdSentenceTextMobile', '<strong>جملة واحدة كل يوم...</strong> واللغة أقرب مما تتخيل', '<strong>One sentence a day...</strong> and the language feels closer than you think');
+    setText('pubAdSentenceCtaMobile', en ? 'Start' : 'ابدأ', en ? 'Start' : 'ابدأ');
   }
 
   function renderHeader(){
@@ -11558,8 +11689,11 @@ async function loadPublic(slug){
     );
     overlay.innerHTML = `
       <div class="modal info-modal">
-        <h3>✨ منيو m@g</h3>
-        <p style="margin:0 0 16px; color:var(--stone); font-size:14px; line-height:1.7;">
+        <div style="text-align:center; margin-bottom:14px;">
+          <img src="favicon.png" alt="منيو m@g" style="width:68px; height:68px; border-radius:18px; object-fit:cover; box-shadow:0 8px 20px rgba(0,0,0,.3);">
+        </div>
+        <h3 style="text-align:center;">✨ منيو m@g</h3>
+        <p style="margin:0 0 16px; color:var(--stone); font-size:14px; line-height:1.7; text-align:center;">
           ${lang==='en'
             ? `This menu was created using Menu m@g — a platform that enables any restaurant or store to build its own online menu and receive orders directly.`
             : `تم إنشاء هذه القائمة باستخدام منيو m@g — منصة تتيح لأي مطعم أو متجر إنشاء قائمة طعام إلكترونية خاصة به واستقبال الطلبات مباشرة.`}
@@ -12039,55 +12173,6 @@ async function loadPublic(slug){
   });
 
   applyMenuDesign();
-  const designBtn = document.getElementById('pubDesignBtn');
-  if(designBtn) designBtn.addEventListener('click', ()=> openDesignPickerModal());
-
-  function openDesignPickerModal(){
-    const overlay = document.createElement('div');
-    overlay.className = 'overlay';
-    const currentId = getMenuDesignId();
-    overlay.innerHTML = `
-      <div class="modal">
-        <h3>${lang==='en' ? 'Choose menu design' : 'اختر شكل المنيو'}</h3>
-        <p style="margin:0 0 14px; color:var(--stone); font-size:13px;">${lang==='en' ? 'Pick the look you like best while browsing.' : 'اختر الشكل الذي يعجبك أثناء اختيار طلبك.'}</p>
-        <div class="design-picker-grid" id="designPickerGrid">
-          ${MENU_DESIGNS.map(d=>{
-            let previewInner, previewCls = '';
-            if(d.layout === 'grid'){
-              previewInner = `<div class="dp-block" style="background:${d.card}; border:1px solid ${d.line};"></div><div class="dp-block" style="background:${d.card}; border:1px solid ${d.line};"></div>`;
-              previewCls = ' dp-grid';
-            } else if(d.layout === 'shelf'){
-              previewInner = `<div class="dp-block" style="background:${d.card}; border:2px solid ${d.accent}; flex:0 0 40%;"></div><div class="dp-block" style="background:${d.card}; border:1px solid ${d.line}; flex:0 0 40%;"></div><div class="dp-block" style="background:${d.card}; border:1px solid ${d.line}; flex:0 0 40%;"></div>`;
-              previewCls = ' dp-grid';
-            } else {
-              previewInner = `<div class="dp-row" style="background:${d.card}; border:1px solid ${d.line};"></div><div class="dp-row" style="background:${d.card}; border:1px solid ${d.line};"></div><div class="dp-row" style="background:${d.card}; border:1px solid ${d.line};"></div>`;
-            }
-            return `
-            <div class="design-card${d.id===currentId ? ' selected' : ''}" data-design-id="${d.id}">
-              <div class="design-card-check">✓</div>
-              <div class="design-card-preview${previewCls}" style="background:${d.bg}; ${d.layout==='shelf' ? 'overflow:hidden;' : ''}">${previewInner}</div>
-              <div class="design-card-name" style="color:${d.accent};">${lang==='en' ? d.nameEn : d.nameAr}</div>
-            </div>`;
-          }).join('')}
-        </div>
-        <div class="modal-actions">
-          <button class="btn-cancel" id="designPickerCloseBtn">${lang==='en' ? 'Close' : 'إغلاق'}</button>
-        </div>
-      </div>`;
-    document.body.appendChild(overlay);
-    overlay.querySelectorAll('.design-card').forEach(card=>{
-      card.addEventListener('click', ()=>{
-        const id = card.dataset.designId;
-        setMenuDesign(id);
-        overlay.querySelectorAll('.design-card').forEach(c=> c.classList.toggle('selected', c.dataset.designId===id));
-        const d = MENU_DESIGNS.find(x=>x.id===id);
-        toast(lang==='en' ? `Design changed: ${d.nameEn}` : `تم تغيير الشكل: ${d.nameAr}`);
-        renderPublicBody();
-      });
-    });
-    overlay.querySelector('#designPickerCloseBtn').addEventListener('click', ()=> overlay.remove());
-    overlay.addEventListener('click', (e)=>{ if(e.target===overlay) overlay.remove(); });
-  }
 
   const moreBtn = document.getElementById('pubMoreBtn');
   const moreMenu = document.getElementById('pubMoreMenu');
@@ -13276,12 +13361,30 @@ boot();
         return;
       }
     }catch(e){}
+    // تبديل تلقائي بين إعلان نقاط البيع وإعلان موقع الجمل (يتوقف عند المرور بالماوس أو عند إخفاء التبويب)
+    var railSlides = card.querySelectorAll('.rail-ad-link');
+    var railIdx = 0, railTimer = null;
+    function railStop(){ if(railTimer){ clearInterval(railTimer); railTimer = null; } }
+    function railStart(){
+      if(railSlides.length < 2 || railTimer) return;
+      railTimer = setInterval(function(){
+        if(card.classList.contains('rail-ad-hidden')){ railStop(); return; }
+        railSlides[railIdx].classList.remove('active');
+        railIdx = (railIdx + 1) % railSlides.length;
+        railSlides[railIdx].classList.add('active');
+      }, 6000);
+    }
+    card.addEventListener('mouseenter', railStop);
+    card.addEventListener('mouseleave', railStart);
+    document.addEventListener('visibilitychange', function(){ if(document.hidden) railStop(); else railStart(); });
+    railStart();
     var closeBtn = document.getElementById('railAdCloseBtn');
     if(closeBtn){
       closeBtn.addEventListener('click', function(e){
         e.preventDefault();
         e.stopPropagation();
         card.classList.add('rail-ad-hidden');
+        railStop();
         try{ localStorage.setItem(STORAGE_KEY, '1'); }catch(err){}
       });
     }

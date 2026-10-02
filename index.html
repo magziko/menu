@@ -5,8 +5,16 @@
      crossorigin="anonymous"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>منيو m@g</title>
-<meta name="description" id="metaDescription" content="تصفح المنتجات واطلب أونلاين بسهولة">
+<title>منيو m@g | منيو إلكتروني ونظام طلبات أونلاين للمطاعم والمتاجر</title>
+<meta name="description" id="metaDescription" content="منيو m@g (M@G Menu - magziko): أنشئ منيو إلكتروني لمطعمك أو متجرك، استقبل الطلبات أونلاين، وتابع التوصيل والمبيعات من مكان واحد. تصفح المنتجات واطلب بسهولة.">
+<meta name="keywords" id="metaKeywords" content="منيو إلكتروني, منيو اونلاين, منيو رقمي, QR منيو, منيو QR, نظام طلبات مطاعم, طلب اونلاين, توصيل, مطعم, متجر, كاشير, magziko, M@G Menu, منيو m@g, منيو ماج">
+<meta name="robots" id="metaRobots" content="index, follow, max-image-preview:large">
+<link rel="canonical" id="canonicalLink" href="https://magziko.github.io/menu/">
+<meta property="og:url" id="ogUrl" content="https://magziko.github.io/menu/">
+<meta property="og:locale" content="ar_EG">
+<meta property="og:site_name" content="منيو m@g">
+<meta name="author" content="منيو m@g">
+<script type="application/ld+json" id="ldJson">{"@context":"https://schema.org","@type":"WebSite","name":"منيو m@g","url":"https://magziko.github.io/menu/","inLanguage":"ar","description":"منيو إلكتروني ونظام طلبات أونلاين للمطاعم والمتاجر"}</script>
 <meta property="og:type" content="website">
 <meta property="og:title" id="ogTitle" content="منيو m@g">
 <meta property="og:description" id="ogDescription" content="تصفح المنتجات واطلب أونلاين بسهولة">
@@ -96,6 +104,9 @@ body{margin:0; font-family:var(--body); background:var(--ink); color:var(--ink);
 .brand-group{display:flex; align-items:center; gap:14px;}
 .brand{ font-family:var(--display); color:var(--paper); font-size:24px; display:flex; align-items:center; gap:10px; }
 .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--ember);}
+.topbar-menu-logo{ flex:0 0 100%; order:-1; display:flex; justify-content:center; align-items:center; margin:-6px 0 -6px; }
+.topbar-menu-logo img{ height:30px; width:30px; border-radius:8px; object-fit:cover; box-shadow:0 3px 10px rgba(0,0,0,.3); }
+.brand-logo.shop-logo{ width:40px; height:40px; border-radius:10px; background:#fff; }
 .brand-logo{ width:34px; height:34px; border-radius:9px; object-fit:cover; flex-shrink:0; box-shadow:0 3px 10px rgba(0,0,0,.3); }
 .switch-link{color:var(--stone); font-size:12px; cursor:pointer; text-decoration:underline; text-underline-offset:3px;}
 .switch-link:hover{color:var(--paper);}
@@ -253,13 +264,26 @@ body{margin:0; font-family:var(--body); background:var(--ink); color:var(--ink);
 .info-quick-btn.call:hover{ background:var(--basil-dark); }
 .info-quick-btn.wa{ background:#25D366; color:#fff; }
 .info-quick-btn.wa:hover{ background:#1DA851; }
-.pub-logo-wrap{ text-align:center; padding:6px 20px 18px; }
-.pub-logo-wrap img{ max-height:64px; max-width:220px; object-fit:contain; }
+.pub-logo-wrap{ text-align:center; padding:10px 20px 20px; }
+.pub-logo-wrap img{ height:92px; width:auto; max-width:260px; object-fit:contain; background:#fff; border-radius:16px; padding:10px 16px; box-shadow:0 4px 14px rgba(0,0,0,.1); cursor:zoom-in; transition:transform .22s ease, box-shadow .22s ease; }
+.pub-logo-wrap img:hover, .pub-logo-wrap img:focus-visible{ transform:scale(1.12); box-shadow:0 10px 26px rgba(0,0,0,.2); }
+@media (max-width:420px){ .pub-logo-wrap img{ height:76px; max-width:200px; } }
+.logo-lightbox{ position:relative; background:#fff; border-radius:20px; padding:40px 24px 24px; max-width:min(420px,90vw); text-align:center; box-sizing:border-box; }
+.logo-lightbox img{ display:block; height:min(55vh,420px); width:auto; max-width:100%; object-fit:contain; margin:0 auto; }
+.logo-lightbox-name{ margin-top:16px; font-family:var(--display); font-size:20px; color:var(--ink); }
 .pub-logo-wrap .name-fallback{ font-family:var(--display); font-size:30px; color:var(--ink); }
 .pub-logo-wrap .pub-rest-name{ font-family:var(--display); font-size:20px; color:var(--ink); margin-top:8px; }
 .pub-logo-wrap .pub-rest-subname{ font-family:var(--body); font-size:14px; color:var(--stone); margin-top:4px; }
 .pub-search{ max-width:640px; margin:0 auto; padding:0 20px 10px; }
 .pub-search input{ width:100%; border:1.5px solid var(--line); border-radius:10px; padding:12px 16px; font-family:var(--body); font-size:14px; background:#fff; color:var(--ink); }
+.pub-filters{ display:flex; gap:8px; max-width:640px; margin:0 auto; padding:0 20px 10px; overflow-x:auto; scrollbar-width:none; }
+.pub-filters::-webkit-scrollbar{ display:none; }
+.pub-filters:empty{ display:none; }
+.pub-filter-chip{ flex:0 0 auto; border:1.5px solid var(--line); background:var(--paper-dim,#fff); color:var(--ink); border-radius:999px; padding:5px 13px; font-family:var(--body); font-weight:700; font-size:12.5px; cursor:pointer; white-space:nowrap; }
+.pub-filter-chip.active{ background:var(--ember); border-color:var(--ember); color:#fff; }
+.new-tag{ display:inline-block; background:var(--basil,#3F6247); color:#fff; font-family:var(--body); font-weight:800; font-size:10px; border-radius:5px; padding:1px 6px; margin-inline-start:4px; vertical-align:middle; }
+body.pub-design-sidebar .pub-filters{ max-width:none; padding:0 0 10px; flex-wrap:wrap; overflow:visible; }
+@media (max-width:560px){ .pub-filters{ padding-inline:14px; } }
 .pub-tabs-wrap{ position:sticky; top:0; z-index:20; background:var(--paper); padding-top:6px; margin-bottom:2px; }
 .pub-tabs-wrap.is-stuck{ box-shadow:0 6px 14px -8px rgba(32,31,29,.25); }
 .pub-tabs{ display:flex; gap:10px; overflow-x:auto; padding:4px 20px 16px; max-width:640px; margin:0 auto; scrollbar-width:none; -ms-overflow-style:none; scroll-behavior:smooth;
@@ -275,6 +299,7 @@ body{margin:0; font-family:var(--body); background:var(--ink); color:var(--ink);
 .pub-cat-heading{ font-family:var(--display); font-size:19px; color:var(--ink); margin:26px 2px 12px; padding-bottom:8px; border-bottom:2px solid var(--ember); letter-spacing:.3px; }
 .pub-body{ max-width:640px; margin:0 auto; padding:4px 20px 60px; }
 .pub-item{ display:flex; align-items:center; gap:12px; padding:14px 12px; border:1px solid var(--line); border-radius:10px; margin-bottom:10px; background:#fff; }
+.pub-item-front{ display:contents; }
 .pub-item .chevron{ color:var(--stone); font-size:13px; flex-shrink:0; cursor:pointer; user-select:none; }
 .pub-item .info{ flex:1; min-width:0; }
 .pub-item .item-control{ flex-shrink:0; width:104px; display:flex; flex-direction:column; align-items:stretch; justify-content:center; gap:6px; align-self:center; }
@@ -321,6 +346,7 @@ body.pub-watermark-on #publicScreen{ padding-top:29px; }
 body.pub-watermark-on .pub-tabs-wrap{ top:29px; }
 body.pub-menu-only .pub-order-btn,
 body.pub-menu-only #pubRepeatOrderBtn,
+body.pub-menu-only #pubRepeatWrap,
 body.pub-menu-only .add-to-cart-btn{ display:none !important; }
 @media (max-width:480px){
   .pub-footer.pub-footer-float{ font-size:9.5px; padding:5px 10px; }
@@ -437,6 +463,19 @@ body.pub-mobile-ad-open .pub-order-btn{ bottom:calc(22px + 58px); }
 .cart-summary-row{ display:flex; justify-content:space-between; padding:6px 0; font-size:13.5px; color:var(--stone); }
 .cart-summary-row.total{ font-weight:800; color:var(--ink); font-size:15px; border-top:1.5px dashed var(--stone-light); margin-top:6px; padding-top:10px; }
 .cart-empty-note{ text-align:center; color:var(--stone); padding:24px; font-size:13.5px; }
+.cart-suggest{ margin-top:14px; padding-top:12px; border-top:1.5px dashed var(--stone-light); }
+.cart-suggest-title{ font-weight:800; font-size:13.5px; color:var(--ink); margin-bottom:8px; }
+.cart-suggest-row{ display:flex; gap:10px; overflow-x:auto; padding-bottom:6px; scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch; scrollbar-width:thin; }
+.cart-suggest-card{ flex:0 0 118px; scroll-snap-align:start; border:1.5px solid var(--line); border-radius:12px; padding:8px; display:flex; flex-direction:column; gap:4px; text-align:center; color:var(--ink); }
+.cart-suggest-card img, .cart-suggest-card .cs-noimg{ width:100%; height:70px; object-fit:cover; border-radius:8px; background:var(--paper-dim); }
+.cart-suggest-card .cs-noimg{ display:flex; align-items:center; justify-content:center; font-size:26px; }
+.cart-suggest-card .cs-name{ font-weight:700; font-size:12.5px; line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; min-height:32px; }
+.cart-suggest-card .cs-price{ font-family:var(--mono); direction:ltr; color:var(--ember); font-weight:700; font-size:12px; }
+.cart-suggest-card .cs-add{ background:var(--basil); color:#fff; border:none; border-radius:14px; padding:7px 6px; font-family:var(--body); font-weight:700; font-size:12.5px; cursor:pointer; min-height:34px; }
+.pub-search{ position:relative; }
+.pub-search input{ padding-inline-end:40px; }
+.pub-search-clear{ position:absolute; inset-inline-end:30px; top:calc(50% - 5px); transform:translateY(-50%); background:none; border:none; color:var(--stone); font-size:22px; line-height:1; cursor:pointer; padding:4px 6px; }
+.pub-result-count{ flex:0 0 auto; margin-inline-start:auto; align-self:center; font-size:12px; font-weight:700; color:var(--stone); white-space:nowrap; }
 
 .orders-list{ display:flex; flex-direction:column; gap:14px; max-height:60vh; overflow-y:auto; }
 .order-row{ border:1.5px solid var(--line); border-radius:14px; padding:16px 16px 14px; position:relative; background:var(--paper); box-shadow:0 1px 3px rgba(32,31,29,.05); }
@@ -709,8 +748,8 @@ body.pub-large-font .modal-actions button{ font-size:16px; }
 body.pub-large-font .order-step-label{ font-size:12px; }
 
 /* ============ Menu Designs (customer-selectable) ============ */
-body.pub-design-grid{ --ember:#1858C9; --ember-dark:#123F94; }
-body.pub-design-grid .pub-body{ display:grid; grid-template-columns:repeat(2,1fr); gap:12px; align-items:start; }
+body.pub-design-grid{ --paper:#EEF4FC; --paper-dim:#E1EBF8; --ember:#1858C9; --ember-dark:#123F94; --basil:#F2994A; --basil-dark:#D67F32; }
+body.pub-design-grid .pub-body{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; align-items:start; }
 body.pub-design-grid .pub-cat-heading{ grid-column:1/-1; }
 body.pub-design-grid .pub-empty{ grid-column:1/-1; }
 body.pub-design-grid .pub-item{ flex-direction:column; align-items:stretch; text-align:center; padding:0; overflow:hidden; margin-bottom:0; gap:0; }
@@ -721,12 +760,12 @@ body.pub-design-grid .pub-item .item-control{ width:auto; align-self:stretch; pa
 body.pub-design-grid .pub-item .desc-expand{ display:none !important; }
 body.pub-design-grid .pub-item .name-primary{ font-size:14.5px; }
 body.pub-design-grid .pub-item .price{ font-size:14.5px; }
-@media (max-width:420px){ body.pub-design-grid .pub-body{ grid-template-columns:repeat(2,1fr); gap:9px; } body.pub-design-grid .pub-item img, body.pub-design-grid .pub-item .no-img{ height:88px; } }
+@media (max-width:420px){ body.pub-design-grid .pub-body{ grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; } body.pub-design-grid .pub-item img, body.pub-design-grid .pub-item .no-img{ height:88px; } }
 @media (max-width:340px){ body.pub-design-grid .pub-body{ grid-template-columns:1fr; } body.pub-design-grid .pub-item{ flex-direction:row; text-align:start; } body.pub-design-grid .pub-item img, body.pub-design-grid .pub-item .no-img{ width:64px; height:64px; } body.pub-design-grid .pub-item .info{ padding:8px 10px; } body.pub-design-grid .pub-item .item-control{ padding:0 10px 10px; } }
 
-body.pub-design-dark{ --paper:#1C1A17; --paper-dim:#241F1A; --ink:#F1EADC; --line:#3A352D; --stone:#9C9587; --stone-light:#4A453B; --ember:#D9A441; --ember-dark:#B8872F; }
+body.pub-design-dark{ --paper:#1C1A17; --paper-dim:#241F1A; --ink:#F1EADC; --line:#3A352D; --stone:#9C9587; --stone-light:#4A453B; --ember:#D9A441; --ember-dark:#B8872F; --basil:#B23A2E; --basil-dark:#8F2A20; }
 body.pub-design-dark .pub-item, body.pub-design-dark .modal, body.pub-design-dark .pub-lang-btn, body.pub-design-dark .pub-icon-btn, body.pub-design-dark .pub-tab, body.pub-design-dark .pub-search input, body.pub-design-dark .qty-btn, body.pub-design-dark .design-card, body.pub-design-dark .variant-select, body.pub-design-dark select, body.pub-design-dark input, body.pub-design-dark textarea{ background:#2A2825; border-color:#3A352D; color:#F1EADC; }
-body.pub-design-dark .pub-item .item-control .variant-select{ background:#2A2825; color:#F1EADC; border-color:#3A352D; }
+body.pub-design-dark .pub-item .item-control .variant-select, body.pub-design-dark .modal .variant-select{ background:#141210; color:#F1EADC; border:1.5px solid #6B6253; color-scheme:dark; }
 body.pub-design-dark .variant-select option, body.pub-design-dark select option{ background:#2A2825; color:#F1EADC; }
 body.pub-design-dark #pubRepeatOrderBtn{ background:#2A2825; color:#F1EADC; border-color:#3A352D; }
 body.pub-design-dark .pub-logo-wrap img{ background:#F1EADC; border-radius:12px; padding:8px; }
@@ -736,8 +775,21 @@ body.pub-design-dark .pub-side-ad-right{ background:linear-gradient(160deg, #2E3
 body.pub-design-dark .pub-side-ad-right[data-active="quran"]{ background:linear-gradient(160deg, #2D3A2C 0%, #222C21 100%); }
 body.pub-design-dark .pub-side-ad-left[data-active="sentence"]{ background:linear-gradient(165deg, #3A342B 0%, #2C2721 100%); }
 body.pub-design-dark .pub-side-ad::after{ background:radial-gradient(circle at 30% 15%, rgba(255,255,255,.06), transparent 55%); }
+/* تفاعل مختلف لـ"داكن أنيق": الضغط على الصف يفتح نافذة تفاصيل سريعة بدل الشرح المطوي داخل الصف */
+body.pub-design-dark .pub-item{ cursor:pointer; }
+body.pub-design-dark .pub-item > .item-control{ display:none; }
+body.pub-design-dark .pub-item .chevron{ display:flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:50%; background:#332C22; color:var(--ember); font-size:14px; }
+body.pub-design-dark .pub-item .chevron::before{ content:'ⓘ'; }
+body.pub-design-dark .pub-item .desc-expand{ display:none !important; }
+.dark-quickview-modal{ padding:0; overflow-y:auto; position:relative; }
+.dark-quickview-modal .pub-item-front{ display:flex; flex-direction:column; padding:22px 22px 0; gap:8px; }
+.dark-quickview-modal .pub-item-front .chevron{ display:none; }
+.dark-quickview-modal .pub-item-front img, .dark-quickview-modal .pub-item-front .no-img{ width:100%; height:170px; border-radius:12px; }
+.dark-quickview-modal .pub-item-front .desc-expand{ display:block !important; }
+.dark-quickview-modal .item-control{ padding:18px 22px 22px; width:auto; }
+.dark-quickview-close{ position:absolute; top:12px; inset-inline-end:12px; width:32px; height:32px; border-radius:50%; border:none; background:rgba(0,0,0,.35); color:#fff; font-size:14px; cursor:pointer; }
 
-body.pub-design-luxury{ --ember:#7A2048; --ember-dark:#5C1836; }
+body.pub-design-luxury{ --paper:#F8EFF2; --paper-dim:#F0E1E7; --ember:#7A2048; --ember-dark:#5C1836; --basil:#B8860B; --basil-dark:#8F6A08; }
 body.pub-design-luxury .pub-item{ padding:16px; border-radius:16px; border:none; box-shadow:0 4px 16px rgba(32,31,29,.09); margin-bottom:16px; }
 body.pub-design-luxury .pub-item img, body.pub-design-luxury .pub-item .no-img{ width:84px; height:84px; border-radius:12px; }
 body.pub-design-luxury .pub-item .name-primary{ font-family:var(--display); font-size:19px; letter-spacing:.2px; }
@@ -746,8 +798,24 @@ body.pub-design-luxury .pub-cat-heading{ font-size:22px; border-bottom-width:3px
 body.pub-design-luxury .pub-tab.active{ background:linear-gradient(135deg, var(--ember), var(--ember-dark)); }
 body.pub-design-luxury .add-to-cart-btn{ border-radius:24px; }
 @media (max-width:560px){ body.pub-design-luxury .pub-item{ padding:12px; border-radius:12px; } body.pub-design-luxury .pub-item .name-primary{ font-size:16.5px; } }
+/* تفاعل مختلف لـ"أنيق فاخر": لوحة الإضافة مش ظاهرة طول الوقت — تتكشف بسحبة على الصف (أو ضغطة) بدل ما تكون زرار ثابت جنب كل صنف */
+body.pub-design-luxury .pub-item{ position:relative; overflow:hidden; padding:0; }
+body.pub-design-luxury .pub-item-front{ display:flex; align-items:center; gap:12px; padding:16px; background:inherit; border-radius:16px; position:relative; z-index:2; flex:1 1 auto; width:100%; min-width:0; box-sizing:border-box; transform:translateX(0); transition:transform .28s cubic-bezier(.4,0,.2,1); touch-action:pan-y; }
+body.pub-design-luxury .pub-item-front::after{ content:'‹'; position:absolute; inset-inline-end:6px; top:50%; transform:translateY(-50%); color:var(--stone); font-size:20px; opacity:.6; }
+body.pub-design-luxury .pub-item .chevron{ display:none; }
+body.pub-design-luxury .pub-item .desc-expand{ display:none !important; }
+body.pub-design-luxury .pub-item.swipe-open .pub-item-front{ transform:translateX(108px); }
+body.pub-design-luxury .pub-item > .item-control{ position:absolute; inset-inline-end:0; top:0; bottom:0; width:108px; display:flex; align-items:center; justify-content:center; flex-direction:column; flex-wrap:nowrap; gap:6px; padding:10px; margin:0; background:linear-gradient(135deg, var(--ember), var(--ember-dark)); z-index:1; box-sizing:border-box; }
+body.pub-design-luxury .pub-item .item-control .add-to-cart-btn{ background:#fff; color:var(--ember-dark); border-radius:20px; width:100%; flex:none; }
+body.pub-design-luxury .pub-item .item-control .qty-stepper{ width:auto; justify-content:center; margin-top:0; }
+body.pub-design-luxury .pub-item .item-control .qty-stepper .qty-btn{ background:#fff; color:var(--ember-dark); }
+body.pub-design-luxury .pub-item .item-control .qty-val{ color:#fff; font-weight:800; }
+body.pub-design-luxury .pub-item .item-control .variant-select{ font-size:10.5px; width:100%; flex:none; padding:4px; }
+@media (max-width:560px){
+  body.pub-design-luxury .pub-item .item-control{ width:96px; }
+}
 
-body.pub-design-minimal{ --ember:#127475; --ember-dark:#0B5457; }
+body.pub-design-minimal{ --paper:#EFF7F6; --paper-dim:#E3F0EE; --ember:#127475; --ember-dark:#0B5457; --basil:#E8734A; --basil-dark:#C85A34; }
 body.pub-design-minimal .pub-body{ background:#fff; border:1px solid var(--line); border-radius:14px; padding:6px 14px; }
 body.pub-design-minimal .pub-item{ border:none; border-bottom:1px solid var(--line); border-radius:0; box-shadow:none; background:transparent; padding:14px 2px; margin-bottom:0; }
 body.pub-design-minimal .pub-body > .pub-item:last-child, body.pub-design-minimal .pub-body > div:last-child .pub-item{ border-bottom:none; }
@@ -758,7 +826,7 @@ body.pub-design-minimal .add-to-cart-btn{ background:transparent; color:var(--em
 body.pub-design-minimal .add-to-cart-btn:hover{ background:var(--ember); color:#fff; }
 @media (max-width:560px){ body.pub-design-minimal .pub-body{ padding:4px 10px; border-radius:10px; } }
 
-body.pub-design-showcase{ --ember:#5B3E8E; --ember-dark:#432D6B; --paper:#F3F0FA; --paper-dim:#EAE4F5; }
+body.pub-design-showcase{ --ember:#5B3E8E; --ember-dark:#432D6B; --paper:#F3F0FA; --paper-dim:#EAE4F5; --basil:#D4A017; --basil-dark:#A97D0E; }
 body.pub-design-showcase .pub-cat-heading{ font-size:20px; margin:24px 2px 10px; border-bottom:none; }
 body.pub-design-showcase .pub-cat-heading::after{ content:''; display:block; width:36px; height:3px; background:var(--ember); border-radius:3px; margin-top:6px; }
 body.pub-design-showcase .shelf-hint{ display:flex; align-items:center; gap:5px; font-size:11.5px; color:var(--stone); margin:0 2px 10px; }
@@ -777,9 +845,9 @@ body.pub-design-showcase .pub-cat-shelf .pub-item .item-control{ width:auto; ali
 body.pub-design-showcase .shelf-wrap{ position:relative; }
 body.pub-design-showcase .shelf-arrow{ display:none; position:absolute; top:calc(50% - 8px); transform:translateY(-50%); width:34px; height:34px; border-radius:50%; border:1px solid var(--line); background:#fff; color:var(--ink); font-size:19px; font-weight:800; line-height:1; cursor:pointer; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(32,31,29,.18); z-index:5; padding:0; }
 body.pub-design-showcase .shelf-arrow:hover{ color:var(--ember); border-color:var(--ember); }
-body.pub-design-showcase .shelf-arrow-left{ left:-6px; }
-body.pub-design-showcase .shelf-arrow-right{ right:-6px; }
-@media (hover:hover) and (pointer:fine){ body.pub-design-showcase .shelf-arrow{ display:flex; } }
+body.pub-design-showcase .shelf-arrow-left{ left:2px; }
+body.pub-design-showcase .shelf-arrow-right{ right:2px; }
+@media (hover:hover) and (pointer:fine){ body.pub-design-showcase .shelf-arrow{ display:flex; } body.pub-design-showcase .pub-cat-shelf{ padding:2px 38px 16px; } }
 body.pub-design-showcase #pubBody:not(.shelf-mode){ display:grid; grid-template-columns:repeat(auto-fill,minmax(148px,1fr)); gap:12px; align-items:start; }
 body.pub-design-showcase #pubBody:not(.shelf-mode) .pub-cat-heading{ grid-column:1/-1; }
 body.pub-design-showcase #pubBody:not(.shelf-mode) .pub-empty{ grid-column:1/-1; }
@@ -794,7 +862,7 @@ body.pub-design-dark .cart-badge{ background:#2A2825; }
 body.pub-design-dark .pub-more-menu{ background:#2A2825; border-color:#3A352D; }
 
 /* تصميم "الأقسام الجانبية" — قائمة أقسام ثابتة بجانب المنتجات بدل التبويبات الأفقية */
-body.pub-design-sidebar{ --ember:#9E1B24; --ember-dark:#6E1218; }
+body.pub-design-sidebar{ --paper:#F8EEDF; --paper-dim:#F0E3CB; --ember:#9E1B24; --ember-dark:#6E1218; --basil:#5C7A3A; --basil-dark:#455C2B; }
 body.pub-design-sidebar .pub-tab.active{ background:var(--ember); }
 @media (min-width:760px){
   body.pub-design-sidebar #publicScreen{ max-width:1080px; margin:0 auto; }
@@ -811,9 +879,592 @@ body.pub-design-sidebar .pub-tab.active{ background:var(--ember); }
   body.pub-design-sidebar .pub-cat-heading{ max-width:none; }
 }
 body.pub-design-sidebar .pub-item{ border-radius:10px; }
+/* تفاعل مختلف لـ"الأقسام الجانبية" على الموبايل: بدل التبويبات الأفقية، الأقسام تتحول لقوائم قابلة للطي — قسم واحد مفتوح في كل مرة */
+@media (max-width:759px){
+  body.pub-design-sidebar.accordion-mode .pub-tabs-wrap{ display:none; }
+  body.pub-design-sidebar .pub-cat-group{ border:1px solid var(--line); border-radius:12px; margin-bottom:12px; overflow:hidden; background:#fff; }
+  body.pub-design-sidebar .pub-cat-group .pub-cat-heading{ margin:0; padding:14px 16px; border-bottom:none; cursor:pointer; display:flex; align-items:center; justify-content:space-between; background:var(--paper-dim); }
+  body.pub-design-sidebar .pub-cat-group .pub-cat-heading::after{ content:'+'; font-size:20px; font-weight:700; color:var(--ember); }
+  body.pub-design-sidebar .pub-cat-group.open .pub-cat-heading::after{ content:'−'; }
+  body.pub-design-sidebar .pub-cat-group .pub-cat-items{ max-height:0; overflow:hidden; padding:0 12px; transition:max-height .25s ease; }
+  body.pub-design-sidebar .pub-cat-group.open .pub-cat-items{ max-height:4000px; padding:12px; }
+  body.pub-design-sidebar .pub-cat-group .pub-item:last-child{ margin-bottom:0; }
+}
 
-.design-picker-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:2px 0 4px; }
-@media (max-width:460px){ .design-picker-grid{ grid-template-columns:repeat(2,1fr); gap:10px; } }
+/* تصميم "أورورا" — هوية لونية مختلفة تمامًا (بنفسجي بارد بدل الألوان الدافئة) */
+body.pub-design-aurora{ --paper:#F4F1FC; --paper-dim:#EAE4F9; --ink:#241B3A; --line:#DAD0F0; --stone:#8D82A8; --stone-light:#E4DCF7; --ember:#7C3AED; --ember-dark:#5B21B6; --basil:#7C3AED; --basil-dark:#5B21B6; }
+body.pub-design-aurora .pub-item{ border:none; border-radius:16px; box-shadow:0 2px 10px rgba(124,58,237,.08); background:#fff; }
+body.pub-design-aurora .pub-item img, body.pub-design-aurora .pub-item .no-img{ border-radius:12px; }
+body.pub-design-aurora .pub-item .price{ display:inline-block; background:var(--paper-dim); color:var(--ember-dark); padding:3px 10px; border-radius:20px; font-size:13.5px; }
+body.pub-design-aurora .pub-cat-heading{ border-bottom:none; position:relative; padding-inline-start:14px; }
+body.pub-design-aurora .pub-cat-heading::before{ content:""; position:absolute; inset-inline-start:0; top:2px; bottom:2px; width:5px; border-radius:4px; background:linear-gradient(180deg, var(--ember), var(--ember-dark)); }
+body.pub-design-aurora .pub-tab{ border-radius:12px; }
+body.pub-design-aurora .pub-tab.active{ background:linear-gradient(135deg, var(--ember), var(--ember-dark)); }
+body.pub-design-aurora .add-to-cart-btn{ border-radius:12px; }
+/* تفاعل مختلف لـ"أورورا": مفيش زرار إضافة منفصل للأصناف البسيطة — الكارت كله قابل للضغط ويضيف للسلة مباشرة */
+body.pub-design-aurora .pub-item{ cursor:pointer; transition:transform .12s ease, box-shadow .12s ease; }
+body.pub-design-aurora .pub-item:active{ transform:scale(.97); }
+body.pub-design-aurora .pub-item .chevron{ display:none; }
+body.pub-design-aurora .pub-item .desc-expand{ display:-webkit-box !important; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; margin-top:4px; }
+body.pub-design-aurora .pub-item:has(> .item-control > .add-to-cart-btn[data-action="add"]) > .item-control,
+body.pub-design-aurora .pub-item:has(> .item-control > .add-to-cart-btn[data-action="addUnit"]) > .item-control{ display:none; }
+body.pub-design-aurora .pub-item:has(> .item-control > .add-to-cart-btn[data-action="add"])::after,
+body.pub-design-aurora .pub-item:has(> .item-control > .add-to-cart-btn[data-action="addUnit"])::after{ content:'+'; position:absolute; inset-inline-end:14px; bottom:14px; width:28px; height:28px; border-radius:50%; background:var(--ember); color:#fff; display:flex; align-items:center; justify-content:center; font-size:17px; font-weight:800; }
+body.pub-design-aurora .pub-item{ position:relative; }
+
+/* تصميم "أخضر طازج" — هوية مختلفة تمامًا: خلفية داكنة أنيقة بألوان مألوفة للمطاعم (أخضر طازج + كهرماني دافئ)، وكروت أصناف على شكل بوستر صور بدل الصفوف التقليدية */
+body.pub-design-fresh{ --paper:#16221D; --paper-dim:#1F2F28; --ink:#EFF5F1; --line:#33473F; --stone:#88A296; --stone-light:#3A4F46; --ember:#3FAE6B; --ember-dark:#2C8C53; --basil:#E8912E; --basil-dark:#C97418; }
+body.pub-design-fresh{ background:var(--paper); }
+body.pub-design-fresh .pub-item, body.pub-design-fresh .modal, body.pub-design-fresh .pub-lang-btn, body.pub-design-fresh .pub-icon-btn,
+body.pub-design-fresh .pub-search input, body.pub-design-fresh .qty-btn, body.pub-design-fresh .design-card,
+body.pub-design-fresh .variant-select, body.pub-design-fresh select, body.pub-design-fresh input, body.pub-design-fresh textarea,
+body.pub-design-fresh .cart-badge, body.pub-design-fresh #pubRepeatOrderBtn{ background:var(--paper-dim); border-color:var(--line); color:var(--ink); }
+body.pub-design-fresh .variant-select option, body.pub-design-fresh select option{ background:var(--paper-dim); color:var(--ink); }
+body.pub-design-fresh .pub-topbar{ border-bottom:3px solid var(--ember); padding-bottom:16px; }
+body.pub-design-fresh .pub-icon-btn.about-btn{ background:var(--ember); border-color:var(--ember); color:var(--paper); }
+body.pub-design-fresh .pub-logo-wrap img{ background:#fff; border-radius:12px; padding:8px; }
+body.pub-design-fresh .pub-logo-wrap .name-fallback, body.pub-design-fresh .pub-logo-wrap .pub-rest-name{ text-transform:uppercase; letter-spacing:1px; text-shadow:0 0 16px rgba(63,174,107,.35); }
+body.pub-design-fresh .pub-search input{ border-radius:999px; border-width:1.5px; }
+body.pub-design-fresh .pub-search input:focus{ outline:none; border-color:var(--ember); box-shadow:0 0 0 3px rgba(63,174,107,.18); }
+body.pub-design-fresh .pub-tabs-wrap{ background:var(--paper); }
+body.pub-design-fresh .pub-tab{ border-radius:7px; text-transform:uppercase; font-size:12px; letter-spacing:.5px; box-shadow:none; }
+body.pub-design-fresh .pub-tab:hover{ border-color:var(--ember); }
+body.pub-design-fresh .pub-tab.active{ background:var(--ember); color:var(--paper); border-color:var(--ember); box-shadow:0 0 18px rgba(63,174,107,.35); }
+body.pub-design-fresh .pub-tab .pub-tab-count{ background:rgba(0,0,0,.4); color:var(--ember); }
+body.pub-design-fresh .pub-tab.active .pub-tab-count{ background:rgba(0,0,0,.15); color:var(--paper); }
+body.pub-design-fresh .pub-cat-heading{ text-transform:uppercase; letter-spacing:1px; font-size:24px; border-bottom:none; margin:36px 2px 18px; }
+body.pub-design-fresh .pub-cat-heading::after{ content:''; display:block; width:56px; height:6px; background:var(--ember); margin-top:9px; transform:skewX(-20deg); box-shadow:0 0 12px rgba(63,174,107,.35); }
+body.pub-design-fresh #pubBody{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+body.pub-design-fresh .pub-cat-heading, body.pub-design-fresh .pub-empty{ grid-column:1/-1; }
+body.pub-design-fresh .pub-item{ position:relative; flex-direction:column; align-items:stretch; padding:0; overflow:hidden; margin-bottom:0; gap:0; border-radius:18px 6px 18px 6px; min-height:0; }
+body.pub-design-fresh .pub-item img, body.pub-design-fresh .pub-item .no-img{ width:100%; height:118px; border-radius:0; }
+body.pub-design-fresh .pub-item .no-img{ font-size:28px; }
+body.pub-design-fresh .pub-item .chevron{ position:absolute; top:8px; inset-inline-start:8px; width:24px; height:24px; background:rgba(0,0,0,.55); border-radius:50%; display:flex; align-items:center; justify-content:center; color:var(--ember); z-index:3; font-size:12px; }
+body.pub-design-fresh .pub-item .info{ padding:10px 12px 2px; }
+body.pub-design-fresh .pub-item .name-primary{ font-size:14px; }
+body.pub-design-fresh .pub-item .name-secondary{ font-size:11px; }
+body.pub-design-fresh .pub-item .price{ background:var(--ember); color:var(--paper); padding:2px 9px; border-radius:6px; font-size:12.5px; margin-top:6px; }
+body.pub-design-fresh .pub-item .price .old-price{ color:rgba(10,10,13,.55); }
+body.pub-design-fresh .pub-item .desc-expand{ display:none !important; }
+body.pub-design-fresh .pub-item .item-control{ width:auto; align-self:stretch; padding:8px 12px 12px; }
+body.pub-design-fresh .pub-item .item-control .variant-select, body.pub-design-fresh .modal .variant-select{ background:#0F1915; color:var(--ink); border:1.5px solid #5A7A6B; color-scheme:dark; }
+body.pub-design-fresh .modal-floating-footer .modal-actions{ background:var(--paper-dim); box-shadow:0 -6px 16px rgba(0,0,0,.35); }
+body.pub-design-fresh .cart-item-note{ background:var(--paper-dim) !important; color:var(--ink) !important; }
+body.pub-design-fresh .add-to-cart-btn{ background:var(--basil); border-radius:8px; text-transform:uppercase; font-size:11.5px; letter-spacing:.4px; }
+body.pub-design-fresh .add-to-cart-btn:hover{ background:var(--basil-dark); }
+@media (max-width:380px){ body.pub-design-fresh #pubBody{ grid-template-columns:1fr; } body.pub-design-fresh .pub-item{ flex-direction:row; border-radius:14px; } body.pub-design-fresh .pub-item img, body.pub-design-fresh .pub-item .no-img{ width:96px; height:auto; align-self:stretch; } }
+
+/* تصميم "معرض الصور" (poster): كروت كبيرة بعرض الشاشة، الصورة في الأعلى بنسبة 4:3، والاسم والسعر والوصف تحتها — خلفية سماوية فاتحة مع لون مرجاني وكحلي */
+body.pub-design-poster{ --paper:#EAF2FA; --paper-dim:#DCE9F5; --ink:#12263F; --line:#C9DAEA; --stone:#5F7791; --stone-light:#D3E2F0; --ember:#F0533A; --ember-dark:#C93E27; --basil:#16324F; --basil-dark:#0E2238; background:var(--paper); }
+body.pub-design-poster .pub-search input{ border-radius:999px; border-width:1.5px; background:#fff; }
+body.pub-design-poster .pub-search input:focus{ outline:none; border-color:var(--ember); box-shadow:0 0 0 3px rgba(240,83,58,.15); }
+body.pub-design-poster .pub-tab{ border-radius:999px; background:#fff; }
+body.pub-design-poster .pub-tab.active{ background:var(--ember); color:#fff; border-color:var(--ember); box-shadow:0 4px 12px rgba(240,83,58,.3); }
+body.pub-design-poster .pub-tab.active .pub-tab-count{ background:rgba(255,255,255,.25); color:#fff; }
+body.pub-design-poster .pub-cat-heading{ display:flex; align-items:center; gap:10px; font-size:24px; border-bottom:none; margin:30px 2px 16px; }
+body.pub-design-poster .pub-cat-heading::before{ content:''; width:8px; height:26px; border-radius:4px; background:var(--ember); flex-shrink:0; }
+body.pub-design-poster .pub-item{ position:relative; flex-direction:column; align-items:stretch; gap:0; padding:0; overflow:hidden; margin-bottom:22px; border:none; border-radius:22px; background:#fff; box-shadow:0 10px 28px rgba(18,38,63,.12); }
+body.pub-design-poster .pub-item img, body.pub-design-poster .pub-item .no-img{ width:100%; height:auto; aspect-ratio:4/3; border-radius:0; }
+body.pub-design-poster .pub-item .no-img{ font-size:44px; }
+body.pub-design-poster .pub-item .chevron{ position:absolute; top:12px; inset-inline-start:12px; z-index:3; width:34px; height:34px; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,.92); color:var(--ink); border-radius:50%; box-shadow:0 2px 8px rgba(0,0,0,.18); font-size:15px; }
+body.pub-design-poster .pub-item .chevron:empty{ display:none; }
+body.pub-design-poster .pub-item .info{ flex:none; padding:16px 18px 4px; display:flex; flex-direction:column; align-items:flex-start; }
+body.pub-design-poster .pub-item .name-primary{ font-size:20px; font-weight:800; line-height:1.35; }
+body.pub-design-poster .pub-item .name-secondary{ font-size:13px; }
+body.pub-design-poster .pub-item .price{ background:var(--ember); color:#fff; padding:5px 16px; border-radius:999px; font-size:16px; margin-top:10px; }
+body.pub-design-poster .pub-item .price .old-price{ color:rgba(255,255,255,.75); }
+body.pub-design-poster .pub-item .desc-expand{ display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; font-size:14.5px; margin-top:10px; }
+body.pub-design-poster .pub-item.expanded .desc-expand{ -webkit-line-clamp:unset; }
+body.pub-design-poster .pub-item .variant-cart-lines{ width:100%; }
+body.pub-design-poster .pub-item .item-control{ width:100%; flex-direction:row; flex-wrap:wrap; align-items:center; gap:8px; align-self:stretch; padding:12px 18px 18px; box-sizing:border-box; margin-top:0; }
+body.pub-design-poster .pub-item .item-control .variant-select{ flex:1 1 120px; width:auto; }
+body.pub-design-poster .pub-item .item-control .add-to-cart-btn{ flex:1 1 140px; width:auto; padding:13px 16px; border-radius:14px; font-size:15px; }
+body.pub-design-poster .pub-item .item-control .qty-stepper{ width:100%; justify-content:center; gap:18px; margin-top:0; }
+body.pub-design-poster .add-to-cart-btn{ background:var(--basil); }
+body.pub-design-poster .add-to-cart-btn:hover{ background:var(--basil-dark); }
+
+/* نافذة تنبيه العروض عند فتح المنيو: مرة واحدة في اليوم، تتحرك حركة خفيفة، ويمكن إغلاقها */
+.offers-popup{ position:relative; text-align:center; padding:28px 22px 18px; animation:offersIn .55s cubic-bezier(.2,1.3,.4,1) both, offersFloat 4s ease-in-out .7s infinite; }
+@keyframes offersIn{ from{ opacity:0; transform:translateY(46px) scale(.9); } to{ opacity:1; transform:none; } }
+@keyframes offersFloat{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-6px); } }
+.offers-icon{ font-size:46px; display:inline-block; transform-origin:50% 85%; animation:offersWiggle 2.6s ease-in-out .9s infinite; }
+@keyframes offersWiggle{ 0%,68%,100%{ transform:rotate(0) scale(1); } 73%{ transform:rotate(-14deg) scale(1.12); } 79%{ transform:rotate(12deg) scale(1.12); } 85%{ transform:rotate(-8deg); } 91%{ transform:rotate(5deg); } }
+.offers-popup h3{ margin:6px 0 4px; font-size:21px; color:var(--ink); }
+.offers-popup .offers-sub{ margin:0; color:var(--stone); font-size:14px; }
+.offers-close{ position:absolute; top:10px; inset-inline-end:10px; width:32px; height:32px; border-radius:50%; border:none; background:var(--paper-dim); color:var(--ink); font-size:14px; cursor:pointer; }
+.offers-list{ margin:16px 0 14px; display:flex; flex-direction:column; gap:8px; text-align:start; }
+.offers-row{ display:flex; align-items:center; gap:12px; padding:8px; border-radius:14px; background:var(--paper-dim); font-size:14px; color:var(--ink); }
+.offers-thumb{ width:76px; height:76px; border-radius:12px; object-fit:cover; flex-shrink:0; background:var(--stone-light); }
+.offers-thumb-empty{ display:flex; align-items:center; justify-content:center; font-size:26px; }
+.offers-info{ flex:1; min-width:0; display:flex; flex-direction:column; gap:5px; }
+.offers-prices{ display:flex; align-items:stretch; flex-wrap:wrap; gap:8px; margin-top:2px; }
+.offers-prices small{ display:block; font-size:11px; font-weight:700; line-height:1.2; margin-bottom:2px; }
+.offers-old{ padding:6px 12px; border-radius:10px; border:1.5px dashed var(--stone); background:transparent; }
+.offers-old small{ color:var(--stone); }
+.offers-old s{ font-size:20px; font-weight:700; color:var(--ink); opacity:.85; text-decoration-thickness:1.5px; text-decoration-color:rgba(217,48,37,.8); }
+.offers-now{ padding:6px 14px; border-radius:10px; background:var(--ember); box-shadow:0 4px 12px rgba(0,0,0,.18); }
+.offers-now small{ color:rgba(255,255,255,.88); }
+.offers-now b{ display:block; font-size:24px; font-weight:900; line-height:1.15; color:#fff; white-space:nowrap; }
+.offers-row .offers-name{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:800; font-size:15px; }
+.offers-row s{ color:var(--stone); font-size:12px; }
+.offers-row .offers-new{ font-weight:800; color:var(--ember); white-space:nowrap; }
+.offers-go{ width:100%; padding:13px; border:none; border-radius:12px; background:var(--ember); color:#fff; font-weight:800; font-size:15px; font-family:inherit; cursor:pointer; }
+.offers-later{ margin-top:8px; padding:6px 10px; border:none; background:none; color:var(--stone); text-decoration:underline; font-family:inherit; font-size:13px; cursor:pointer; }
+.pub-item.offer-flash{ animation:offerFlash .8s ease 3; }
+@keyframes offerFlash{ 0%,100%{ box-shadow:0 0 0 0 rgba(240,83,58,0); } 50%{ box-shadow:0 0 0 7px rgba(240,83,58,.4); } }
+@media (prefers-reduced-motion: reduce){ .offers-popup, .offers-icon, .pub-item.offer-flash{ animation:none; } }
+
+/* تصميم "لوحة المنتجات" (board): كروت في عمودين، الاسم والسعر مكتوبين فوق الصورة نفسها بتدرّج غامق أسفلها — خلفية كراميلي دافئة تناسب متاجر ومطاعم البيتزا/المخبوزات */
+body.pub-design-board{ --paper:#FBF1E2; --paper-dim:#F3E4CB; --ink:#3B2417; --line:#E7D2AC; --stone:#8A6B49; --stone-light:#EFDDBB; --ember:#C1531F; --ember-dark:#9C4118; --basil:#A64B2A; --basil-dark:#7D3A20; background:var(--paper); }
+body.pub-design-board .pub-search input{ border-radius:14px; border-width:1.5px; background:#fff; }
+body.pub-design-board .pub-search input:focus{ outline:none; border-color:var(--ember); box-shadow:0 0 0 3px rgba(193,83,31,.16); }
+body.pub-design-board .pub-tab{ border-radius:10px; background:#fff; border-color:var(--line); }
+body.pub-design-board .pub-tab.active{ background:var(--ember); color:#fff; border-color:var(--ember); }
+body.pub-design-board .pub-tab.active .pub-tab-count{ background:rgba(255,255,255,.28); color:#fff; }
+body.pub-design-board .pub-cat-heading{ font-size:21px; border-bottom:3px solid var(--ember); display:inline-block; padding-bottom:6px; margin:26px 0 16px; }
+body.pub-design-board #pubBody{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+body.pub-design-board .pub-cat-heading{ grid-column:1/-1; }
+body.pub-design-board .pub-empty{ grid-column:1/-1; }
+body.pub-design-board .pub-item{ position:relative; flex-direction:column; align-items:stretch; gap:0; padding:0; overflow:hidden; margin-bottom:0; border:none; border-radius:16px; background:#fff; box-shadow:0 6px 16px rgba(59,36,23,.14); }
+body.pub-design-board .pub-item .pub-item-front{ display:contents; }
+body.pub-design-board .pub-item img, body.pub-design-board .pub-item .no-img{ width:100%; height:auto; aspect-ratio:1/1; border-radius:0; }
+body.pub-design-board .pub-item .no-img{ font-size:34px; }
+body.pub-design-board .pub-item .info{ position:relative; }
+body.pub-design-board .pub-item .info::before{ content:''; position:absolute; inset-inline:0; bottom:100%; height:64px; background:linear-gradient(to top, rgba(0,0,0,.72), rgba(0,0,0,0)); pointer-events:none; }
+body.pub-design-board .pub-item .name-primary{ position:absolute; bottom:100%; inset-inline:10px; margin-bottom:6px; color:#fff; font-size:14.5px; font-weight:800; text-shadow:0 1px 3px rgba(0,0,0,.5); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+body.pub-design-board .pub-item .name-secondary{ display:none; }
+body.pub-design-board .pub-item .chevron{ position:absolute; top:8px; inset-inline-start:8px; z-index:3; width:26px; height:26px; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,.85); color:var(--ink); border-radius:50%; font-size:12px; }
+body.pub-design-board .pub-item .chevron:empty{ display:none; }
+body.pub-design-board .pub-item .price{ padding:9px 10px 3px; font-size:14.5px; font-weight:800; color:var(--ember); }
+body.pub-design-board .pub-item .price .old-price{ font-size:11px; }
+body.pub-design-board .pub-item .desc-expand{ padding:0 10px; font-size:12.5px; color:var(--stone); }
+body.pub-design-board .pub-item .variant-cart-lines{ padding:0 10px; }
+body.pub-design-board .pub-item .item-control{ width:100%; flex-direction:column; align-items:stretch; gap:6px; padding:8px 10px 10px; box-sizing:border-box; margin-top:0; }
+body.pub-design-board .pub-item .item-control .variant-select{ width:100%; font-size:11.5px; }
+body.pub-design-board .pub-item .item-control .add-to-cart-btn{ width:100%; padding:9px; border-radius:10px; font-size:13px; }
+body.pub-design-board .pub-item .item-control .qty-stepper{ width:100%; justify-content:space-between; margin-top:0; }
+body.pub-design-board .add-to-cart-btn{ background:var(--basil); }
+body.pub-design-board .add-to-cart-btn:hover{ background:var(--basil-dark); }
+@media (max-width:380px){ body.pub-design-board #pubBody{ gap:10px; } body.pub-design-board .pub-item .name-primary{ font-size:13px; } }
+
+/* تصميم "القائمة المرقّمة" (ledger): سطر أنيق لكل صنف برقم متسلسل وخط منقّط يصل الاسم بالسعر، زي قوائم المطاعم الراقية — خلفية كحلية داكنة بلمسة ذهبية */
+body.pub-design-ledger{ --paper:#171B33; --paper-dim:#1F2544; --ink:#F3EFE2; --line:#3B416A; --stone:#9AA0C4; --stone-light:#262C4E; --ember:#D8B25C; --ember-dark:#B8933E; --basil:#D8B25C; --basil-dark:#B8933E; background:var(--paper); }
+body.pub-design-ledger, body.pub-design-ledger input, body.pub-design-ledger select{ font-family:'Georgia','Amiri',serif; }
+body.pub-design-ledger .pub-search input{ background:var(--paper-dim); color:var(--ink); border-color:var(--line); border-radius:8px; }
+body.pub-design-ledger .pub-search input::placeholder{ color:var(--stone); }
+body.pub-design-ledger .pub-search input:focus{ outline:none; border-color:var(--ember); }
+body.pub-design-ledger .pub-tab{ background:var(--paper-dim); color:var(--ink); border-color:var(--line); border-radius:8px; }
+body.pub-design-ledger .pub-tab.active{ background:var(--ember); color:#171B33; border-color:var(--ember); }
+body.pub-design-ledger .pub-tab.active .pub-tab-count{ background:rgba(0,0,0,.25); color:#171B33; }
+body.pub-design-ledger .pub-cat-heading{ counter-reset:ledgerItem; text-align:center; border-bottom:none; font-size:22px; letter-spacing:1px; position:relative; margin:32px 0 20px; }
+body.pub-design-ledger .pub-cat-heading::before, body.pub-design-ledger .pub-cat-heading::after{ content:''; position:absolute; top:50%; width:60px; height:1px; background:var(--ember); opacity:.6; }
+body.pub-design-ledger .pub-cat-heading::before{ inset-inline-start:calc(50% - 130px); }
+body.pub-design-ledger .pub-cat-heading::after{ inset-inline-end:calc(50% - 130px); }
+body.pub-design-ledger .pub-item{ counter-increment:ledgerItem; position:relative; flex-wrap:wrap; align-items:center; gap:10px; padding:14px 6px; border:none; border-bottom:1px dashed var(--line); border-radius:0; background:transparent; margin-bottom:0; }
+body.pub-design-ledger .pub-item .chevron{ order:-1; color:var(--ember); font-size:12px; width:18px; }
+body.pub-design-ledger .pub-item .chevron:empty{ visibility:hidden; }
+body.pub-design-ledger .pub-item img, body.pub-design-ledger .pub-item .no-img{ width:52px; height:52px; border-radius:50%; border:2px solid var(--ember); }
+body.pub-design-ledger .pub-item .info{ flex:1; min-width:0; display:flex; align-items:baseline; flex-wrap:wrap; gap:0; }
+body.pub-design-ledger .pub-item .name-primary{ font-size:16.5px; font-weight:700; color:var(--ink); white-space:nowrap; }
+body.pub-design-ledger .pub-item .name-primary::before{ content:counter(ledgerItem, decimal-leading-zero) ' '; color:var(--ember); font-size:12px; font-weight:400; margin-inline-end:6px; }
+body.pub-design-ledger .pub-item .name-secondary{ order:5; width:100%; font-style:italic; }
+body.pub-design-ledger .pub-item .info::after{ content:''; flex:1 1 24px; align-self:end; margin:0 8px 5px; border-bottom:2px dotted var(--stone); min-width:16px; }
+body.pub-design-ledger .pub-item .price{ order:4; font-size:16.5px; font-weight:800; color:var(--ember); }
+body.pub-design-ledger .pub-item .price .old-price{ color:var(--stone); }
+body.pub-design-ledger .pub-item .desc-expand{ width:100%; font-style:italic; color:var(--stone); font-size:13px; padding-inline-start:62px; }
+body.pub-design-ledger .pub-item .variant-cart-lines{ width:100%; padding-inline-start:62px; }
+body.pub-design-ledger .pub-item .item-control{ width:100%; flex-direction:row; flex-wrap:wrap; margin-top:4px; padding-inline-start:62px; box-sizing:border-box; }
+body.pub-design-ledger .pub-item .item-control .variant-select{ background:var(--paper-dim); color:var(--ink); border:1.5px solid var(--line); color-scheme:dark; flex:1 1 110px; width:auto; }
+body.pub-design-ledger .pub-item .item-control .add-to-cart-btn{ background:var(--ember); color:#171B33; font-weight:800; flex:1 1 100px; width:auto; }
+body.pub-design-ledger .pub-item .item-control .qty-stepper .qty-btn{ background:var(--paper-dim); color:var(--ink); border:1px solid var(--line); }
+body.pub-design-ledger .discount-badge{ background:var(--ember); color:#171B33; }
+@media (max-width:480px){ body.pub-design-ledger .pub-item .name-primary{ white-space:normal; } body.pub-design-ledger .pub-item .desc-expand, body.pub-design-ledger .pub-item .item-control, body.pub-design-ledger .pub-item .variant-cart-lines{ padding-inline-start:0; } }
+/* تصميم "القائمة المرقّمة" — نوافذ السلة وإتمام الطلب: نفس ألوان التصميم (كحلي داكن + ذهبي). السبب: .modal خلفيته بيضاء بينما --ink فاتح فكان النص بيختفي */
+body.pub-design-ledger .modal{ background:#171B33; color:#F3EFE2; border:1px solid #3B416A; }
+body.pub-design-ledger .modal h3, body.pub-design-ledger .modal label, body.pub-design-ledger .modal .cr-name{ color:#F3EFE2; }
+body.pub-design-ledger .modal input, body.pub-design-ledger .modal textarea, body.pub-design-ledger .modal select,
+body.pub-design-ledger .modal .cart-item-note{ background:#1F2544 !important; color:#F3EFE2 !important; border:1.5px solid #3B416A !important; color-scheme:dark; }
+body.pub-design-ledger .modal input::placeholder, body.pub-design-ledger .modal textarea::placeholder{ color:#9AA0C4; opacity:1; }
+body.pub-design-ledger .modal input:focus, body.pub-design-ledger .modal textarea:focus, body.pub-design-ledger .modal select:focus{ outline:none; border-color:#D8B25C !important; }
+body.pub-design-ledger .modal select option{ background:#1F2544; color:#F3EFE2; }
+body.pub-design-ledger .modal .cart-row{ border-bottom:1px dashed #3B416A; }
+body.pub-design-ledger .modal .cr-line-total{ color:#D8B25C; }
+body.pub-design-ledger .modal .qty-btn{ background:#1F2544; color:#F3EFE2; border:1px solid #3B416A; }
+body.pub-design-ledger .modal .qty-stepper span{ color:#F3EFE2; }
+body.pub-design-ledger .modal .cr-delete-btn{ color:#9AA0C4; }
+body.pub-design-ledger .modal .cart-summary-row{ color:#9AA0C4; }
+body.pub-design-ledger .modal .cart-summary-row.total{ color:#F3EFE2; border-top:1.5px dashed #3B416A; }
+body.pub-design-ledger .modal .btn-cancel{ background:#1F2544; color:#F3EFE2; border:1.5px solid #3B416A; }
+body.pub-design-ledger .modal .btn-confirm, body.pub-design-ledger .modal .ord-type-btn.active{ background:#D8B25C; border-color:#D8B25C; color:#171B33; font-weight:800; }
+body.pub-design-ledger .modal .btn-confirm:hover{ background:#B8933E; }
+body.pub-design-ledger .modal .btn-confirm:disabled{ opacity:.5; }
+body.pub-design-ledger .modal .ord-type-btn{ background:#1F2544; color:#F3EFE2; border-color:#3B416A; }
+body.pub-design-ledger .modal .order-step-circle{ background:#1F2544; border-color:#3B416A; color:#9AA0C4; }
+body.pub-design-ledger .modal .order-step.done .order-step-circle, body.pub-design-ledger .modal .order-step.active .order-step-circle{ background:#D8B25C; border-color:#D8B25C; color:#171B33; }
+body.pub-design-ledger .modal .order-step-label{ color:#9AA0C4; }
+body.pub-design-ledger .modal .order-step.active .order-step-label{ color:#F3EFE2; }
+body.pub-design-ledger .modal .order-step.done .order-step-label{ color:#D8B25C; }
+body.pub-design-ledger .modal-floating-footer .modal-actions{ background:#171B33; box-shadow:0 -6px 16px rgba(0,0,0,.45); }
+body.pub-design-ledger .modal .ord-footer-total, body.pub-design-ledger .modal .ord-footer-total .ord-footer-total-amount{ color:#F3EFE2; }
+body.pub-design-ledger .modal #cartClearBtn{ background:#1F2544 !important; border-color:#3B416A !important; color:#FF7B7B !important; }
+
+/* تصميم "الكتالوج الحديث" (catalog): قائمة نصية نظيفة بدون صور للأصناف، خطوط عريضة وسعر في شارة ملوّنة — مناسب لمتاجر السوبرماركت والبقالة والمطاعم اللي مركزة على السرعة والوضوح */
+body.pub-design-catalog{ --paper:#F6F6F4; --paper-dim:#ECECE8; --ink:#15151A; --line:#DCDCD6; --stone:#6B6B70; --stone-light:#E4E4DF; --ember:#4F46E5; --ember-dark:#3B32C7; --basil:#15151A; --basil-dark:#000000; background:var(--paper); }
+body.pub-design-catalog .pub-search input{ border-radius:10px; border-width:2px; background:#fff; font-weight:600; }
+body.pub-design-catalog .pub-search input:focus{ outline:none; border-color:var(--ember); }
+body.pub-design-catalog .pub-tab{ border-radius:8px; border-width:2px; font-weight:700; }
+body.pub-design-catalog .pub-tab.active{ background:var(--ink); color:#fff; border-color:var(--ink); }
+body.pub-design-catalog .pub-tab.active .pub-tab-count{ background:var(--ember); color:#fff; }
+body.pub-design-catalog .pub-cat-heading{ display:flex; align-items:center; gap:10px; font-size:22px; font-weight:900; border-bottom:3px solid var(--ink); padding-bottom:8px; margin:30px 0 4px; }
+body.pub-design-catalog .pub-cat-heading::before{ content:''; width:14px; height:14px; border-radius:3px; background:var(--ember); flex-shrink:0; }
+body.pub-design-catalog .pub-item{ border:none; border-bottom:1px solid var(--line); border-radius:0; background:transparent; margin-bottom:0; padding:14px 8px; }
+body.pub-design-catalog .pub-item:nth-child(even){ background:var(--paper-dim); }
+body.pub-design-catalog .pub-item img, body.pub-design-catalog .pub-item .no-img{ display:none; }
+body.pub-design-catalog .pub-item .chevron{ width:22px; height:22px; border-radius:6px; background:var(--paper-dim); color:var(--ink); font-size:11px; display:flex; align-items:center; justify-content:center; }
+body.pub-design-catalog .pub-item.expanded .chevron{ background:var(--ink); color:#fff; }
+body.pub-design-catalog .pub-item .name-primary{ font-size:16.5px; font-weight:800; color:var(--ink); }
+body.pub-design-catalog .pub-item .name-secondary{ font-size:12.5px; color:var(--stone); font-weight:600; }
+body.pub-design-catalog .pub-item .price{ background:var(--ember); color:#fff; font-weight:800; font-size:14px; padding:5px 13px; border-radius:8px; display:inline-block; }
+body.pub-design-catalog .pub-item .price .old-price{ color:rgba(255,255,255,.75); }
+body.pub-design-catalog .pub-item .desc-expand{ color:var(--stone); font-size:13.5px; border-inline-start:3px solid var(--ember); padding-inline-start:10px; margin-top:6px; }
+body.pub-design-catalog .pub-item .item-control{ flex-shrink:0; align-items:flex-end; gap:6px; }
+body.pub-design-catalog .pub-item .item-control .variant-select{ border:2px solid var(--line); border-radius:8px; font-weight:700; }
+body.pub-design-catalog .pub-item .item-control .add-to-cart-btn{ border-radius:8px; font-weight:800; }
+body.pub-design-catalog .pub-item .item-control .qty-stepper .qty-btn{ border-radius:7px; }
+body.pub-design-catalog .discount-badge{ background:var(--ink); color:#fff; }
+body.pub-design-catalog .add-to-cart-btn{ background:var(--ink); }
+body.pub-design-catalog .add-to-cart-btn:hover{ background:var(--ember); }
+@media (max-width:480px){ body.pub-design-catalog .pub-item{ flex-wrap:wrap; } body.pub-design-catalog .pub-item .item-control{ width:100%; align-items:stretch; margin-top:8px; } }
+
+/* تصميم "فاتورة السوق" (receipt): شكل ورق الكاشير — خط مونوسبيس، حواف مسنّنة زي شريط الإيصال، خلفية رمادية وورق أبيض بلمسة حمراء */
+body.pub-design-receipt{ --paper:#E7E7E5; --paper-dim:#FFFFFF; --ink:#1A1A1A; --line:#BFBFBC; --stone:#6E6E6B; --stone-light:#F0F0EE; --ember:#C81E1E; --ember-dark:#9E1717; --basil:#1A1A1A; --basil-dark:#000000; background:var(--paper); }
+body.pub-design-receipt, body.pub-design-receipt input, body.pub-design-receipt select, body.pub-design-receipt button{ font-family:'Courier New', 'Consolas', monospace; }
+body.pub-design-receipt .pub-body{ background:var(--paper-dim); box-shadow:0 4px 18px rgba(0,0,0,.14); padding-top:20px; padding-bottom:20px; position:relative; }
+body.pub-design-receipt .pub-body::before, body.pub-design-receipt .pub-body::after{ content:''; position:absolute; inset-inline:0; height:12px; background:radial-gradient(circle at 10px 6px, var(--paper) 7px, transparent 7.5px) repeat-x; background-size:20px 14px; }
+body.pub-design-receipt .pub-body::before{ top:-1px; }
+body.pub-design-receipt .pub-body::after{ bottom:-1px; }
+body.pub-design-receipt .pub-search{ padding-inline:20px; }
+body.pub-design-receipt .pub-search input{ border-radius:0; border:1.5px dashed var(--ink); background:#fff; }
+body.pub-design-receipt .pub-tabs-wrap{ padding-inline:20px; }
+body.pub-design-receipt .pub-tab{ border-radius:0; border:1.5px solid var(--ink); background:#fff; }
+body.pub-design-receipt .pub-tab.active{ background:var(--ink); color:#fff; }
+body.pub-design-receipt .pub-cat-heading{ text-align:center; text-transform:uppercase; letter-spacing:3px; font-size:15px; border-bottom:none; margin:26px 20px 14px; padding-bottom:10px; border-bottom:2px dashed var(--ink); }
+body.pub-design-receipt .pub-item{ border:none; border-bottom:1px dashed var(--line); border-radius:0; background:transparent; margin:0 20px; padding:12px 0; }
+body.pub-design-receipt .pub-item img, body.pub-design-receipt .pub-item .no-img{ width:44px; height:44px; border-radius:0; border:1.5px solid var(--ink); filter:grayscale(.15) contrast(1.05); }
+body.pub-design-receipt .pub-item .chevron{ font-size:11px; color:var(--stone); }
+body.pub-design-receipt .pub-item .name-primary{ font-size:14.5px; font-weight:700; letter-spacing:.3px; }
+body.pub-design-receipt .pub-item .name-primary::before{ content:'» '; color:var(--ember); }
+body.pub-design-receipt .pub-item .name-secondary{ font-size:11.5px; color:var(--stone); }
+body.pub-design-receipt .pub-item .price{ font-weight:800; color:var(--ember); font-size:15px; }
+body.pub-design-receipt .pub-item .price .old-price{ color:var(--stone); }
+body.pub-design-receipt .pub-item .desc-expand{ color:var(--stone); font-size:12.5px; }
+body.pub-design-receipt .pub-item .item-control .variant-select{ border:1.5px dashed var(--ink); border-radius:0; background:#fff; }
+body.pub-design-receipt .pub-item .item-control .add-to-cart-btn{ border:2px dashed var(--ember); border-radius:0; background:transparent; color:var(--ember); font-weight:800; transform:rotate(-2deg); }
+body.pub-design-receipt .pub-item .item-control .add-to-cart-btn:hover{ background:var(--ember); color:#fff; }
+body.pub-design-receipt .pub-item .item-control .qty-stepper .qty-btn{ border-radius:0; border:1px solid var(--ink); background:#fff; }
+body.pub-design-receipt .discount-badge{ background:var(--ember); color:#fff; border-radius:0; }
+body.pub-design-receipt .add-to-cart-btn{ border-radius:0; }
+
+/* تصميم "معاينة مكبّرة" (zoom): على أجهزة الماوس، تمرير المؤشر فوق صورة الصنف يكبّرها ويرفعها فوق باقي العناصر للمعاينة — خلفية رمادية باردة بلمسة مرجانية */
+body.pub-design-zoom{ --paper:#EDEFF2; --paper-dim:#E2E6EB; --ink:#1F2933; --line:#D2D7DE; --stone:#6B7684; --stone-light:#E7EAEE; --ember:#FF6B57; --ember-dark:#E14E3A; --basil:#1F2933; --basil-dark:#0F171F; background:var(--paper); }
+body.pub-design-zoom .pub-search input{ border-radius:12px; background:#fff; border-color:var(--line); }
+body.pub-design-zoom .pub-search input:focus{ outline:none; border-color:var(--ember); box-shadow:0 0 0 3px rgba(255,107,87,.15); }
+body.pub-design-zoom .pub-tab{ background:#fff; border-radius:10px; }
+body.pub-design-zoom .pub-tab.active{ background:var(--ink); color:#fff; border-color:var(--ink); }
+body.pub-design-zoom .pub-tab.active .pub-tab-count{ background:var(--ember); color:#fff; }
+body.pub-design-zoom .pub-cat-heading{ font-size:21px; font-weight:800; border-bottom:none; margin:28px 0 16px; padding-inline-start:14px; border-inline-start:5px solid var(--ember); }
+body.pub-design-zoom .pub-item{ position:relative; overflow:visible; background:#fff; border:1px solid var(--line); border-radius:14px; box-shadow:0 2px 8px rgba(31,41,51,.05); transition:box-shadow .2s ease; }
+body.pub-design-zoom .pub-item:hover{ box-shadow:0 8px 22px rgba(31,41,51,.14); z-index:2; }
+body.pub-design-zoom .pub-item img, body.pub-design-zoom .pub-item .no-img{ width:80px; height:80px; border-radius:12px; position:relative; z-index:1; transition:transform .3s cubic-bezier(.2,.8,.3,1), box-shadow .3s ease; transform-origin:center center; }
+@media (hover:hover){
+  body.pub-design-zoom .pub-item:hover img,
+  body.pub-design-zoom .pub-item:hover .no-img{ transform:scale(2.15); z-index:6; box-shadow:0 14px 34px rgba(0,0,0,.3); }
+  body.pub-design-zoom .pub-item:hover .chevron{ opacity:0; }
+}
+body.pub-design-zoom .pub-item .name-primary{ font-size:16px; font-weight:800; }
+body.pub-design-zoom .pub-item .name-secondary{ color:var(--stone); }
+body.pub-design-zoom .pub-item .price{ font-weight:800; color:var(--ember); font-size:15.5px; }
+body.pub-design-zoom .pub-item .price .old-price{ color:var(--stone); }
+body.pub-design-zoom .pub-item .desc-expand{ color:var(--stone); font-size:13px; }
+body.pub-design-zoom .pub-item .item-control .variant-select{ border-color:var(--line); border-radius:8px; }
+body.pub-design-zoom .pub-item .item-control .add-to-cart-btn{ background:var(--ember); border-radius:10px; font-weight:800; }
+body.pub-design-zoom .pub-item .item-control .add-to-cart-btn:hover{ background:var(--ember-dark); }
+body.pub-design-zoom .pub-item .item-control .qty-stepper .qty-btn{ background:var(--paper-dim); border-radius:8px; }
+body.pub-design-zoom .discount-badge{ background:var(--ember); }
+
+/* تصميم "شارة الصنف الدائرية" (badge): فكرة إبداعية — صورة دائرية زي الشارة طافية فوق بطاقة ملوّنة، والاسم والسعر في المنتصف — خلفية صفراء فاتحة دافئة بلمسة بنفسجية حيوية */
+body.pub-design-badge{ --paper:#FFF7E1; --paper-dim:#FDECC0; --ink:#26203A; --line:#F0DFA3; --stone:#7A7160; --stone-light:#FBEECB; --ember:#7B5EA7; --ember-dark:#5E4482; --basil:#26203A; --basil-dark:#120F1D; background:var(--paper); }
+body.pub-design-badge .pub-search input{ border-radius:999px; background:#fff; border-width:2px; }
+body.pub-design-badge .pub-search input:focus{ outline:none; border-color:var(--ember); box-shadow:0 0 0 3px rgba(142,45,226,.16); }
+body.pub-design-badge .pub-tab{ border-radius:999px; background:#fff; border-width:2px; }
+body.pub-design-badge .pub-tab.active{ background:var(--ember); color:#fff; border-color:var(--ember); }
+body.pub-design-badge .pub-tab.active .pub-tab-count{ background:rgba(255,255,255,.28); color:#fff; }
+body.pub-design-badge .pub-cat-heading{ text-align:center; font-size:23px; font-weight:900; color:var(--ember); border-bottom:none; margin:34px 0 26px; }
+body.pub-design-badge #pubBody{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:34px 14px; }
+body.pub-design-badge .pub-cat-heading, body.pub-design-badge .pub-empty{ grid-column:1/-1; }
+body.pub-design-badge .pub-item{ position:relative; flex-direction:column; align-items:center; text-align:center; gap:4px; margin-top:32px; padding:40px 10px 14px; border:none; border-radius:22px; background:#fff; box-shadow:0 8px 0 var(--stone-light), 0 10px 20px rgba(38,32,58,.1); }
+body.pub-design-badge .pub-item-front{ display:contents; }
+body.pub-design-badge .pub-item img, body.pub-design-badge .pub-item .no-img{ position:absolute; top:-30px; inset-inline-start:50%; transform:translateX(-50%); width:72px; height:72px; border-radius:50%; border:4px solid var(--ember); box-shadow:0 4px 10px rgba(0,0,0,.18); background:#fff; }
+body.pub-design-badge .pub-item .no-img{ font-size:26px; display:flex; align-items:center; justify-content:center; }
+body.pub-design-badge .pub-item .chevron{ position:absolute; top:4px; inset-inline-end:4px; width:22px; height:22px; border-radius:50%; background:var(--paper-dim); color:var(--ember); font-size:11px; display:flex; align-items:center; justify-content:center; }
+body.pub-design-badge .pub-item .chevron:empty{ visibility:hidden; }
+body.pub-design-badge .pub-item .info{ display:flex; flex-direction:column; align-items:center; }
+body.pub-design-badge .pub-item .name-primary{ font-size:14.5px; font-weight:800; line-height:1.3; }
+body.pub-design-badge .pub-item .name-secondary{ font-size:11.5px; color:var(--stone); }
+body.pub-design-badge .pub-item .price{ margin-top:6px; background:var(--ember); color:#fff; font-weight:800; font-size:13px; padding:4px 14px; border-radius:999px; }
+body.pub-design-badge .pub-item .price .old-price{ color:rgba(255,255,255,.75); }
+body.pub-design-badge .pub-item .desc-expand{ font-size:12px; color:var(--stone); margin-top:6px; }
+body.pub-design-badge .pub-item .variant-cart-lines{ width:100%; }
+body.pub-design-badge .pub-item .item-control{ width:100%; flex-direction:column; align-items:center; gap:6px; margin-top:10px; }
+body.pub-design-badge .pub-item .item-control .variant-select{ width:100%; font-size:11px; border-radius:10px; }
+body.pub-design-badge .pub-item .item-control .add-to-cart-btn{ width:100%; border-radius:999px; font-weight:800; }
+body.pub-design-badge .pub-item .item-control .qty-stepper{ justify-content:center; }
+body.pub-design-badge .pub-item .item-control .qty-stepper .qty-btn{ border-radius:50%; }
+body.pub-design-badge .discount-badge{ background:var(--ink); }
+body.pub-design-badge .add-to-cart-btn{ background:var(--ember); }
+body.pub-design-badge .add-to-cart-btn:hover{ background:var(--ember-dark); }
+@media (max-width:380px){ body.pub-design-badge #pubBody{ gap:30px 10px; } body.pub-design-badge .pub-item img, body.pub-design-badge .pub-item .no-img{ width:60px; height:60px; top:-26px; } }
+
+/* تصميم "بولارويد اللوحة الفلينية" (cork): فكرة إبداعية — كل صنف صورة "بولارويد" مائلة شوية ومُلصقة زي على لوحة فلين حقيقية، مع اسم بخط يدوي وتاغ سعر مايل زي ملصق السعر الحقيقي */
+body.pub-design-cork{ --paper:#C9A778; --paper-dim:#B9925F; --ink:#3B2A1A; --line:#A98653; --stone:#6B4F32; --stone-light:#D8BD8E; --ember:#2A9D8F; --ember-dark:#1F7A6F; --basil:#3B2A1A; --basil-dark:#20160D;
+  background-color:var(--paper);
+  background-image:
+    radial-gradient(circle at 15% 25%, rgba(255,255,255,.12) 1.5px, transparent 2px),
+    radial-gradient(circle at 55% 60%, rgba(0,0,0,.12) 1.5px, transparent 2px),
+    radial-gradient(circle at 80% 20%, rgba(255,255,255,.09) 1.5px, transparent 2px),
+    radial-gradient(circle at 35% 85%, rgba(0,0,0,.09) 1.5px, transparent 2px);
+  background-size:26px 26px, 30px 30px, 22px 22px, 34px 34px;
+}
+body.pub-design-cork .pub-search input{ border-radius:8px; background:#fdfdfb; border-color:var(--line); }
+body.pub-design-cork .pub-search input:focus{ outline:none; border-color:var(--ember); }
+body.pub-design-cork .pub-tab{ background:#fdfdfb; border-radius:8px; border-color:var(--line); }
+body.pub-design-cork .pub-tab.active{ background:var(--ember); color:#fff; border-color:var(--ember); }
+body.pub-design-cork .pub-tab.active .pub-tab-count{ background:rgba(255,255,255,.3); color:#fff; }
+body.pub-design-cork .pub-cat-heading{ display:inline-block; background:#fdfdfb; color:var(--ink); font-weight:800; font-size:16px; padding:8px 20px; border-radius:5px; box-shadow:0 5px 10px rgba(0,0,0,.2); transform:rotate(-1.5deg); margin:28px 0 26px; border-bottom:none; }
+body.pub-design-cork #pubBody{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:26px 16px; }
+body.pub-design-cork .pub-cat-heading, body.pub-design-cork .pub-empty{ grid-column:1/-1; }
+body.pub-design-cork .pub-item{ position:relative; flex-direction:column; align-items:stretch; gap:0; background:#fdfdfb; border:none; border-radius:2px; padding:9px 9px 22px; box-shadow:0 8px 16px rgba(32,22,13,.28); transition:transform .2s ease, box-shadow .2s ease; }
+body.pub-design-cork .pub-item-front{ display:contents; }
+body.pub-design-cork .pub-item:nth-child(odd){ transform:rotate(-2.4deg); }
+body.pub-design-cork .pub-item:nth-child(even){ transform:rotate(1.8deg); }
+body.pub-design-cork .pub-item:hover{ transform:rotate(0deg) scale(1.04); z-index:3; box-shadow:0 14px 26px rgba(32,22,13,.35); }
+body.pub-design-cork .pub-item::before{ content:''; position:absolute; top:-11px; inset-inline-start:50%; transform:translateX(-50%) rotate(-4deg); width:44px; height:16px; background:rgba(255,255,255,.6); border:1px solid rgba(0,0,0,.08); box-shadow:0 2px 3px rgba(0,0,0,.18); }
+body.pub-design-cork .pub-item img, body.pub-design-cork .pub-item .no-img{ width:100%; aspect-ratio:1/1; height:auto; border-radius:1px; }
+body.pub-design-cork .pub-item .no-img{ font-size:30px; }
+body.pub-design-cork .pub-item .price{ position:absolute; top:10px; inset-inline-end:-4px; background:var(--ember); color:#fff; font-weight:800; font-size:12px; padding:5px 11px; border-radius:5px; transform:rotate(5deg); box-shadow:0 3px 7px rgba(0,0,0,.3); white-space:nowrap; }
+body.pub-design-cork .pub-item .price .old-price{ color:rgba(255,255,255,.8); }
+body.pub-design-cork .pub-item .chevron{ position:absolute; top:8px; inset-inline-start:8px; width:22px; height:22px; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,.85); border-radius:50%; font-size:11px; color:var(--ink); }
+body.pub-design-cork .pub-item .chevron:empty{ visibility:hidden; }
+body.pub-design-cork .pub-item .info{ text-align:center; padding-top:10px; }
+body.pub-design-cork .pub-item .name-primary{ font-family:'Segoe Script','Bradley Hand','Comic Sans MS',cursive; font-size:19px; font-weight:700; color:var(--ink); line-height:1.25; }
+body.pub-design-cork .pub-item .name-secondary{ font-size:11px; color:var(--stone); }
+body.pub-design-cork .pub-item .desc-expand{ font-size:12px; color:var(--stone); margin-top:5px; }
+body.pub-design-cork .pub-item .variant-cart-lines{ width:100%; }
+body.pub-design-cork .pub-item .item-control{ width:100%; flex-direction:column; align-items:center; gap:6px; margin-top:10px; }
+body.pub-design-cork .pub-item .item-control .variant-select{ width:100%; font-size:11px; border-radius:6px; }
+body.pub-design-cork .pub-item .item-control .add-to-cart-btn{ width:100%; border-radius:6px; font-weight:800; }
+body.pub-design-cork .pub-item .item-control .qty-stepper{ justify-content:center; }
+body.pub-design-cork .discount-badge{ background:var(--basil); }
+body.pub-design-cork .add-to-cart-btn{ background:var(--ember); }
+body.pub-design-cork .add-to-cart-btn:hover{ background:var(--ember-dark); }
+@media (max-width:380px){ body.pub-design-cork #pubBody{ gap:22px 12px; } body.pub-design-cork .pub-item .name-primary{ font-size:17px; } }
+
+/* تصميم "قصاصة الجريدة" (newsprint): فكرة إبداعية — كل صنف يظهر كقصاصة مجلة/جريدة ممزوقة الحواف، وعنوانه بخط عريض زي مانشيت، والسعر ختم حبر أحمر مايل */
+body.pub-design-newsprint{ --paper:#EDEAE3; --paper-dim:#E2DDD2; --ink:#201D19; --line:#CFC9BC; --stone:#6E675B; --stone-light:#E6E1D6; --ember:#B3261E; --ember-dark:#8C1D17; --basil:#201D19; --basil-dark:#000000;
+  background-color:var(--paper);
+  background-image:radial-gradient(rgba(0,0,0,.045) 1px, transparent 1px);
+  background-size:8px 8px;
+}
+body.pub-design-newsprint, body.pub-design-newsprint input, body.pub-design-newsprint select{ font-family:Georgia,'Times New Roman',serif; }
+body.pub-design-newsprint .pub-search input{ border-radius:0; border:2px solid var(--ink); background:#fff; }
+body.pub-design-newsprint .pub-tab{ border-radius:0; border:2px solid var(--ink); background:#fff; }
+body.pub-design-newsprint .pub-tab.active{ background:var(--ink); color:#fff; }
+body.pub-design-newsprint .pub-cat-heading{ text-align:center; font-size:26px; font-weight:900; text-transform:uppercase; letter-spacing:2px; border-top:3px solid var(--ink); border-bottom:3px solid var(--ink); padding:8px 0; margin:30px 0 22px; }
+body.pub-design-newsprint .pub-item{ position:relative; flex-direction:column; align-items:stretch; gap:0; background:#FAF8F2; border:none; padding:12px 12px 16px; margin-bottom:26px; box-shadow:0 6px 14px rgba(0,0,0,.16); transition:transform .2s ease;
+  clip-path:polygon(0% 2%,3% 0%,9% 1.5%,16% 0%,24% 1%,33% 0%,42% 1.5%,51% 0%,60% 1%,69% 0%,78% 1.5%,87% 0%,94% 1%,100% 0%,100% 98%,96% 100%,89% 98.5%,80% 100%,71% 98.5%,62% 100%,53% 98.5%,44% 100%,35% 98.5%,26% 100%,17% 98.5%,8% 100%,0% 98.5%);
+}
+body.pub-design-newsprint .pub-item:nth-child(odd){ transform:rotate(-1deg); }
+body.pub-design-newsprint .pub-item:nth-child(even){ transform:rotate(.8deg); }
+body.pub-design-newsprint .pub-item:hover{ transform:rotate(0); z-index:2; }
+body.pub-design-newsprint .pub-item-front{ display:contents; }
+body.pub-design-newsprint .pub-item img, body.pub-design-newsprint .pub-item .no-img{ width:100%; height:auto; aspect-ratio:16/10; filter:grayscale(.5) contrast(1.05); border-radius:0; }
+body.pub-design-newsprint .pub-item .no-img{ font-size:30px; }
+body.pub-design-newsprint .pub-item .chevron{ position:absolute; top:6px; inset-inline-start:6px; z-index:2; width:20px; height:20px; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,.85); font-size:10px; }
+body.pub-design-newsprint .pub-item .chevron:empty{ visibility:hidden; }
+body.pub-design-newsprint .pub-item .info{ padding-top:10px; position:relative; }
+body.pub-design-newsprint .pub-item .name-primary{ font-size:18px; font-weight:900; line-height:1.25; border-bottom:1px solid var(--line); padding-bottom:6px; }
+body.pub-design-newsprint .pub-item .name-secondary{ font-size:11.5px; font-style:italic; color:var(--stone); }
+body.pub-design-newsprint .pub-item .price{ position:absolute; top:-38px; inset-inline-end:6px; width:58px; height:58px; border-radius:50%; border:2.5px dashed var(--ember); color:var(--ember); background:rgba(255,255,255,.75); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:800; text-align:center; line-height:1.15; transform:rotate(-11deg); mix-blend-mode:multiply; }
+body.pub-design-newsprint .pub-item .price .old-price{ color:var(--stone); display:block; font-size:9px; }
+body.pub-design-newsprint .pub-item .desc-expand{ font-size:13px; color:var(--stone); margin-top:8px; font-style:italic; }
+body.pub-design-newsprint .pub-item .item-control{ width:100%; margin-top:10px; }
+body.pub-design-newsprint .pub-item .item-control .variant-select{ border-radius:0; border:1.5px solid var(--ink); }
+body.pub-design-newsprint .pub-item .item-control .add-to-cart-btn{ border-radius:0; font-weight:800; }
+body.pub-design-newsprint .discount-badge{ background:var(--ember); border-radius:0; }
+body.pub-design-newsprint .add-to-cart-btn{ background:var(--ink); }
+body.pub-design-newsprint .add-to-cart-btn:hover{ background:var(--ember); }
+
+/* تصميم "تذكرة السفر" (ticket): فكرة إبداعية — كل صنف بطاقة زي تذكرة الطيران، بجذع جانبي منفصل بخط متقطع وسعر مكتوب رأسي زي كعب التذكرة، مع خطوط باركود زخرفية */
+body.pub-design-ticket{ --paper:#FFF9F0; --paper-dim:#F3EAD8; --ink:#1B3B5F; --line:#D8CBAE; --stone:#7C8A9A; --stone-light:#EAF1F8; --ember:#E8792E; --ember-dark:#C4601C; --basil:#1B3B5F; --basil-dark:#0F253D; background:var(--paper); }
+body.pub-design-ticket .pub-search input{ border-radius:12px; background:#fff; border:2px solid var(--line); }
+body.pub-design-ticket .pub-search input:focus{ outline:none; border-color:var(--ember); }
+body.pub-design-ticket .pub-tab{ border-radius:12px 12px 0 0; background:#fff; border-bottom:3px solid transparent; }
+body.pub-design-ticket .pub-tab.active{ border-bottom-color:var(--ember); color:var(--ember); }
+body.pub-design-ticket .pub-cat-heading{ font-size:20px; font-weight:800; color:var(--ink); border-bottom:none; display:flex; align-items:center; gap:10px; margin:28px 0 16px; }
+body.pub-design-ticket .pub-cat-heading::after{ content:''; flex:1; height:2px; background:repeating-linear-gradient(to left, var(--line) 0 6px, transparent 6px 12px); }
+body.pub-design-ticket .pub-item{ position:relative; padding:0; border:none; border-radius:14px; background:#fff; overflow:hidden; box-shadow:0 6px 16px rgba(27,59,95,.14); align-items:stretch; flex-wrap:wrap; }
+body.pub-design-ticket .pub-item-front{ display:flex; align-items:center; gap:12px; padding:14px; flex:1; min-width:0; }
+body.pub-design-ticket .pub-item img, body.pub-design-ticket .pub-item .no-img{ width:64px; height:64px; border-radius:10px; }
+body.pub-design-ticket .pub-item .chevron{ color:var(--ember); }
+body.pub-design-ticket .pub-item .name-primary{ font-weight:800; color:var(--ink); }
+body.pub-design-ticket .pub-item .name-secondary{ color:var(--stone); font-size:12px; }
+body.pub-design-ticket .pub-item .desc-expand{ color:var(--stone); font-size:13px; }
+body.pub-design-ticket .pub-item .price{ display:none; }
+body.pub-design-ticket .pub-item .item-control{ width:100%; flex:1 0 100%; margin-top:0; padding:0 14px 14px; box-sizing:border-box; }
+body.pub-design-ticket .pub-item .item-control .variant-select{ border-color:var(--line); }
+body.pub-design-ticket .pub-item .item-control .add-to-cart-btn{ background:var(--ember); }
+body.pub-design-ticket .pub-item .item-control .add-to-cart-btn:hover{ background:var(--ember-dark); }
+body.pub-design-ticket .ticket-stub{ flex-shrink:0; width:62px; position:relative; background:var(--stone-light); border-inline-start:2px dashed var(--line); display:flex; align-items:center; justify-content:center; }
+body.pub-design-ticket .ticket-stub::before, body.pub-design-ticket .ticket-stub::after{ content:''; position:absolute; inset-inline-start:-9px; width:18px; height:18px; border-radius:50%; background:var(--paper); }
+body.pub-design-ticket .ticket-stub::before{ top:-9px; }
+body.pub-design-ticket .ticket-stub::after{ bottom:-9px; }
+body.pub-design-ticket .ticket-stub .stub-price{ writing-mode:vertical-rl; transform:rotate(180deg); font-weight:900; color:var(--ember); font-size:15px; white-space:nowrap; }
+body.pub-design-ticket .ticket-stub .stub-price .old-price{ color:var(--stone); font-size:10px; }
+body.pub-design-ticket .ticket-stub .stub-barcode{ position:absolute; bottom:8px; width:16px; height:26px; background:repeating-linear-gradient(to bottom, var(--ink) 0 2px, transparent 2px 4px); opacity:.55; }
+body.pub-design-ticket .discount-badge{ position:static; display:block; margin-top:4px; background:var(--ink); }
+
+/* تصميم "شريط السينما" (filmstrip): فكرة إبداعية — كل صنف كارت أسود زي كادر فيلم سينمائي، حواف مثقّبة فوق وتحت زي شريط الفيلم الحقيقي، والسعر شارة حمراء متوهجة زي لافتة السينما */
+body.pub-design-filmstrip{ --paper:#0D0D0D; --paper-dim:#1A1A1A; --ink:#F5F5F5; --line:#333333; --stone:#9A9A9A; --stone-light:#262626; --ember:#E50914; --ember-dark:#B00610; --basil:#F5F5F5; --basil-dark:#cccccc; background:var(--paper); }
+body.pub-design-filmstrip .pub-search input{ background:#1a1a1a; color:#fff; border:1.5px solid #333; border-radius:6px; }
+body.pub-design-filmstrip .pub-search input::placeholder{ color:#777; }
+body.pub-design-filmstrip .pub-search input:focus{ outline:none; border-color:var(--ember); }
+body.pub-design-filmstrip .pub-tab{ background:#1a1a1a; color:#ccc; border:1.5px solid #333; border-radius:6px; }
+body.pub-design-filmstrip .pub-tab.active{ background:var(--ember); color:#fff; border-color:var(--ember); }
+body.pub-design-filmstrip .pub-tab.active .pub-tab-count{ background:rgba(255,255,255,.25); color:#fff; }
+body.pub-design-filmstrip .pub-cat-heading{ color:#fff; text-align:center; font-size:23px; font-weight:900; text-transform:uppercase; letter-spacing:4px; border-bottom:none; margin:34px 0 20px; text-shadow:0 0 14px rgba(229,9,20,.55); }
+body.pub-design-filmstrip #pubBody{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px 12px; }
+body.pub-design-filmstrip .pub-cat-heading, body.pub-design-filmstrip .pub-empty{ grid-column:1/-1; }
+body.pub-design-filmstrip .pub-item{ position:relative; flex-direction:column; align-items:stretch; gap:0; background:#161616; border:none; border-radius:6px; padding:16px 12px 12px; margin-bottom:0; box-shadow:0 10px 22px rgba(0,0,0,.55); }
+body.pub-design-filmstrip .pub-item::before, body.pub-design-filmstrip .pub-item::after{ content:''; position:absolute; inset-inline:8px; height:7px; background-color:#3a3a3a; background-image:linear-gradient(to right, transparent 0 5px, #000 5px 12px); background-size:16px 100%; border-radius:2px; }
+body.pub-design-filmstrip .pub-item::before{ top:4px; }
+body.pub-design-filmstrip .pub-item::after{ bottom:4px; }
+body.pub-design-filmstrip .pub-item-front{ display:contents; }
+body.pub-design-filmstrip .pub-item img, body.pub-design-filmstrip .pub-item .no-img{ width:100%; height:auto; aspect-ratio:16/10; border-radius:2px; margin-top:8px; filter:brightness(.94) contrast(1.06); }
+body.pub-design-filmstrip .pub-item .no-img{ font-size:26px; }
+body.pub-design-filmstrip .pub-item .chevron{ position:absolute; top:16px; inset-inline-start:12px; z-index:2; width:20px; height:20px; border-radius:50%; background:rgba(0,0,0,.65); color:#fff; font-size:10px; display:flex; align-items:center; justify-content:center; }
+body.pub-design-filmstrip .pub-item .chevron:empty{ visibility:hidden; }
+body.pub-design-filmstrip .pub-item .info{ padding-top:9px; }
+body.pub-design-filmstrip .pub-item .name-primary{ color:#fff; font-weight:800; font-size:14.5px; line-height:1.3; }
+body.pub-design-filmstrip .pub-item .name-secondary{ color:#999; font-size:11px; }
+body.pub-design-filmstrip .pub-item .price{ position:absolute; top:13px; inset-inline-end:12px; background:var(--ember); color:#fff; font-weight:900; font-size:11px; padding:5px 10px; border-radius:4px; box-shadow:0 0 12px rgba(229,9,20,.65); }
+body.pub-design-filmstrip .pub-item .price .old-price{ color:rgba(255,255,255,.7); }
+body.pub-design-filmstrip .pub-item .desc-expand{ color:#999; font-size:12px; margin-top:6px; }
+body.pub-design-filmstrip .pub-item .variant-cart-lines{ width:100%; }
+body.pub-design-filmstrip .pub-item .item-control{ width:100%; flex-direction:column; gap:6px; margin-top:9px; }
+body.pub-design-filmstrip .pub-item .item-control .variant-select{ width:100%; background:#1a1a1a; color:#fff; border:1.5px solid #333; color-scheme:dark; }
+body.pub-design-filmstrip .pub-item .item-control .add-to-cart-btn{ width:100%; font-weight:800; }
+body.pub-design-filmstrip .pub-item .item-control .qty-stepper .qty-btn{ background:#1a1a1a; color:#fff; border:1px solid #333; }
+body.pub-design-filmstrip .discount-badge{ background:#fff; color:#000; }
+body.pub-design-filmstrip .add-to-cart-btn{ background:var(--ember); }
+body.pub-design-filmstrip .add-to-cart-btn:hover{ background:var(--ember-dark); }
+
+/* تصميم "لفافة الحلوى" (candy): فكرة إبداعية — كل صنف كارت شكله لفافة حلوى ملفوفة الطرفين، صورة دائرية زي حبة الحلوى، وسعر زي "الملصق" — مناسب لمحلات الحلويات والآيس كريم والمخبوزات */
+body.pub-design-candy{ --paper:#FFE9F5; --paper-dim:#FFD8EC; --ink:#3A1030; --line:#FFC2E2; --stone:#9C6E8D; --stone-light:#FFEFF8; --ember:#FF3D81; --ember-dark:#DB2569; --basil:#00B8A0; --basil-dark:#039485; background:linear-gradient(160deg,#FFE9F5,#E4F9F6); }
+body.pub-design-candy .pub-search input{ border-radius:999px; border:2px solid var(--ember); background:#fff; }
+body.pub-design-candy .pub-search input:focus{ outline:none; box-shadow:0 0 0 3px rgba(255,61,129,.18); }
+body.pub-design-candy .pub-tab{ border-radius:999px; border:2px solid var(--ember); background:#fff; color:var(--ink); }
+body.pub-design-candy .pub-tab.active{ background:var(--ember); color:#fff; border-color:var(--ember); }
+body.pub-design-candy .pub-tab.active .pub-tab-count{ background:rgba(255,255,255,.3); color:#fff; }
+body.pub-design-candy .pub-cat-heading{ text-align:center; font-size:23px; font-weight:900; color:var(--ember); border-bottom:none; margin:32px 0 30px; }
+body.pub-design-candy #pubBody{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:30px 26px; }
+body.pub-design-candy .pub-cat-heading, body.pub-design-candy .pub-empty{ grid-column:1/-1; }
+body.pub-design-candy .pub-item{ position:relative; flex-direction:column; align-items:center; text-align:center; gap:4px; background:#fff; border:none; border-radius:20px; padding:18px 10px 14px; box-shadow:0 7px 0 var(--stone-light), 0 9px 18px rgba(58,16,48,.14); }
+body.pub-design-candy .pub-item::before, body.pub-design-candy .pub-item::after{ content:''; position:absolute; top:50%; width:0; height:0; border-top:18px solid transparent; border-bottom:18px solid transparent; filter:drop-shadow(0 3px 2px rgba(58,16,48,.12)); }
+body.pub-design-candy .pub-item::before{ inset-inline-start:-13px; border-inline-end:15px solid #fff; transform:translateY(-50%); }
+body.pub-design-candy .pub-item::after{ inset-inline-end:-13px; border-inline-start:15px solid #fff; transform:translateY(-50%); }
+body.pub-design-candy .pub-item-front{ display:contents; }
+body.pub-design-candy .pub-item img, body.pub-design-candy .pub-item .no-img{ width:64px; height:64px; border-radius:50%; border:4px solid var(--basil); margin:0 auto; }
+body.pub-design-candy .pub-item .no-img{ font-size:24px; display:flex; align-items:center; justify-content:center; }
+body.pub-design-candy .pub-item .chevron{ position:absolute; top:6px; inset-inline-end:6px; width:20px; height:20px; border-radius:50%; background:var(--stone-light); color:var(--ember); font-size:10px; display:flex; align-items:center; justify-content:center; }
+body.pub-design-candy .pub-item .chevron:empty{ visibility:hidden; }
+body.pub-design-candy .pub-item .info{ display:flex; flex-direction:column; align-items:center; }
+body.pub-design-candy .pub-item .name-primary{ font-size:14px; font-weight:800; color:var(--ink); margin-top:6px; }
+body.pub-design-candy .pub-item .name-secondary{ font-size:11px; color:var(--stone); }
+body.pub-design-candy .pub-item .price{ margin-top:6px; background:var(--ember); color:#fff; font-weight:800; font-size:12.5px; padding:4px 13px; border-radius:999px; }
+body.pub-design-candy .pub-item .price .old-price{ color:rgba(255,255,255,.75); }
+body.pub-design-candy .pub-item .desc-expand{ font-size:11.5px; color:var(--stone); margin-top:5px; }
+body.pub-design-candy .pub-item .variant-cart-lines{ width:100%; }
+body.pub-design-candy .pub-item .item-control{ width:100%; flex-direction:column; align-items:center; gap:6px; margin-top:9px; }
+body.pub-design-candy .pub-item .item-control .variant-select{ width:100%; font-size:11px; border-radius:10px; }
+body.pub-design-candy .pub-item .item-control .add-to-cart-btn{ width:100%; border-radius:999px; font-weight:800; background:var(--basil); }
+body.pub-design-candy .pub-item .item-control .add-to-cart-btn:hover{ background:var(--basil-dark); }
+body.pub-design-candy .pub-item .item-control .qty-stepper{ justify-content:center; }
+body.pub-design-candy .pub-item .item-control .qty-stepper .qty-btn{ border-radius:50%; background:var(--stone-light); }
+body.pub-design-candy .discount-badge{ background:var(--basil); }
+@media (max-width:380px){ body.pub-design-candy #pubBody{ gap:26px 18px; } }
+
+/* وضع داكن اختياري يفعّله الزائر بنفسه فوق أي شكل مختار — يغيّر الحيادي فقط ويحافظ على لون العلامة الخاص بالتصميم */
+body.pub-user-dark{ --paper:#17151C; --paper-dim:#211E29; --ink:#F0ECE0; --line:#37333F; --stone:#9C96A8; --stone-light:#37333F; }
+body.pub-user-dark .pub-item, body.pub-user-dark .modal, body.pub-user-dark .pub-lang-btn, body.pub-user-dark .pub-icon-btn,
+body.pub-user-dark .pub-tab, body.pub-user-dark .pub-search input, body.pub-user-dark .qty-btn, body.pub-user-dark .design-card,
+body.pub-user-dark .variant-select, body.pub-user-dark select, body.pub-user-dark input, body.pub-user-dark textarea,
+body.pub-user-dark .cart-badge, body.pub-user-dark #pubRepeatOrderBtn{ background:#221F29; border-color:#37333F; color:#F0ECE0; }
+body.pub-user-dark .variant-select option, body.pub-user-dark select option{ background:#221F29; color:#F0ECE0; }
+/* خانة اختيار الوزن/الحجم/السعر في الوضع الداكن: القاعدة الأساسية كانت بتثبّت خلفية بيضاء بأولوية أعلى، فالنص الفاتح كان بيختفي — هنا بنغلبها لكل التصميمات */
+body.pub-user-dark .pub-item .item-control .variant-select, body.pub-user-dark .modal .variant-select, body.pub-user-dark .dark-quickview-modal .variant-select{ background:#14121A; color:#F5F1E6; border:1.5px solid #6A6478; color-scheme:dark; }
+body.pub-user-dark .variant-select::placeholder{ color:#A9A2B8; opacity:1; }
+body.pub-user-dark .variant-select:focus{ outline:none; border-color:var(--ember); box-shadow:0 0 0 2px rgba(255,255,255,.14); }
+body.pub-user-dark.pub-design-aurora .pub-item{ box-shadow:none; }
+body.pub-user-dark .pub-logo-wrap img{ background:#F0ECE0; border-radius:12px; padding:8px; }
+
+/* ============================================================
+   إصلاح وضوح الألوان في نافذة السلة وإتمام الطلب (الوضع العادي + الداكن)
+   السبب: تصميم "شريط السينما" بيعرّف --ink فاتح و--basil أبيض، بينما .modal خلفيته بيضاء،
+   فكان النص والأزرار (المتابعة/توصيل/علامة ✓) بيختفوا. وفي الوضع الداكن الفوتر والملاحظات كانت بيضاء.
+   ============================================================ */
+/* عام لكل التصميمات في الوضع الداكن */
+body.pub-user-dark .modal-floating-footer .modal-actions{ background:var(--paper-dim); box-shadow:0 -6px 16px rgba(0,0,0,.4); }
+body.pub-user-dark .cart-item-note{ background:var(--paper-dim) !important; color:var(--ink) !important; border-color:var(--line) !important; }
+body.pub-user-dark .modal #cartClearBtn{ background:var(--paper-dim) !important; color:#FF7B7B !important; border-color:var(--line) !important; }
+
+/* شريط السينما — الوضع العادي: نافذة فاتحة بنص غامق واضح */
+body.pub-design-filmstrip .modal{ --ink:#1A1A1A; --paper:#FFFFFF; --paper-dim:#F1F1F1; --line:#D4D4D4; --stone:#5E5E5E; --stone-light:#CFCFCF; --basil:#1E7B3A; --basil-dark:#155C2B; background:#fff; color:#1A1A1A; }
+/* شريط السينما — الوضع الداكن: نافذة داكنة بنص فاتح واضح */
+body.pub-design-filmstrip.pub-user-dark .modal{ --ink:#F5F5F5; --paper:#1A1A1A; --paper-dim:#262626; --line:#404040; --stone:#B0B0B0; --stone-light:#404040; --basil:#4BE08F; --basil-dark:#34C277; background:#161616; color:#F5F5F5; border:1px solid #2E2E2E; }
+
+body.pub-design-filmstrip .modal input, body.pub-design-filmstrip .modal textarea, body.pub-design-filmstrip .modal select,
+body.pub-design-filmstrip .modal .cart-item-note{ background:var(--paper-dim) !important; color:var(--ink) !important; border-color:var(--line) !important; }
+body.pub-design-filmstrip .modal input::placeholder, body.pub-design-filmstrip .modal textarea::placeholder{ color:var(--stone); opacity:1; }
+body.pub-design-filmstrip .modal input:focus, body.pub-design-filmstrip .modal textarea:focus, body.pub-design-filmstrip .modal select:focus{ outline:none; border-color:var(--ember) !important; }
+body.pub-design-filmstrip .modal .qty-btn{ background:var(--paper-dim); color:var(--ink); border-color:var(--line); }
+body.pub-design-filmstrip .modal .cr-line-total{ color:#D10812; }
+body.pub-design-filmstrip.pub-user-dark .modal .cr-line-total{ color:#FF4A55; }
+body.pub-design-filmstrip .modal .btn-cancel{ background:var(--paper-dim); color:var(--ink); border:1.5px solid var(--line); }
+body.pub-design-filmstrip .modal .btn-confirm, body.pub-design-filmstrip .modal .ord-type-btn.active{ background:var(--ember); border-color:var(--ember); color:#fff; }
+body.pub-design-filmstrip .modal .btn-confirm:hover{ background:var(--ember-dark); }
+body.pub-design-filmstrip .modal .btn-confirm:disabled{ opacity:.5; }
+body.pub-design-filmstrip .modal .ord-type-btn{ background:var(--paper-dim); color:var(--ink); border-color:var(--line); }
+body.pub-design-filmstrip .modal .order-step.done .order-step-circle{ background:#1E7B3A; border-color:#1E7B3A; color:#fff; }
+body.pub-design-filmstrip .modal .order-step.active .order-step-circle{ background:var(--ember); border-color:var(--ember); color:#fff; }
+body.pub-design-filmstrip .modal .order-step-label{ color:var(--stone); }
+body.pub-design-filmstrip .modal .order-step.active .order-step-label{ color:var(--ink); }
+body.pub-design-filmstrip .modal .order-step.done .order-step-label{ color:var(--basil); }
+body.pub-design-filmstrip .modal .cart-summary-row{ color:var(--stone); }
+body.pub-design-filmstrip .modal .cart-summary-row.total{ color:var(--ink); }
+body.pub-design-filmstrip .modal-floating-footer .modal-actions{ background:var(--paper); box-shadow:0 -6px 16px rgba(0,0,0,.18); }
+body.pub-design-filmstrip .modal .ord-footer-total, body.pub-design-filmstrip .modal .ord-footer-total .ord-footer-total-amount{ color:var(--ink); }
+body.pub-design-filmstrip .modal #cartClearBtn{ background:var(--paper-dim) !important; border-color:var(--line) !important; color:#B3261E !important; }
+body.pub-design-filmstrip.pub-user-dark .modal #cartClearBtn{ color:#FF7B7B !important; }
+
+/* زر "كرر آخر طلب" + زر الإخفاء (×) + وضوح الألوان في التصميمات الداكنة */
+.repeat-chip{ align-items:center; gap:6px; }
+.repeat-dismiss{ width:28px; height:28px; border-radius:50%; border:1px solid var(--line); background:var(--paper-dim); color:var(--stone); font-size:16px; line-height:1; cursor:pointer; padding:0; display:inline-flex; align-items:center; justify-content:center; font-family:var(--body); }
+.repeat-dismiss:hover{ color:var(--danger); border-color:var(--danger); }
+body.pub-design-filmstrip #pubRepeatOrderBtn, body.pub-design-ledger #pubRepeatOrderBtn{ background:var(--paper-dim); color:var(--ink); border-color:var(--line); }
+body.pub-design-filmstrip .repeat-dismiss, body.pub-design-ledger .repeat-dismiss, body.pub-user-dark .repeat-dismiss{ background:var(--paper-dim); color:var(--stone); border-color:var(--line); }
+
+.design-picker-grid{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin:2px 0 4px; }
+@media (max-width:460px){ .design-picker-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; } }
 @media (max-width:340px){ .design-picker-grid{ grid-template-columns:1fr; } }
 .design-card{ position:relative; border:2px solid var(--line); border-radius:14px; padding:10px; cursor:pointer; text-align:center; background:#fff; transition:border-color .15s ease, transform .1s ease; }
 .design-card:hover{ transform:translateY(-2px); }
@@ -830,6 +1481,112 @@ body.pub-design-sidebar .pub-item{ border-radius:10px; }
 .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
 .loading{ min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; color:var(--stone); background:var(--ink); font-family:var(--body); }
 .loading-logo{ width:76px; height:76px; object-fit:contain; border-radius:18px; background:#fff; padding:8px; animation:notifPulse 1.4s ease-in-out infinite; }
+
+/* ============================================================
+   إصلاح مقاسات الموبايل والشاشات الصغيرة (Mobile hardening)
+   السبب الأساسي للمشكلة: صف الكمية داخل كارت الصنف (الاسم + − + ‏+ + السعر)
+   ما كانش بيلتف، فكان بيوسّع عمود الجريد ويخلّي الصفحة أعرض من الشاشة.
+   ============================================================ */
+html{ max-width:100%; overflow-x:hidden; -webkit-text-size-adjust:100%; text-size-adjust:100%; }
+body{ max-width:100%; }
+img,svg,video{ max-width:100%; }
+
+/* أي عنصر جوه الجريد/الفليكس يقدر يصغّر بدل ما يوسّع الأب */
+#pubBody, .pub-body, .pub-item, .pub-item .info, .pub-item .item-control,
+.pub-item .variant-cart-lines, .pub-item-front{ min-width:0; }
+.pub-item{ max-width:100%; }
+.pub-item .name-primary, .pub-item .name-secondary, .pub-item .desc-expand{ overflow-wrap:anywhere; word-break:normal; }
+.pub-item select, .pub-item input, .pub-item .add-to-cart-btn{ max-width:100%; min-width:0; }
+.pub-item .item-control .variant-select{ text-overflow:ellipsis; }
+
+/* صف الكمية داخل الكارت (المتواجد في variant-cart-lines): يلتف بدل ما يفرد الكارت */
+.pub-item .variant-cart-lines .qty-stepper{
+  flex-wrap:wrap; justify-content:center; gap:6px 8px; width:100%; min-width:0;
+}
+.pub-item .variant-cart-lines .qty-stepper > span:first-child{
+  flex:1 1 100%; min-width:0; text-align:center; overflow-wrap:anywhere;
+}
+.pub-item .variant-cart-lines .qty-stepper .qty-btn{ width:36px; height:36px; flex:0 0 auto; }
+.pub-item .variant-cart-lines .qty-stepper .cr-line-total{
+  flex:1 1 100%; margin:0 !important; text-align:center; white-space:normal; overflow-wrap:anywhere;
+}
+/* لو الكارت عريض كفاية (تصميم قائمة عادي)، خلّي الصف في سطر واحد */
+@media (min-width:561px){
+  body:not([class*="pub-design-filmstrip"]):not([class*="pub-design-candy"]):not([class*="pub-design-badge"]):not([class*="pub-design-cork"]):not([class*="pub-design-board"]):not([class*="pub-design-fresh"]):not([class*="pub-design-grid"]) .pub-item .variant-cart-lines .qty-stepper{ flex-wrap:nowrap; justify-content:space-between; }
+  body:not([class*="pub-design-filmstrip"]):not([class*="pub-design-candy"]):not([class*="pub-design-badge"]):not([class*="pub-design-cork"]):not([class*="pub-design-board"]):not([class*="pub-design-fresh"]):not([class*="pub-design-grid"]) .pub-item .variant-cart-lines .qty-stepper > span:first-child{ flex:1 1 auto; text-align:start; }
+  body:not([class*="pub-design-filmstrip"]):not([class*="pub-design-candy"]):not([class*="pub-design-badge"]):not([class*="pub-design-cork"]):not([class*="pub-design-board"]):not([class*="pub-design-fresh"]):not([class*="pub-design-grid"]) .pub-item .variant-cart-lines .qty-stepper .cr-line-total{ flex:0 0 auto; text-align:end; }
+}
+
+/* شارة السعر في تصميم شريط السينما: ما تطلعش برا الكارت */
+body.pub-design-filmstrip .pub-item .price{
+  max-width:calc(100% - 24px); box-sizing:border-box; white-space:normal; line-height:1.35; text-align:center;
+}
+body.pub-design-filmstrip .pub-item .price .old-price{ margin-inline-end:4px; }
+body.pub-design-filmstrip .pub-item .discount-badge{ margin-inline-start:4px; }
+body.pub-design-filmstrip .pub-cat-heading{ letter-spacing:2px; overflow-wrap:anywhere; }
+
+@media (max-width:420px){
+  .pub-search, .pub-body{ padding-inline:14px; }
+  .pub-tabs{ padding-inline:14px; }
+  body.pub-design-filmstrip #pubBody{ gap:16px 10px; }
+  body.pub-design-filmstrip .pub-item{ padding:16px 9px 10px; }
+  body.pub-design-filmstrip .pub-item .name-primary{ font-size:13.5px; }
+  body.pub-design-filmstrip .pub-item .price{ font-size:10px; padding:4px 7px; inset-inline-end:9px; }
+  body.pub-design-filmstrip .pub-item .item-control .variant-select{ font-size:12px; padding:8px 6px; }
+  body.pub-design-filmstrip .pub-item .item-control .add-to-cart-btn{ padding:9px 6px; font-size:13px; }
+  body.pub-design-filmstrip .pub-item .item-control .qty-stepper{ width:100%; justify-content:center; gap:8px; }
+  body.pub-design-filmstrip .pub-item .item-control .qty-btn{ width:36px; height:36px; }
+  body.pub-design-filmstrip .mode-toggle-link{ text-align:center; font-size:10.5px; }
+  body.pub-design-filmstrip .pub-cat-heading{ font-size:19px; margin:26px 0 14px; }
+}
+/* شاشات ضيقة جدًا: عمود واحد بدل اتنين */
+@media (max-width:340px){
+  body.pub-design-filmstrip #pubBody,
+  body.pub-design-board #pubBody,
+  body.pub-design-badge #pubBody,
+  body.pub-design-cork #pubBody,
+  body.pub-design-candy #pubBody,
+  body.pub-design-fresh #pubBody{ grid-template-columns:minmax(0,1fr); }
+}
+
+/* ===== سلة المشتريات / النوافذ المنبثقة على الموبايل ===== */
+.overlay{ padding:12px; }
+.modal{ max-width:100%; }
+@media (max-width:560px){
+  .overlay{ padding:10px; }
+  .modal{ width:100%; max-width:calc(100vw - 20px); padding:16px; }
+  /* الصف: الاسم في سطر لوحده بعرض كامل، وتحته الكمية والسعر والحذف */
+  .cart-row{ flex-wrap:wrap; gap:8px 10px; }
+  .cart-row .cr-name{ flex:1 1 100%; min-width:0; overflow-wrap:anywhere; }
+  .cart-row .qty-stepper{ margin-top:0; gap:8px; flex:0 0 auto; }
+  .cart-row .qty-btn{ width:36px; height:36px; }
+  .cart-row .cr-line-total{ flex:1 1 auto; min-width:0; text-align:start; white-space:nowrap; }
+  .cart-row .cr-delete-btn{ margin-inline-start:auto; padding:6px; font-size:18px; }
+}
+
+@media (max-width:400px){
+  .order-step{ flex:0 1 auto; min-width:0; }
+  .order-step-label{ font-size:10px; white-space:normal; text-align:center; max-width:70px; line-height:1.25; }
+  .order-step-line{ margin-inline:2px; min-width:8px; }
+  .modal-actions button, .modal-actions a{ min-width:0; }
+}
+
+/* في التصميمات اللي فيها منطقة التحكم عمودية، قيم flex:1 1 110px كانت بتتحول لارتفاع (القائمة والزر طالعين طوال) */
+body.pub-design-filmstrip .pub-item .item-control > .variant-select,
+body.pub-design-candy .pub-item .item-control > .variant-select,
+body.pub-design-badge .pub-item .item-control > .variant-select,
+body.pub-design-cork .pub-item .item-control > .variant-select,
+body.pub-design-board .pub-item .item-control > .variant-select,
+body.pub-design-fresh .pub-item .item-control > .variant-select{ flex:0 0 auto; width:100%; height:auto; min-height:40px; }
+body.pub-design-filmstrip .pub-item .item-control > .add-to-cart-btn,
+body.pub-design-candy .pub-item .item-control > .add-to-cart-btn,
+body.pub-design-badge .pub-item .item-control > .add-to-cart-btn,
+body.pub-design-cork .pub-item .item-control > .add-to-cart-btn,
+body.pub-design-board .pub-item .item-control > .add-to-cart-btn,
+body.pub-design-fresh .pub-item .item-control > .add-to-cart-btn{ flex:0 0 auto; width:100%; height:auto; min-height:44px; }
+body.pub-design-filmstrip .pub-item .item-control .mode-toggle-link,
+body.pub-design-filmstrip .pub-item .item-control .price-preview,
+body.pub-design-filmstrip .pub-item .item-control .min-weight-note{ flex:0 0 auto; width:100%; text-align:center; margin-top:0; }
 </style>
 </head>
 <body>
@@ -895,10 +1652,13 @@ body.pub-design-sidebar .pub-item{ border-radius:10px; }
   </div>
 </div>
 
+<noscript><div style="padding:20px;color:#F6F1E4;text-align:center;">منيو m@g — منيو إلكتروني ونظام طلبات أونلاين للمطاعم والمتاجر. فعّل JavaScript لتصفح المنيو والطلب.</div></noscript>
+
 <div id="cashierScreen" class="hidden">
   <div class="topbar">
+    <div class="topbar-menu-logo"><img src="favicon.png" alt="منيو m@g" title="منيو m@g"></div>
     <div class="brand-group">
-      <div class="brand"><img class="brand-logo" src="favicon.png" alt="منيو m@g" title="منيو m@g"> <span id="cashierRestName">منيو m@g</span></div>
+      <div class="brand"><img class="brand-logo shop-logo" id="cashierShopLogo" style="display:none" alt="" onerror="this.style.display='none'"> <span id="cashierRestName">منيو m@g</span></div>
       <span style="color:var(--stone); font-size:12px; background:#2A2825; border:1px solid #454138; border-radius:6px; padding:5px 10px;">👤 حساب كاشير</span>
     </div>
     <div class="topbar-actions">
@@ -940,8 +1700,9 @@ body.pub-design-sidebar .pub-item{ border-radius:10px; }
 
 <div class="app hidden" id="dashboardScreen">
   <div class="topbar">
+    <div class="topbar-menu-logo"><img src="favicon.png" alt="منيو m@g" title="منيو m@g"></div>
     <div class="brand-group">
-      <div class="brand"><img class="brand-logo" src="favicon.png" alt="منيو m@g" title="منيو m@g"> <span id="dashRestaurantName">—</span></div>
+      <div class="brand"><img class="brand-logo shop-logo" id="dashShopLogo" style="display:none" alt="" onerror="this.style.display='none'"> <span id="dashRestaurantName">—</span></div>
       <span id="branchSwitcherWrap" class="hidden" style="display:inline-flex; align-items:center; gap:4px;">
         <select id="branchSwitcherSelect" style="font-size:12px; padding:3px 6px; border-radius:6px; border:1px solid var(--line); background:var(--paper); color:var(--ink); max-width:140px;"></select>
         <button type="button" class="link-btn" id="addBranchBtn" title="إضافة فرع جديد" style="font-size:12px; padding:3px 8px;">+ فرع</button>
@@ -952,6 +1713,7 @@ body.pub-design-sidebar .pub-item{ border-radius:10px; }
     </div>
     <div class="topbar-actions">
       <button class="link-btn" id="viewOrdersBtn">📦 الطلبات <span id="newOrdersBadge" class="new-orders-badge hidden">0</span></button>
+      <button class="link-btn" id="abandonedCartsBtn">🛒 السلات المتروكة <span id="abandonedCartsBadge" class="new-orders-badge hidden">0</span></button>
 
       <div class="dash-menu-group" data-menu="menu-reports">
         <button type="button" class="link-btn dash-menu-trigger">📊 التقارير والإحصائيات <span class="caret">▾</span></button>
@@ -994,6 +1756,7 @@ body.pub-design-sidebar .pub-item{ border-radius:10px; }
         <button type="button" class="link-btn dash-menu-trigger">⚙️ الإعدادات <span class="caret">▾</span></button>
         <div class="dash-menu-dropdown">
           <button class="link-btn" id="restaurantSettingsBtn">إعدادات المطعم</button>
+          <button class="link-btn" id="menuDesignBtn">🎨 شكل المنيو</button>
           <button class="link-btn" id="backupBtn">📦 النسخ الاحتياطي</button>
           <button class="link-btn" id="staffBtn">👤 حسابات الكاشير</button>
           <button class="link-btn" id="subscriptionBtn">💳 الاشتراك</button>
@@ -1136,8 +1899,8 @@ body.pub-design-sidebar .pub-item{ border-radius:10px; }
       <div class="pub-icon-btn hidden" id="pubInfoBtn" title="معلومات المطعم">
         <svg viewBox="0 0 24 24"><path d="M12 21s-7-6.1-7-11.5A7 7 0 0 1 12 2.5a7 7 0 0 1 7 7C19 14.9 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.4"/></svg>
       </div>
-      <div class="pub-icon-btn hidden" id="pubDesignBtn" title="تغيير شكل المنيو">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="8.5" cy="10" r="1.3" fill="currentColor" stroke="none"/><circle cx="15" cy="9" r="1.3" fill="currentColor" stroke="none"/><circle cx="15.5" cy="15" r="1.3" fill="currentColor" stroke="none"/><path d="M12 3a9 9 0 0 0 0 18c1.1 0 1.6-.9 1.1-1.8-.2-.4-.1-.9.3-1.1.3-.2.7-.2 1 0 1 .6 2.3.2 2.7-.9A9 9 0 0 0 12 3z"/></svg>
+      <div class="pub-icon-btn" id="pubDarkModeBtn" title="الوضع الداكن">
+        <svg id="pubDarkModeIcon" viewBox="0 0 24 24"><path d="M21 12.6A9 9 0 1 1 11.4 3a7 7 0 0 0 9.6 9.6z"/></svg>
       </div>
       <div class="pub-more-wrap">
         <div class="pub-icon-btn" id="pubMoreBtn" title="المزيد">
@@ -1166,12 +1929,17 @@ body.pub-design-sidebar .pub-item{ border-radius:10px; }
   <div class="pub-logo-wrap" id="pubLogoWrap"></div>
   <div id="pubClosedBanner" class="hidden" style="max-width:640px; margin:0 auto 10px; padding:10px 20px; text-align:center; background:#5c2b2b; color:#fff; font-weight:700; font-size:13px; border-radius:8px;"></div>
   <div style="max-width:640px; margin:0 auto; padding:0 20px 10px; text-align:center;">
-    <button type="button" id="pubRepeatOrderBtn" class="link-btn hidden">🔁 كرر آخر طلب</button>
+    <span id="pubRepeatWrap" class="repeat-chip" style="display:none;">
+      <button type="button" id="pubRepeatOrderBtn" class="link-btn hidden">🔁 كرر آخر طلب</button>
+      <button type="button" id="pubRepeatDismissBtn" class="repeat-dismiss" aria-label="إخفاء" title="إخفاء">×</button>
+    </span>
   </div>
   <div class="pub-tabs-wrap" id="pubTabsWrap">
     <div class="pub-search">
-      <input type="text" id="pubSearchInput" placeholder="ابحث في القائمة...">
+      <input type="text" id="pubSearchInput" placeholder="ابحث في القائمة..." autocomplete="off" enterkeyhint="search">
+      <button type="button" id="pubSearchClear" class="pub-search-clear hidden" aria-label="مسح البحث">×</button>
     </div>
+    <div class="pub-filters" id="pubFilters"></div>
     <div class="pub-tabs" id="pubTabs"></div>
   </div>
   <div class="pub-body" id="pubBody"></div>
@@ -1695,7 +2463,7 @@ function setFavicon(href){
   document.getElementById('appleTouchIconLink').setAttribute('href', href);
 }
 
-function setPageMeta({ title, description, image }){
+function setPageMeta({ title, description, image, keywords, url, robots, jsonLd }){
   document.title = title;
   document.getElementById('metaDescription').setAttribute('content', description);
   document.getElementById('ogTitle').setAttribute('content', title);
@@ -1706,6 +2474,13 @@ function setPageMeta({ title, description, image }){
     document.getElementById('ogImage').setAttribute('content', image);
     document.getElementById('twImage').setAttribute('content', image);
   }
+  if(keywords) document.getElementById('metaKeywords').setAttribute('content', keywords);
+  if(url){
+    document.getElementById('canonicalLink').setAttribute('href', url);
+    document.getElementById('ogUrl').setAttribute('content', url);
+  }
+  if(robots) document.getElementById('metaRobots').setAttribute('content', robots);
+  if(jsonLd) document.getElementById('ldJson').textContent = JSON.stringify(jsonLd);
 }
 
 async function boot(){
@@ -1716,6 +2491,12 @@ async function boot(){
   const wantSignup = params.get('signup');
   const tableParam = parseInt(params.get('table'), 10);
   window.dineInTable = (tableParam && tableParam > 0) ? tableParam : null; // رقم الطاولة لو الدخول جاي من مسح QR طاولة
+  const ratingCode = params.get('v'); // رابط تقييم قصير بعد التسليم: ?v=xxxxxxxx
+  if(ratingCode){
+    setFavicon('menu-favicon.png');
+    await loadRatingByCode(ratingCode);
+    return;
+  }
   if(trackId){
     setFavicon('menu-favicon.png');
     await loadOrderTracking(trackId);
@@ -2190,7 +2971,7 @@ function maybeShowRenewSoonBanner(){
 
 function applyFeaturePlanUI(){
   const menuOnly = restaurant.feature_plan === 'menu_only';
-  ['viewOrdersBtn','deliveryZonesBtn','customersBtn'].forEach(id=>{
+  ['viewOrdersBtn','abandonedCartsBtn','deliveryZonesBtn','customersBtn'].forEach(id=>{
     const el = document.getElementById(id);
     if(el) el.classList.toggle('hidden', menuOnly);
   });
@@ -2203,6 +2984,7 @@ function applyGranularRestrictionsUI(){
   const menuOnly = restaurant.feature_plan === 'menu_only';
   const restrictions = {
     viewOrdersBtn: restaurant.restriction_orders_disabled || menuOnly,
+    abandonedCartsBtn: restaurant.restriction_orders_disabled || menuOnly,
     viewStatsBtn: restaurant.restriction_stats_disabled,
     publicLinkSplitBtn: restaurant.restriction_share_disabled,
     showQrBtn: restaurant.restriction_share_disabled,
@@ -2247,11 +3029,20 @@ function applyTierLockBadgesUI(){
   setFeatureLockBadge('winbackBtn', !!restaurant.restriction_winback_disabled, '🔒 شاشة العملاء غير النشطين متاحة في باقة PRO فقط');
 }
 
+// شعار المتجر بجانب اسمه في الشريط العلوي (شعار المنيو الثابت بقى في منتصف أعلى الشريط)
+function setTopbarShopLogo(imgId){
+  const el = document.getElementById(imgId);
+  if(!el) return;
+  if(restaurant && restaurant.logo_url){ el.src = restaurant.logo_url; el.alt = restaurant.name || ''; el.style.display = ''; }
+  else { el.removeAttribute('src'); el.style.display = 'none'; }
+}
+
 // شاشة الكاشير المبسّطة — تُفتح للحسابات الفرعية ذات الصلاحية المحدودة (عرض الطلبات وتحديث حالتها فقط)
 async function openCashierDashboard(staffRow){
   restaurant = staffRow.restaurants;
   if(!restaurant){ toast('تعذر تحميل بيانات المتجر'); show('authScreen'); return; }
   document.getElementById('cashierRestName').textContent = restaurant.name || 'منيو m@g';
+  setTopbarShopLogo('cashierShopLogo');
   show('cashierScreen');
   subscribeToNewOrders();
   refreshNewOrdersCount();
@@ -2265,6 +3056,7 @@ async function openDashboard(){
   if(restaurant && restaurant.logo_url) setLoadingLogo(restaurant.logo_url); else resetLoadingLogo();
   show('loadingScreen');
   document.getElementById('dashRestaurantName').textContent = restaurant.name;
+  setTopbarShopLogo('dashShopLogo');
   document.getElementById('ticketShopName').textContent = restaurant.name;
   renderBranchSwitcher();
   refreshAllBizLabels();
@@ -2272,6 +3064,7 @@ async function openDashboard(){
   subscribeToNewOrders();
   startOverdueCheckLoop();
   refreshNewOrdersCount();
+  startAbandonedBadgeLoop();
   setupNotificationPermission();
   show('dashboardScreen');
   document.getElementById('adminPanelBtn').classList.toggle('hidden', !isSuperAdmin);
@@ -2971,6 +3764,140 @@ async function refreshNewOrdersCount(){
   if(error) return;
   newOrdersCount = count || 0;
   updateNewOrdersBadge();
+}
+
+// ===== السلات المتروكة: عملاء أدخلوا رقمهم وملأوا السلة ولم يُكملوا الطلب =====
+const ABANDON_MIN_MINUTES = 20; // لا تظهر السلة إلا بعد هذه المدة من آخر نشاط (حتى لا نزعج عميلًا لا يزال يطلب)
+const ABANDON_DAYS = 7;         // نعرض سلات آخر 7 أيام فقط
+let abandonedBadgeTimer = null;
+
+function abandonedWindow(){
+  const now = Date.now();
+  return {
+    from: new Date(now - ABANDON_DAYS*86400000).toISOString(),
+    to: new Date(now - ABANDON_MIN_MINUTES*60000).toISOString()
+  };
+}
+function updateAbandonedBadge(n){
+  const b = document.getElementById('abandonedCartsBadge');
+  if(!b) return;
+  if(n > 0){ b.textContent = n > 99 ? '99+' : n; b.classList.remove('hidden'); } else { b.classList.add('hidden'); }
+}
+async function refreshAbandonedBadge(){
+  if(!restaurant) return;
+  try{
+    const w = abandonedWindow();
+    const { count, error } = await sb.from('abandoned_carts').select('id', { count:'exact', head:true })
+      .eq('restaurant_id', restaurant.id).is('recovered_at', null).is('reminded_at', null)
+      .gte('updated_at', w.from).lte('updated_at', w.to);
+    if(!error) updateAbandonedBadge(count || 0);
+  }catch(e){}
+}
+function startAbandonedBadgeLoop(){
+  if(abandonedBadgeTimer) clearInterval(abandonedBadgeTimer);
+  refreshAbandonedBadge();
+  abandonedBadgeTimer = setInterval(refreshAbandonedBadge, 5*60000);
+}
+function abandonedAgo(ts){
+  const mins = Math.max(1, Math.round((Date.now() - new Date(ts).getTime())/60000));
+  if(mins < 60) return mins === 1 ? 'منذ دقيقة' : (mins === 2 ? 'منذ دقيقتين' : (mins <= 10 ? `منذ ${mins} دقائق` : `منذ ${mins} دقيقة`));
+  const h = Math.round(mins/60);
+  if(h < 24) return h === 1 ? 'منذ ساعة' : (h === 2 ? 'منذ ساعتين' : `منذ ${h} ساعات`);
+  const d = Math.round(h/24);
+  return d === 1 ? 'منذ يوم' : (d === 2 ? 'منذ يومين' : `منذ ${d} أيام`);
+}
+function abandonedCartSummary(cartArr){
+  const lines = Array.isArray(cartArr) ? cartArr : [];
+  const shown = lines.slice(0, 3).map(l=> `${l.n}${l.v ? ' (' + l.v + ')' : ''}${Number(l.q) > 1 ? ' ×' + l.q : ''}`);
+  const more = lines.length - shown.length;
+  const moreTxt = more === 1 ? 'صنف آخر' : (more === 2 ? 'صنفان آخران' : (more <= 10 ? `${more} أصناف أخرى` : `${more} صنفًا آخر`));
+  return shown.join('، ') + (more > 0 ? ` و${moreTxt}` : '');
+}
+// رسالتان بصياغتين مختلفتين (واحدة بالاسم وواحدة بدونه) لتقليل فرصة اعتبار الرسائل المتكررة سبامًا
+function buildAbandonedCartWaMessage(row, variantIdx){
+  const link = `${location.origin}${location.pathname}?r=${restaurant.slug}`;
+  const cur = getRestaurantCurrency(restaurant);
+  const summary = abandonedCartSummary(row.cart);
+  const total = Number(row.subtotal).toFixed(2);
+  const rName = restaurant.name || 'المتجر';
+  if(row.customer_name && variantIdx % 2 === 0){
+    return `مرحبًا ${row.customer_name} 👋\nلاحظنا إنك أضفت ${summary} لسلتك في ${rName} ولسه ماكملتش الطلب 🛒\nإجمالي السلة: ${total} ${cur}\nتقدر تكمل طلبك بسهولة من هنا:\n${link}\nوإحنا في خدمتك لو محتاج أي مساعدة 🌟`;
+  }
+  return `أهلًا بك 🌟\nسلتك في ${rName} لسه منتظراك 🛒\n${summary} — الإجمالي ${total} ${cur}\nأكمل طلبك من هنا:\n${link}`;
+}
+
+async function openAbandonedCartsOverlay(){
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.innerHTML = `
+    <div class="modal">
+      <h3 style="margin:0 0 6px;">🛒 السلات المتروكة</h3>
+      <div style="font-size:12.5px; color:var(--stone); margin-bottom:10px; line-height:1.6;">
+        عملاء أدخلوا رقم هاتفهم وأضافوا أصنافًا للسلة ثم غادروا دون إتمام الطلب (آخر ${ABANDON_DAYS} أيام). اضغط لإرسال تذكير على واتساب — تُفتح الرسالة معبّأة وتضغط إرسال بنفسك.
+      </div>
+      <div id="abStats" style="font-size:12.5px; font-weight:700; color:var(--basil-dark); margin-bottom:8px;"></div>
+      <div id="abList" style="max-height:60vh; overflow-y:auto;"><div class="orders-empty">جارِ التحميل...</div></div>
+      <div class="modal-actions"><button class="btn-cancel" id="abClose">إغلاق</button></div>
+    </div>`;
+  document.body.appendChild(overlay);
+  const close = ()=>{ overlay.remove(); refreshAbandonedBadge(); };
+  overlay.querySelector('#abClose').addEventListener('click', close);
+  overlay.addEventListener('click', (e)=>{ if(e.target===overlay) close(); });
+
+  const w = abandonedWindow();
+  const [listRes, recRes] = await Promise.all([
+    sb.from('abandoned_carts').select('*').eq('restaurant_id', restaurant.id).is('recovered_at', null)
+      .gte('updated_at', w.from).lte('updated_at', w.to).order('updated_at', { ascending:false }).limit(200),
+    sb.from('abandoned_carts').select('id', { count:'exact', head:true }).eq('restaurant_id', restaurant.id).not('recovered_at', 'is', null).gte('recovered_at', w.from)
+  ]);
+  const listEl = overlay.querySelector('#abList');
+  if(listRes.error){ listEl.innerHTML = `<div class="orders-empty">تعذر تحميل السلات المتروكة</div>`; return; }
+  let rows = listRes.data || [];
+  const recovered = recRes.count || 0;
+  overlay.querySelector('#abStats').textContent = recovered > 0 ? `✅ عملاء أكملوا طلبهم بعد ترك السلة (آخر ${ABANDON_DAYS} أيام): ${recovered}` : '';
+  const cur = getRestaurantCurrency(restaurant);
+
+  function render(){
+    if(!rows.length){ listEl.innerHTML = `<div class="orders-empty">لا توجد سلات متروكة حاليًا 👌</div>`; return; }
+    listEl.innerHTML = rows.map((r, idx)=>`
+      <div class="ab-card" data-id="${r.id}" style="border:1.5px solid var(--line); border-radius:12px; padding:12px; margin-bottom:10px; background:var(--paper-dim,#fff);">
+        <div style="display:flex; justify-content:space-between; gap:8px; flex-wrap:wrap; align-items:baseline;">
+          <strong>${escapeHtml(r.customer_name || 'عميل بدون اسم')}</strong>
+          <span style="font-family:var(--mono); direction:ltr; font-size:12.5px;">${escapeHtml(r.customer_phone)}</span>
+        </div>
+        <div style="font-size:13px; margin:6px 0; line-height:1.6;">${escapeHtml(abandonedCartSummary(r.cart))}</div>
+        <div style="display:flex; justify-content:space-between; gap:8px; flex-wrap:wrap; font-size:12px; color:var(--stone); margin-bottom:8px;">
+          <span>${abandonedAgo(r.updated_at)}</span>
+          <span style="font-family:var(--mono); direction:ltr; color:var(--ember); font-weight:700;">${Number(r.subtotal).toFixed(2)} ${escapeHtml(cur)}</span>
+          <span>${r.reminded_at ? '✅ تم التذكير ' + abandonedAgo(r.reminded_at) : 'لم يُرسل تذكير'}</span>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button type="button" data-ab="wa" style="flex:1; background:#25D366; color:#fff; border:none; border-radius:10px; padding:9px 10px; font-family:var(--body); font-weight:800; font-size:13px; cursor:pointer;">📲 ${r.reminded_at ? 'إعادة إرسال التذكير' : 'أرسل تذكير واتساب'}</button>
+          <button type="button" data-ab="del" title="حذف" style="background:none; border:1.5px solid var(--line); color:var(--danger); border-radius:10px; padding:9px 12px; cursor:pointer;">🗑</button>
+        </div>
+      </div>`).join('');
+    listEl.querySelectorAll('.ab-card').forEach(card=>{
+      const id = card.dataset.id;
+      const idx = rows.findIndex(x=>x.id===id);
+      const row = rows[idx];
+      card.querySelector('[data-ab="wa"]').addEventListener('click', async ()=>{
+        const digits = toEgyptWaDigits(row.customer_phone);
+        if(!digits){ toast('رقم الهاتف غير صالح'); return; }
+        window.open(`https://wa.me/${digits}?text=${encodeURIComponent(buildAbandonedCartWaMessage(row, idx))}`, '_blank');
+        const nowIso = new Date().toISOString();
+        const { error } = await sb.from('abandoned_carts').update({ reminded_at: nowIso }).eq('id', id);
+        if(!error){ row.reminded_at = nowIso; render(); }
+      });
+      card.querySelector('[data-ab="del"]').addEventListener('click', async ()=>{
+        if(!confirm('حذف هذه السلة من القائمة؟')) return;
+        const { error } = await sb.from('abandoned_carts').delete().eq('id', id);
+        if(error){ toast('تعذر الحذف'); return; }
+        rows = rows.filter(x=>x.id!==id);
+        render();
+      });
+    });
+  }
+  render();
 }
 
 function updateNotifPermBtn(btnId){
@@ -4793,7 +5720,7 @@ async function openOrdersOverlay(){
   // رسائل واتساب جاهزة تُرسل للعميل عند تغيير حالة طلبه (ميزة PRO) — يفتح واتساب برسالة معبأة مسبقًا ليضغط صاحب المتجر إرسال فقط
   const STATUS_WA_MESSAGES = {
     preparing: (o)=> `مرحبًا ${o.customer_name || ''} 👋\nطلبك رقم #${o.order_number ?? ''} من ${restaurant.name || 'المتجر'} الآن قيد التجهيز 👨‍🍳\nسيصلك قريبًا إن شاء الله.`,
-    delivered: (o)=> `مرحبًا ${o.customer_name || ''} 👋\nطلبك رقم #${o.order_number ?? ''} من ${restaurant.name || 'المتجر'} تم تسليمه ✅\nنتمنالك بالهنا والشفا، ومنتظرين طلبك تاني 🌟`,
+    delivered: (o)=> `مرحبًا ${o.customer_name || ''} 👋\nطلبك رقم #${o.order_number ?? ''} من ${restaurant.name || 'المتجر'} تم تسليمه ✅\nنتمنالك بالهنا والشفا، ومنتظرين طلبك تاني 🌟${o.rating_code ? `\n\nقيّم تجربتك في ثواني 👇\n${location.origin}${location.pathname}?v=${o.rating_code}` : ''}`,
     cancelled: (o)=> `مرحبًا ${o.customer_name || ''} 👋\nنأسف، طلبك رقم #${o.order_number ?? ''} من ${restaurant.name || 'المتجر'} تم إلغاؤه ❌\nإذا كنت بحاجة لمزيد من التفاصيل أو ترغب في تقديم طلب جديد، فنحن في خدمتك.`,
   };
   function sendStatusWaToCustomer(o, newStatus){
@@ -4879,7 +5806,7 @@ async function openOrdersOverlay(){
       ? `<button type="button" class="btn-export-sm" data-action="markPaid" data-order-id="${o.id}" style="margin-top:6px;">✅ تأكيد استلام الدفع</button>`
       : '';
     const ratingBadgeHtml = o.rating_stars
-      ? `<span class="status-badge" style="background:#4a3a10; color:#f5d98a;" title="${o.rating_comment ? escapeHtml(o.rating_comment) : ''}">${'★'.repeat(o.rating_stars)}${'☆'.repeat(5-o.rating_stars)}</span>`
+      ? `<span class="status-badge" style="background:#4a3a10; color:#f5d98a;" title="${o.rating_comment ? escapeHtml(o.rating_comment) : ''}">${'★'.repeat(o.rating_stars)}${'☆'.repeat(5-o.rating_stars)}</span>${o.rating_comment ? `<span class="status-badge" style="background:#4a3a10; color:#f5d98a; white-space:normal; max-width:100%;">💬 ${escapeHtml(o.rating_comment)}</span>` : ''}`
       : '';
     const isActive = status === 'pending' || status === 'preparing';
     let prepHtml = '';
@@ -5128,6 +6055,7 @@ async function openOrdersOverlay(){
   renderList();
 }
 document.getElementById('viewOrdersBtn').addEventListener('click', openOrdersOverlay);
+document.getElementById('abandonedCartsBtn').addEventListener('click', openAbandonedCartsOverlay);
 
 const RECEIPT_WIDTH_KEY = 'menuReceiptWidth';
 function getSavedReceiptWidth(){
@@ -8496,6 +9424,73 @@ async function openSubscriptionModal(){
 
 document.getElementById('subscriptionBtn').addEventListener('click', openSubscriptionModal);
 
+function openMenuDesignModal(){
+  if(restaurant.restriction_settings_disabled){ toast('إعدادات المطعم غير متاحة في نسختك الحالية'); return; }
+  const MENU_DESIGN_OPTIONS = [
+    { id:'classic', nameAr:'كلاسيكي' },
+    { id:'grid', nameAr:'شبكة عصرية' },
+    { id:'dark', nameAr:'داكن أنيق' },
+    { id:'luxury', nameAr:'أنيق فاخر' },
+    { id:'minimal', nameAr:'بسيط مرتب' },
+    { id:'showcase', nameAr:'أقسام عرض' },
+    { id:'sidebar', nameAr:'أقسام جانبية' },
+    { id:'aurora', nameAr:'أورورا نابض (ألوان مختلفة تمامًا)' },
+    { id:'fresh', nameAr:'أخضر طازج (تصميم مختلف كليًا)' },
+    { id:'poster', nameAr:'معرض الصور (صور كبيرة)' },
+    { id:'board', nameAr:'لوحة المنتجات (الاسم فوق الصورة)' },
+    { id:'ledger', nameAr:'القائمة المرقّمة (أنيقة بخط منقّط)' },
+    { id:'catalog', nameAr:'الكتالوج الحديث (بدون صور، نصي وسريع)' },
+    { id:'receipt', nameAr:'فاتورة السوق (شكل إيصال الكاشير)' },
+    { id:'zoom', nameAr:'معاينة مكبّرة (الصورة تكبر عند تمرير الماوس)' },
+    { id:'badge', nameAr:'شارة الصنف الدائرية (تصميم إبداعي)' },
+    { id:'cork', nameAr:'بولارويد اللوحة الفلينية (تصميم إبداعي)' },
+    { id:'newsprint', nameAr:'قصاصة الجريدة (تصميم إبداعي)' },
+    { id:'ticket', nameAr:'تذكرة السفر (تصميم إبداعي)' },
+    { id:'filmstrip', nameAr:'شريط السينما (تصميم إبداعي)' },
+    { id:'candy', nameAr:'لفافة الحلوى (تصميم إبداعي)' }
+  ];
+  let pendingDesign = restaurant.menu_design || 'classic';
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.innerHTML = `
+    <div class="modal">
+      <h3>🎨 شكل المنيو</h3>
+      <div class="field">
+        <small>اختر الشكل الذي سيظهر لكل زوار المنيو، ويمكنك تغييره في أي وقت من هنا.</small>
+        <div class="design-picker-grid" id="menuDesignPickerGrid" style="margin-top:8px;">
+          ${MENU_DESIGN_OPTIONS.map(d=>`
+            <div class="design-card${d.id===pendingDesign ? ' selected' : ''}" data-design-id="${d.id}" style="padding:14px 6px;">
+              <div class="design-card-check">✓</div>
+              <div class="design-card-name" style="font-size:13px;">${d.nameAr}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" id="mdCancel">إلغاء</button>
+        <button class="btn-confirm" id="mdConfirm">حفظ</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.querySelectorAll('#menuDesignPickerGrid .design-card').forEach(card=>{
+    card.addEventListener('click', ()=>{
+      pendingDesign = card.dataset.designId;
+      overlay.querySelectorAll('#menuDesignPickerGrid .design-card').forEach(c=> c.classList.toggle('selected', c.dataset.designId===pendingDesign));
+    });
+  });
+  overlay.querySelector('#mdCancel').addEventListener('click', ()=> overlay.remove());
+  overlay.addEventListener('click', (e)=>{ if(e.target===overlay) overlay.remove(); });
+  overlay.querySelector('#mdConfirm').addEventListener('click', async ()=>{
+    const btn = overlay.querySelector('#mdConfirm');
+    btn.disabled = true;
+    const { data, error } = await sb.from('restaurants').update({ menu_design: pendingDesign }).eq('id', restaurant.id).select().single();
+    if(error){ toast('تعذر الحفظ'); btn.disabled = false; return; }
+    restaurant = data;
+    toast('تم حفظ شكل المنيو');
+    overlay.remove();
+  });
+}
+document.getElementById('menuDesignBtn').addEventListener('click', openMenuDesignModal);
+
 document.getElementById('backupBtn').addEventListener('click', ()=>{
   openBackupModal();
 });
@@ -8511,16 +9506,6 @@ document.getElementById('restaurantSettingsBtn').addEventListener('click', async
   let pendingLogo = restaurant.logo_url || null;
   const originalLogoUrl = restaurant.logo_url || null;
   let pendingBizType = restaurant.business_type === 'store' ? 'store' : 'restaurant';
-  let pendingMenuDesign = restaurant.menu_design || 'classic';
-  const RS_DESIGN_OPTIONS = [
-    { id:'classic', nameAr:'كلاسيكي' },
-    { id:'grid', nameAr:'شبكة عصرية' },
-    { id:'dark', nameAr:'داكن أنيق' },
-    { id:'luxury', nameAr:'أنيق فاخر' },
-    { id:'minimal', nameAr:'بسيط مرتب' },
-    { id:'showcase', nameAr:'أقسام عرض' },
-    { id:'sidebar', nameAr:'أقسام جانبية' }
-  ];
   const t = () => BIZ_TERMS[pendingBizType];
   const overlay = document.createElement('div');
   overlay.className = 'overlay';
@@ -8670,17 +9655,6 @@ document.getElementById('restaurantSettingsBtn').addEventListener('click', async
         ${restaurant.restriction_notif_settings_disabled ? `<small style="color:var(--stone); margin-top:4px; display:block;">🔒 رقم استلام إشعارات الطلبات مقفول من الإدارة.</small>` : ''}
       </div>
       <div class="field">
-        <label>شكل المنيو</label>
-        <small>اختر الشكل الثابت الذي سيظهر لكل زوار المنيو (يمكن تغييره في أي وقت من هنا).</small>
-        <div class="design-picker-grid" id="rsDesignPickerGrid" style="margin-top:8px;">
-          ${RS_DESIGN_OPTIONS.map(d=>`
-            <div class="design-card${d.id===pendingMenuDesign ? ' selected' : ''}" data-rs-design-id="${d.id}" style="padding:14px 6px;">
-              <div class="design-card-check">✓</div>
-              <div class="design-card-name" style="font-size:13px;">${d.nameAr}</div>
-            </div>`).join('')}
-        </div>
-      </div>
-      <div class="field">
         <label>الصيانة</label>
         <small>أدوات صيانة دورية، لا حاجة لاستخدامها كثيرًا</small>
         <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
@@ -8695,13 +9669,6 @@ document.getElementById('restaurantSettingsBtn').addEventListener('click', async
     </div>`;
   document.body.appendChild(overlay);
   wireEnterToConfirm(overlay, overlay.querySelector('#rsConfirm'));
-
-  overlay.querySelectorAll('#rsDesignPickerGrid .design-card').forEach(card=>{
-    card.addEventListener('click', ()=>{
-      pendingMenuDesign = card.dataset.rsDesignId;
-      overlay.querySelectorAll('#rsDesignPickerGrid .design-card').forEach(c=> c.classList.toggle('selected', c.dataset.rsDesignId===pendingMenuDesign));
-    });
-  });
 
   // إدارة قائمة المحافظ الإلكترونية (أكثر من محفظة لكل متجر)
   let pendingWallets = (Array.isArray(restaurant.wallets) && restaurant.wallets.length)
@@ -8966,13 +9933,14 @@ document.getElementById('restaurantSettingsBtn').addEventListener('click', async
         return;
       }
     }
-    const { data, error } = await sb.from('restaurants').update({ logo_url: finalLogoUrl, name, name_en, phone, messenger_username, telegram_username, address, country_code, currency_label, opening_time, closing_time, min_delivery_order, min_delivery_order_online, default_delivery_fee_mode, default_delivery_fee_amount, default_delivery_zone_id, notification_phone, notification_apikey, business_type: pendingBizType, default_prep_minutes, accept_online_payment, wallets, wallet_label: wallets[0] ? wallets[0].label : null, wallet_number: wallets[0] ? wallets[0].number : null, instapay_account, menu_design: pendingMenuDesign }).eq('id', restaurant.id).select().single();
+    const { data, error } = await sb.from('restaurants').update({ logo_url: finalLogoUrl, name, name_en, phone, messenger_username, telegram_username, address, country_code, currency_label, opening_time, closing_time, min_delivery_order, min_delivery_order_online, default_delivery_fee_mode, default_delivery_fee_amount, default_delivery_zone_id, notification_phone, notification_apikey, business_type: pendingBizType, default_prep_minutes, accept_online_payment, wallets, wallet_label: wallets[0] ? wallets[0].label : null, wallet_number: wallets[0] ? wallets[0].number : null, instapay_account }).eq('id', restaurant.id).select().single();
     if(error){ toast('تعذر الحفظ'); btn.disabled=false; return; }
     restaurant = data;
     if(originalLogoUrl && originalLogoUrl !== finalLogoUrl){
       await deleteStorageFileFromUrl(originalLogoUrl); // امسح الشعار القديم من التخزين بعد نجاح الحفظ فقط
     }
     document.getElementById('dashRestaurantName').textContent = restaurant.name;
+    setTopbarShopLogo('dashShopLogo');
     document.getElementById('ticketShopName').textContent = restaurant.name;
     refreshAllBizLabels();
     overlay.remove();
@@ -11082,7 +12050,7 @@ async function refreshTrackingData(orderId){
 }
 
 // يعرض واجهة التقييم بعد تسليم الطلب، أو النجوم التي قيّم بها العميل الطلب إن كان قد قيّمه من قبل
-function renderRatingWidget(orderId, row){
+function renderRatingWidget(orderId, row, code){
   const wrap = document.getElementById('trackRatingWrap');
   if(row.order_status !== 'delivered'){ wrap.innerHTML = ''; return; }
   if(row.rating_stars){
@@ -11124,7 +12092,9 @@ function renderRatingWidget(orderId, row){
     submitBtn.disabled = true;
     submitBtn.textContent = 'جاري الإرسال...';
     const comment = wrap.querySelector('#trackRatingComment').value.trim();
-    const { data: ok, error } = await sb.rpc('submit_order_rating', { p_order_id: orderId, p_stars: selectedStars, p_comment: comment });
+    const { data: ok, error } = code
+      ? await sb.rpc('submit_rating_by_code', { p_code: code, p_stars: selectedStars, p_comment: comment })
+      : await sb.rpc('submit_order_rating', { p_order_id: orderId, p_stars: selectedStars, p_comment: comment });
     if(error || !ok){
       toast('تعذر إرسال التقييم، يرجى المحاولة مرة أخرى');
       submitBtn.disabled = false;
@@ -11132,8 +12102,33 @@ function renderRatingWidget(orderId, row){
       return;
     }
     toast('شكرًا لتقييمك! 🙏');
-    refreshTrackingData(orderId);
+    if(code) loadRatingByCode(code); else refreshTrackingData(orderId);
   });
+}
+
+// صفحة تقييم مختصرة برابط قصير (?v=كود) — تعرض اسم المتجر وواجهة التقييم فقط، والتقييم يصل لصاحب المتجر وحده
+async function loadRatingByCode(code){
+  show('trackingScreen');
+  ['trackStatusWrap','trackPaymentReminderWrap','trackItemsWrap','trackContactWrap'].forEach(id=>{ document.getElementById(id).innerHTML = ''; });
+  document.getElementById('trackTotalWrap').textContent = '';
+  document.getElementById('trackUpdatedAt').parentElement.style.display = 'none';
+  const wrap = document.getElementById('trackRatingWrap');
+  const { data, error } = await sb.rpc('get_rating_by_code', { p_code: code });
+  const row = Array.isArray(data) ? data[0] : data;
+  if(error || !row){
+    document.getElementById('trackRestName').textContent = 'رابط التقييم غير صحيح';
+    document.getElementById('trackLogoWrap').innerHTML = '';
+    wrap.innerHTML = '';
+    return;
+  }
+  document.getElementById('trackLogoWrap').innerHTML = row.restaurant_logo
+    ? `<img src="${escapeHtml(row.restaurant_logo)}" style="max-height:56px; max-width:200px; object-fit:contain;">` : '';
+  document.getElementById('trackRestName').textContent = row.restaurant_name || '';
+  if(row.order_status !== 'delivered' && !row.rating_stars){
+    wrap.innerHTML = '<div class="orders-empty">التقييم متاح بعد تسليم طلبك 🙏</div>';
+    return;
+  }
+  renderRatingWidget(null, row, code);
 }
 
 // يبني نص الطلب كاملًا (كرسالة الطلب الأصلية) ليُرسل من شاشة التتبع إذا رغب العميل في التواصل بخصوص طلبه
@@ -11280,7 +12275,7 @@ async function loadPublic(slug){
   const [catsRes, zonesRes, topItemsRes] = await Promise.all([
     sb.from('categories').select('*, items(*)').eq('restaurant_id', rest.id).eq('items.is_available', true).order('position').order('position', { foreignTable: 'items' }),
     sb.from('delivery_zones').select('*').eq('restaurant_id', rest.id).order('area_name'),
-    sb.rpc('get_top_items', { p_restaurant_id: rest.id, p_limit: 5 }).then(r=>r, e=>({ data: null, error: e }))
+    sb.rpc('get_top_items', { p_restaurant_id: rest.id, p_limit: 12 }).then(r=>r, e=>({ data: null, error: e }))
   ]);
   const catsData = catsRes.data || [];
   const pubCats = catsData.map(c=>{ const { items, ...catOnly } = c; return catOnly; });
@@ -11357,18 +12352,97 @@ async function loadPublic(slug){
       zonesLoadFailed = false;
     }
   }
-  const topItemIds = new Set((topItemsRes.data || []).map(t=>t.item_id));
-  setPageMeta({
-
-    title: rest.name,
-    description: `اطلب أونلاين من ${rest.name} بسهولة وسرعة`,
-    image: rest.logo_url || undefined
-  });
+  // عدد "الأكثر طلبًا" يكبر مع حجم المنيو (5 للمنيو الصغير حتى 12 للمنيو الكبير) عشان الفلتر والشارة يفضلوا مفيدين
+  const TOP_ITEMS_N = Math.min(12, Math.max(5, Math.round(pubItems.length / 15)));
+  const topItemIds = new Set((topItemsRes.data || []).slice(0, TOP_ITEMS_N).map(t=>t.item_id));
+  {
+    const isStore = rest.business_type === 'store';
+    const kind = isStore ? 'متجر' : 'مطعم';
+    const catNames = pubCats.map(c=>c.name).filter(Boolean);
+    const topCats = catNames.slice(0, 6).join('، ');
+    const baseUrl = `https://${location.host}${location.pathname}`;
+    const pageUrl = `${baseUrl}?r=${encodeURIComponent(rest.slug)}`;
+    const seoTitle = `${rest.name} | منيو أونلاين وطلب ${isStore ? 'منتجات' : 'أكل'} بالتوصيل`;
+    const seoDesc = (`منيو ${rest.name} أونلاين — ${topCats ? 'تصفح ' + topCats + ' و' : ''}اطلب بسهولة مع التوصيل. الأسعار والعروض محدّثة. عبر منيو m@g (M@G Menu - magziko).`).slice(0, 300);
+    const seoKeywords = [
+      rest.name, `منيو ${rest.name}`, `${kind} ${rest.name}`, `اطلب من ${rest.name}`, `${rest.name} اونلاين`,
+      `${rest.name} توصيل`, `${rest.name} اسعار`, 'منيو اونلاين', 'منيو إلكتروني', 'طلب اونلاين', 'توصيل',
+      'magziko', 'M@G Menu', 'منيو m@g',
+      ...catNames.slice(0, 10)
+    ].join(', ');
+    setPageMeta({
+      title: seoTitle,
+      description: seoDesc,
+      image: rest.logo_url || undefined,
+      keywords: seoKeywords,
+      url: pageUrl,
+      robots: 'index, follow, max-image-preview:large',
+      jsonLd: {
+        '@context': 'https://schema.org',
+        '@type': isStore ? 'Store' : 'Restaurant',
+        name: rest.name,
+        url: pageUrl,
+        image: rest.logo_url || undefined,
+        description: seoDesc,
+        inLanguage: 'ar',
+        keywords: seoKeywords,
+        hasMenu: pageUrl,
+        ...(isStore ? {} : { servesCuisine: catNames.slice(0, 6) }),
+        potentialAction: { '@type': 'OrderAction', target: pageUrl }
+      }
+    });
+  }
   if(rest.logo_url) setFavicon(rest.logo_url);
   setupInstallableMenu(rest);
   let activeCat = 'ALL';
   let lang = 'ar'; // 'ar' or 'en'
   let searchTerm = '';
+  let activeFilter = null; // 'top' | 'new' | 'offers' | null
+  // تطبيع النص العربي: يتجاهل التشكيل والتطويل ويوحّد (أ إ آ → ا) و(ى → ي) و(ة → ه) عشان البحث ما يفوّتش نتائج بسبب اختلاف الكتابة
+  function normSearch(t){
+    return String(t==null ? '' : t).toLowerCase()
+      .replace(/[\u064B-\u065F\u0670\u0640]/g,'')
+      .replace(/[أإآٱ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه')
+      .replace(/\s+/g,' ').trim();
+  }
+  const _searchIndex = new Map();
+  function itemSearchIndex(i){
+    let e = _searchIndex.get(i.id);
+    if(!e){
+      const cat = pubCats.find(c=>c.id===i.category_id);
+      e = {
+        name: normSearch((i.name||'') + ' ' + (i.name_en||'')),
+        rest: normSearch((i.description||'') + ' ' + (cat ? (cat.name||'') + ' ' + (cat.name_en||'') : ''))
+      };
+      _searchIndex.set(i.id, e);
+    }
+    return e;
+  }
+  // كل كلمة يكتبها العميل لازم تظهر في اسم الصنف أو وصفه أو اسم قسمه
+  function searchScore(i, tokens){
+    const e = itemSearchIndex(i);
+    let inName = true;
+    for(const t of tokens){
+      if(e.name.includes(t)) continue;
+      inName = false;
+      if(!e.rest.includes(t)) return -1;
+    }
+    return inName ? 0 : 1;
+  }
+  // "جديد": الأصناف المضافة خلال آخر 14 يومًا — ولو معظم القائمة جديدة (مطعم لسه بادئ) ما تتعلّمش عشان الشارة تفضل ليها معنى
+  const NEW_ITEM_DAYS = 14;
+  const newItemIds = (function(){
+    const cutoff = Date.now() - NEW_ITEM_DAYS*24*60*60*1000;
+    const ids = pubItems.filter(i=> i.created_at && new Date(i.created_at).getTime() >= cutoff).map(i=>i.id);
+    return ids.length <= Math.ceil(pubItems.length/2) ? new Set(ids) : new Set();
+  })();
+  function itemHasDiscount(i){ return i.old_price != null && Number(i.old_price) > Number(i.price); }
+  function filterMatch(i){
+    if(activeFilter === 'top') return topItemIds.has(i.id);
+    if(activeFilter === 'new') return newItemIds.has(i.id);
+    if(activeFilter === 'offers') return itemHasDiscount(i);
+    return true;
+  }
   let cart = {}; // item_id -> { item, qty }
   let weightInputMode = {}; // item_id -> 'weight' | 'price' (لأصناف البيع بالوزن)
   let isRestaurantOpenNow = true;
@@ -11380,17 +12454,50 @@ async function loadPublic(slug){
     { id:'luxury', nameAr:'أنيق فاخر', nameEn:'Luxury', bodyClass:'pub-design-luxury', bg:'#F6F1E4', card:'#ffffff', accent:'#7A2048', line:'#E4DCC7', layout:'list' },
     { id:'minimal', nameAr:'بسيط مرتب', nameEn:'Clean Minimal', bodyClass:'pub-design-minimal', bg:'#F6F1E4', card:'#ffffff', accent:'#127475', line:'#E4DCC7', layout:'list' },
     { id:'showcase', nameAr:'أقسام عرض', nameEn:'Showcase Rows', bodyClass:'pub-design-showcase', bg:'#F3F0FA', card:'#ffffff', accent:'#5B3E8E', line:'#E4DCC7', layout:'shelf' },
-    { id:'sidebar', nameAr:'أقسام جانبية', nameEn:'Sidebar Menu', bodyClass:'pub-design-sidebar', bg:'#F6F1E4', card:'#ffffff', accent:'#9E1B24', line:'#E4DCC7', layout:'list' }
+    { id:'sidebar', nameAr:'أقسام جانبية', nameEn:'Sidebar Menu', bodyClass:'pub-design-sidebar', bg:'#F6F1E4', card:'#ffffff', accent:'#9E1B24', line:'#E4DCC7', layout:'list' },
+    { id:'aurora', nameAr:'أورورا نابض', nameEn:'Aurora', bodyClass:'pub-design-aurora', bg:'#F4F1FC', card:'#ffffff', accent:'#7C3AED', line:'#DAD0F0', layout:'list' },
+    { id:'fresh', nameAr:'أخضر طازج', nameEn:'Fresh Green', bodyClass:'pub-design-fresh', bg:'#16221D', card:'#1F2F28', accent:'#3FAE6B', line:'#33473F', layout:'grid' },
+    { id:'poster', nameAr:'معرض الصور', nameEn:'Photo Gallery', bodyClass:'pub-design-poster', bg:'#EAF2FA', card:'#ffffff', accent:'#F0533A', line:'#C9DAEA', layout:'cards' },
+    { id:'board', nameAr:'لوحة المنتجات', nameEn:'Product Board', bodyClass:'pub-design-board', bg:'#FBF1E2', card:'#ffffff', accent:'#C1531F', line:'#E7D2AC', layout:'grid' },
+    { id:'ledger', nameAr:'القائمة المرقّمة', nameEn:'Numbered Ledger', bodyClass:'pub-design-ledger', bg:'#171B33', card:'#1F2544', accent:'#D8B25C', line:'#3B416A', layout:'list' },
+    { id:'catalog', nameAr:'الكتالوج الحديث', nameEn:'Modern Catalog', bodyClass:'pub-design-catalog', bg:'#F6F6F4', card:'#ffffff', accent:'#4F46E5', line:'#DCDCD6', layout:'list' },
+    { id:'receipt', nameAr:'فاتورة السوق', nameEn:'Market Receipt', bodyClass:'pub-design-receipt', bg:'#E7E7E5', card:'#ffffff', accent:'#C81E1E', line:'#BFBFBC', layout:'list' },
+    { id:'zoom', nameAr:'معاينة مكبّرة', nameEn:'Hover Zoom', bodyClass:'pub-design-zoom', bg:'#EDEFF2', card:'#ffffff', accent:'#FF6B57', line:'#D2D7DE', layout:'list' },
+    { id:'badge', nameAr:'شارة الصنف الدائرية', nameEn:'Circular Badge', bodyClass:'pub-design-badge', bg:'#FFF7E1', card:'#ffffff', accent:'#7B5EA7', line:'#F0DFA3', layout:'grid' },
+    { id:'cork', nameAr:'بولارويد اللوحة الفلينية', nameEn:'Corkboard Polaroid', bodyClass:'pub-design-cork', bg:'#C9A778', card:'#fdfdfb', accent:'#2A9D8F', line:'#A98653', layout:'grid' },
+    { id:'newsprint', nameAr:'قصاصة الجريدة', nameEn:'Newsprint Clipping', bodyClass:'pub-design-newsprint', bg:'#EDEAE3', card:'#FAF8F2', accent:'#B3261E', line:'#CFC9BC', layout:'grid' },
+    { id:'ticket', nameAr:'تذكرة السفر', nameEn:'Travel Ticket', bodyClass:'pub-design-ticket', bg:'#FFF9F0', card:'#ffffff', accent:'#E8792E', line:'#D8CBAE', layout:'list' },
+    { id:'filmstrip', nameAr:'شريط السينما', nameEn:'Film Strip', bodyClass:'pub-design-filmstrip', bg:'#0D0D0D', card:'#161616', accent:'#E50914', line:'#333333', layout:'grid' },
+    { id:'candy', nameAr:'لفافة الحلوى', nameEn:'Candy Wrapper', bodyClass:'pub-design-candy', bg:'#FFE9F5', card:'#ffffff', accent:'#FF3D81', line:'#FFC2E2', layout:'grid' }
   ];
   // شكل المنيو أصبح إعدادًا ثابتًا يحدده صاحب المطعم من لوحة التحكم (وليس اختيارًا مؤقتًا لكل زائر)
+  var previewDesignId = null; // معاينة مؤقتة للمالك بالاختصار T — مش بتتحفظ
   function getMenuDesignId(){
-    return (rest && rest.menu_design) || 'classic';
+    return previewDesignId || (rest && rest.menu_design) || 'classic';
   }
   function applyMenuDesign(){
     const id = getMenuDesignId();
     MENU_DESIGNS.forEach(d=>{ if(d.bodyClass) document.body.classList.remove(d.bodyClass); });
     const d = MENU_DESIGNS.find(x=>x.id===id) || MENU_DESIGNS[0];
     if(d.bodyClass) document.body.classList.add(d.bodyClass);
+  }
+  const DARK_MODE_KEY = `darkMode_${rest.id}`;
+  function isUserDarkMode(){
+    try{ return localStorage.getItem(DARK_MODE_KEY) === '1'; }catch(e){ return false; }
+  }
+  function applyUserDarkMode(){
+    const on = isUserDarkMode();
+    document.body.classList.toggle('pub-user-dark', on);
+    const icon = document.getElementById('pubDarkModeIcon');
+    if(icon){
+      icon.innerHTML = on
+        ? '<circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M4.5 12H2.1M21.9 12h-2.4M5.3 5.3l1.7 1.7M17 17l1.7 1.7M18.7 5.3 17 7M7 17l-1.7 1.7"/>'
+        : '<path d="M21 12.6A9 9 0 1 1 11.4 3a7 7 0 0 0 9.6 9.6z"/>';
+    }
+  }
+  function toggleUserDarkMode(){
+    try{ localStorage.setItem(DARK_MODE_KEY, isUserDarkMode() ? '0' : '1'); }catch(e){}
+    applyUserDarkMode();
   }
 
   function saveCart(){
@@ -11450,9 +12557,54 @@ async function loadPublic(slug){
   function cartSubtotal(){
     return Object.values(cart).reduce((sum,c)=> sum + (c.qty * Number(c.unitPrice)), 0);
   }
+  // ترتيب الاقتراحات: قسم مختلف عمّا في السلة (مكمّل) ← الأكثر طلبًا ← عليه خصم ← جديد ← سعر لا يزيد عن أغلى سطر في السلة. بحد أقصى صنفين من كل قسم
+  function getCartSuggestions(limit){
+    const lines = Object.values(cart);
+    const inCartIds = new Set(lines.map(c=>c.item.id));
+    const cartCats = new Set(lines.map(c=>c.item.category_id));
+    const maxUnit = Math.max(0, ...lines.map(c=> Number(c.unitPrice) || 0));
+    const scored = [];
+    pubItems.forEach((i, idx)=>{
+      if(inCartIds.has(i.id)) return;
+      if(i.pricing_type === 'weight' || i.pricing_type === 'sizes') return;
+      const price = Number(i.price);
+      if(!Number.isFinite(price) || price <= 0) return;
+      if(getItemModifierSections(i.id).length) return;
+      let sc = 0;
+      if(!cartCats.has(i.category_id)) sc += 3;
+      if(topItemIds.has(i.id)) sc += 2;
+      if(itemHasDiscount(i)) sc += 1;
+      if(newItemIds.has(i.id)) sc += 0.5;
+      if(maxUnit && price <= maxUnit) sc += 1;
+      scored.push({ i, sc, idx });
+    });
+    scored.sort((a,b)=> b.sc - a.sc || a.idx - b.idx);
+    const perCat = {}, out = [];
+    for(const x of scored){
+      const c = x.i.category_id;
+      if((perCat[c] || 0) >= 2) continue;
+      perCat[c] = (perCat[c] || 0) + 1;
+      out.push(x.i);
+      if(out.length >= limit) break;
+    }
+    return out;
+  }
   let prevPubCartCount = 0;
+  // زر "كرر آخر طلب": يظهر فقط لو فيه طلب سابق + العميل ما أخفاهوش + السلة فاضية
+  function syncRepeatVisibility(){
+    const wrap = document.getElementById('pubRepeatWrap');
+    if(!wrap || !rest) return;
+    let hasLast = false, dismissed = false;
+    try{
+      const arr = JSON.parse(localStorage.getItem(`menuLastOrder_${rest.id}`)) || [];
+      hasLast = Array.isArray(arr) && arr.length > 0;
+      dismissed = localStorage.getItem(`menuRepeatDismissed_${rest.id}`) === '1';
+    }catch(e){}
+    wrap.style.display = (hasLast && !dismissed && Object.keys(cart).length === 0) ? 'inline-flex' : 'none';
+  }
   function updateCartButton(){
     saveCart();
+    syncRepeatVisibility();
     const badge = document.getElementById('pubCartBadge');
     const btn = document.getElementById('pubOrderBtn');
     const label = document.getElementById('pubOrderBtnLabel');
@@ -11510,6 +12662,14 @@ async function loadPublic(slug){
   let lastOrderItems = [];
   try{ lastOrderItems = JSON.parse(localStorage.getItem(`menuLastOrder_${rest.id}`)) || []; }catch(e){ lastOrderItems = []; }
   if(lastOrderItems.length > 0){ repeatOrderBtn.classList.remove('hidden'); } else { repeatOrderBtn.classList.add('hidden'); }
+  const repeatDismissBtn = document.getElementById('pubRepeatDismissBtn');
+  if(repeatDismissBtn){
+    repeatDismissBtn.onclick = ()=>{
+      try{ localStorage.setItem(`menuRepeatDismissed_${rest.id}`, '1'); }catch(e){}
+      syncRepeatVisibility();
+    };
+  }
+  syncRepeatVisibility();
   repeatOrderBtn.onclick = ()=>{
     let restoredCount = 0, skippedCount = 0;
     lastOrderItems.forEach(li=>{
@@ -11644,6 +12804,23 @@ async function loadPublic(slug){
       ? `<img src="${rest.logo_url}" data-cache-src="${rest.logo_url}" alt="${escapeHtml(restName)}"><div class="pub-rest-name">${escapeHtml(restName)}</div>`
       : nameBlockHtml;
     hydrateCachedImages(pubLogoWrapEl);
+    const pubLogoImgEl = pubLogoWrapEl.querySelector('img');
+    if(pubLogoImgEl){
+      pubLogoImgEl.addEventListener('click', ()=>{
+        const overlay = document.createElement('div');
+        overlay.className = 'overlay logo-lightbox-overlay';
+        overlay.innerHTML = `
+          <div class="logo-lightbox">
+            <button type="button" class="dark-quickview-close" aria-label="${lang==='en' ? 'Close' : 'إغلاق'}">✕</button>
+            <img src="${rest.logo_url}" alt="${escapeHtml(restName)}">
+            <div class="logo-lightbox-name">${escapeHtml(restName)}</div>
+          </div>`;
+        document.body.appendChild(overlay);
+        function close(){ overlay.remove(); }
+        overlay.addEventListener('click', (e)=>{ if(e.target===overlay) close(); });
+        overlay.querySelector('.dark-quickview-close').addEventListener('click', close);
+      });
+    }
     document.getElementById('pubSearchInput').placeholder = lang==='en' ? 'Search the menu...' : 'ابحث في القائمة...';
     document.getElementById('pubOrderBtnLabel').textContent = lang==='en' ? 'Cart' : 'السلة';
     document.getElementById('pubOrderBtnIcon').textContent = rest.business_type === 'store' ? '🛒' : '🍽️';
@@ -11740,7 +12917,30 @@ async function loadPublic(slug){
     overlay.addEventListener('click', (e)=>{ if(e.target===overlay) overlay.remove(); });
   }
 
+  function scrollTabIntoView(container, tab){
+    if(!container || !tab) return;
+    const target = tab.offsetLeft - (container.clientWidth - tab.offsetWidth)/2;
+    container.scrollTo({ left: target, behavior: 'auto' });
+  }
+
+  // يحفظ مكان السكرول قبل إعادة بناء المنيو ويرجّعه بعدها (يمنع القفز لفوق عند إضافة صنف للسلة)
   function renderPublicBody(){
+    const tabsEl = document.getElementById('pubTabs');
+    const prevY = window.scrollY;
+    const prevTabsX = tabsEl ? tabsEl.scrollLeft : 0;
+    const prevBehavior = document.documentElement.style.scrollBehavior;
+    document.documentElement.style.scrollBehavior = 'auto';
+    _renderPublicBodyInner();
+    const t2 = document.getElementById('pubTabs');
+    if(t2){ t2.style.scrollBehavior = 'auto'; t2.scrollLeft = prevTabsX; }
+    window.scrollTo(0, prevY);
+    requestAnimationFrame(()=>{
+      window.scrollTo(0, prevY);
+      document.documentElement.style.scrollBehavior = prevBehavior;
+      if(t2) t2.style.scrollBehavior = '';
+    });
+  }
+  function _renderPublicBodyInner(){
     renderHeader();
     const tabsWrap = document.getElementById('pubTabs');
     tabsWrap.innerHTML = '';
@@ -11749,29 +12949,59 @@ async function loadPublic(slug){
       return;
     }
     const allTab = document.createElement('div');
-    const isAllActive = activeCat==='ALL' && !searchTerm;
+    const isAllActive = activeCat==='ALL' && !searchTerm && !activeFilter;
     allTab.className = 'pub-tab pub-tab-all' + (isAllActive ? ' active' : '');
     allTab.innerHTML = `<span>📋 ${lang==='en' ? 'All' : 'الكل'}</span><span class="pub-tab-count">${pubItems.length}</span>`;
-    allTab.addEventListener('click', ()=>{ activeCat = 'ALL'; searchTerm=''; document.getElementById('pubSearchInput').value=''; renderPublicBody(); });
+    allTab.addEventListener('click', ()=>{ activeCat = 'ALL'; searchTerm=''; activeFilter=null; document.getElementById('pubSearchInput').value=''; renderPublicBody(); });
     tabsWrap.appendChild(allTab);
-    if(isAllActive){ requestAnimationFrame(()=> allTab.scrollIntoView({ behavior:'smooth', inline:'center', block:'nearest' })); }
+    if(isAllActive){ requestAnimationFrame(()=> scrollTabIntoView(tabsWrap, allTab)); }
     pubCats.forEach(cat=>{
-      const isActive = cat.id===activeCat && !searchTerm;
+      const isActive = cat.id===activeCat && !searchTerm && !activeFilter;
       const t = document.createElement('div');
       t.className = 'pub-tab' + (isActive ? ' active' : '');
       const count = pubItems.filter(i=>i.category_id===cat.id).length;
       t.innerHTML = `<span>${escapeHtml(tName(cat.name, cat.name_en))}</span><span class="pub-tab-count">${count}</span>`;
-      t.addEventListener('click', ()=>{ activeCat = cat.id; searchTerm=''; document.getElementById('pubSearchInput').value=''; renderPublicBody(); });
+      t.addEventListener('click', ()=>{ activeCat = cat.id; searchTerm=''; activeFilter=null; document.getElementById('pubSearchInput').value=''; renderPublicBody(); });
       tabsWrap.appendChild(t);
-      if(isActive){ requestAnimationFrame(()=> t.scrollIntoView({ behavior:'smooth', inline:'center', block:'nearest' })); }
+      if(isActive){ requestAnimationFrame(()=> scrollTabIntoView(tabsWrap, t)); }
     });
+    const clearBtnEl = document.getElementById('pubSearchClear');
+    if(clearBtnEl) clearBtnEl.classList.toggle('hidden', !searchTerm);
+    const filtersEl = document.getElementById('pubFilters');
+    if(filtersEl){
+      const defs = [
+        { key:'top',    on: pubItems.some(i=>topItemIds.has(i.id)), label: lang==='en' ? '🔥 Bestsellers' : '🔥 الأكثر طلبًا' },
+        { key:'new',    on: newItemIds.size > 0,                    label: lang==='en' ? '🆕 New' : '🆕 جديد' },
+        { key:'offers', on: pubItems.some(itemHasDiscount),         label: lang==='en' ? '🏷 Offers' : '🏷 عروض' }
+      ].filter(d=>d.on);
+      filtersEl.innerHTML = '';
+      defs.forEach(d=>{
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'pub-filter-chip' + (activeFilter===d.key ? ' active' : '');
+        chip.textContent = d.label;
+        chip.addEventListener('click', ()=>{ activeFilter = activeFilter===d.key ? null : d.key; renderPublicBody(); });
+        filtersEl.appendChild(chip);
+      });
+    }
     const body = document.getElementById('pubBody');
     let catItems;
-    if(searchTerm){
-      const q = searchTerm.toLowerCase();
-      catItems = pubItems.filter(i=>
-        (i.name||'').toLowerCase().includes(q) || (i.name_en||'').toLowerCase().includes(q)
-      );
+    if(searchTerm || activeFilter){
+      const tokens = normSearch(searchTerm).split(' ').filter(Boolean);
+      const scored = [];
+      pubItems.forEach(i=>{
+        if(activeFilter && !filterMatch(i)) return;
+        const sc = tokens.length ? searchScore(i, tokens) : 0;
+        if(sc >= 0) scored.push({ i, sc });
+      });
+      // نتائج الاسم أولًا ثم نتائج الوصف/القسم (الترتيب الأصلي محفوظ داخل كل مجموعة)
+      catItems = scored.map((x,k)=>({ ...x, k })).sort((x,y)=> x.sc - y.sc || x.k - y.k).map(x=>x.i);
+      if(filtersEl){
+        const cnt = document.createElement('span');
+        cnt.className = 'pub-result-count';
+        cnt.textContent = lang==='en' ? `${catItems.length} result${catItems.length===1?'':'s'}` : `${catItems.length} نتيجة`;
+        filtersEl.appendChild(cnt);
+      }
     } else if(activeCat === 'ALL'){
       catItems = pubCats.flatMap(cat => pubItems.filter(i=>i.category_id===cat.id));
     } else {
@@ -11796,7 +13026,7 @@ async function loadPublic(slug){
 
     body.innerHTML = catItems.map((i, idx)=>{
       let headerHtml = '';
-      if(activeCat === 'ALL' && !searchTerm){
+      if(activeCat === 'ALL' && !searchTerm && !activeFilter){
         const prevCatId = idx>0 ? catItems[idx-1].category_id : null;
         if(i.category_id !== prevCatId){
           const cat = pubCats.find(c=>c.id===i.category_id);
@@ -11862,21 +13092,23 @@ async function loadPublic(slug){
       }
       return `${headerHtml}
       <div class="pub-item" data-id="${i.id}">
-        <span class="chevron" data-action="toggle">${i.description ? '▾' : ''}</span>
-        ${i.image_url ? `<img src="${i.image_url}" data-cache-src="${i.image_url}" loading="lazy" decoding="async">` : `<div class="no-img">${biz(rest.business_type,'placeholderIcon')}</div>`}
-        <div class="info">
-          <div class="name-primary">${escapeHtml(tName(i.name, i.name_en))}${topItemIds.has(i.id) ? ` <span title="${lang==='en' ? 'Bestseller' : 'الأكثر طلبًا'}">🔥</span>` : ''}</div>
-          ${secondaryName(i.name, i.name_en) ? `<div class="name-secondary">${escapeHtml(secondaryName(i.name, i.name_en))}</div>` : ''}
-          <div class="price">${priceLine}</div>
-          ${i.description ? `<div class="desc-expand">${escapeHtml(i.description)}</div>` : ''}
-          ${cartLinesHtml ? `<div class="variant-cart-lines">${cartLinesHtml}</div>` : ''}
+        <div class="pub-item-front">
+          <span class="chevron" data-action="toggle">${i.description ? '▾' : ''}</span>
+          ${i.image_url ? `<img src="${i.image_url}" data-cache-src="${i.image_url}" loading="lazy" decoding="async">` : `<div class="no-img">${biz(rest.business_type,'placeholderIcon')}</div>`}
+          <div class="info">
+            <div class="name-primary">${escapeHtml(tName(i.name, i.name_en))}${topItemIds.has(i.id) ? ` <span title="${lang==='en' ? 'Bestseller' : 'الأكثر طلبًا'}">🔥</span>` : ''}${newItemIds.has(i.id) ? ` <span class="new-tag">${lang==='en' ? 'New' : 'جديد'}</span>` : ''}</div>
+            ${secondaryName(i.name, i.name_en) ? `<div class="name-secondary">${escapeHtml(secondaryName(i.name, i.name_en))}</div>` : ''}
+            <div class="price">${priceLine}</div>
+            ${i.description ? `<div class="desc-expand">${escapeHtml(i.description)}</div>` : ''}
+            ${cartLinesHtml ? `<div class="variant-cart-lines">${cartLinesHtml}</div>` : ''}
+          </div>
         </div>
         <div class="item-control">${controlHtml}</div>
       </div>`;
     }).join('');
     hydrateCachedImages(body);
 
-    const isShowcaseShelf = document.body.classList.contains('pub-design-showcase') && activeCat === 'ALL' && !searchTerm;
+    const isShowcaseShelf = document.body.classList.contains('pub-design-showcase') && activeCat === 'ALL' && !searchTerm && !activeFilter;
     body.classList.toggle('shelf-mode', isShowcaseShelf);
     if(isShowcaseShelf){
       const kids = Array.from(body.children);
@@ -11918,6 +13150,44 @@ async function loadPublic(slug){
       });
       body.innerHTML = '';
       body.appendChild(frag);
+    }
+
+    // تصميم "الأقسام الجانبية" على الموبايل: بدل التبويبات الأفقية، الأقسام تتحول لقوائم قابلة للطي (أكورديون) — قسم واحد مفتوح في كل مرة
+    const isSidebarAccordion = document.body.classList.contains('pub-design-sidebar') && window.innerWidth < 760 && activeCat === 'ALL' && !searchTerm && !activeFilter;
+    body.classList.toggle('accordion-mode', isSidebarAccordion);
+    if(isSidebarAccordion){
+      const kids = Array.from(body.children);
+      const frag = document.createDocumentFragment();
+      let currentGroup = null;
+      let currentList = null;
+      let groupIndex = 0;
+      kids.forEach(el=>{
+        if(el.classList.contains('pub-cat-heading')){
+          groupIndex++;
+          currentGroup = document.createElement('div');
+          currentGroup.className = 'pub-cat-group' + (groupIndex === 1 ? ' open' : '');
+          el.setAttribute('data-action', 'toggleCatGroup');
+          currentGroup.appendChild(el);
+          currentList = document.createElement('div');
+          currentList.className = 'pub-cat-items';
+          currentGroup.appendChild(currentList);
+          frag.appendChild(currentGroup);
+        } else if(el.classList.contains('pub-item') && currentList){
+          currentList.appendChild(el);
+        } else {
+          frag.appendChild(el);
+        }
+      });
+      body.innerHTML = '';
+      body.appendChild(frag);
+      body.querySelectorAll('.pub-cat-group > .pub-cat-heading').forEach(h=>{
+        h.addEventListener('click', ()=>{
+          const grp = h.closest('.pub-cat-group');
+          const wasOpen = grp.classList.contains('open');
+          body.querySelectorAll('.pub-cat-group.open').forEach(g=> g.classList.remove('open'));
+          if(!wasOpen) grp.classList.add('open');
+        });
+      });
     }
 
     // منتقي الإضافات/المتغيرات — يعرض كل الأقسام المرتبطة بالصنف (مجموعات + إضافات خاصة به):
@@ -12037,7 +13307,7 @@ async function loadPublic(slug){
         e.stopPropagation();
         const itemId = btn.dataset.itemId;
         const item = pubItems.find(x=>x.id===itemId);
-        const sel = body.querySelector(`[data-weight-select="${itemId}"]`);
+        const sel = document.querySelector(`[data-weight-select="${itemId}"]`);
         const grams = parseInt(sel.value);
         const baseKey = `${itemId}:${grams}`;
         const unitPrice = Number(item.price) * grams / 1000;
@@ -12051,6 +13321,7 @@ async function loadPublic(slug){
         e.stopPropagation();
         const itemId = el.dataset.modeToggle;
         weightInputMode[itemId] = (weightInputMode[itemId] === 'price') ? 'weight' : 'price';
+        if(weightInputMode[itemId] === 'price') darkQuickViewFocusPrice = true;
         renderPublicBody();
       });
     });
@@ -12078,7 +13349,7 @@ async function loadPublic(slug){
       inp.addEventListener('keydown', (e)=>{
         if(e.key === 'Enter'){
           e.preventDefault();
-          const btn = body.querySelector(`[data-action="addWeightByPrice"][data-item-id="${itemId}"]`);
+          const btn = document.querySelector(`[data-action="addWeightByPrice"][data-item-id="${itemId}"]`);
           if(btn) btn.click();
         }
       });
@@ -12089,7 +13360,7 @@ async function loadPublic(slug){
         e.stopPropagation();
         const itemId = btn.dataset.itemId;
         const item = pubItems.find(x=>x.id===itemId);
-        const input = body.querySelector(`[data-price-input="${itemId}"]`);
+        const input = document.querySelector(`[data-price-input="${itemId}"]`);
         const desiredPrice = Number(input.value);
         if(!desiredPrice || desiredPrice <= 0){
           input.focus();
@@ -12118,7 +13389,7 @@ async function loadPublic(slug){
         e.stopPropagation();
         const itemId = btn.dataset.itemId;
         const item = pubItems.find(x=>x.id===itemId);
-        const sel = body.querySelector(`[data-size-select="${itemId}"]`);
+        const sel = document.querySelector(`[data-size-select="${itemId}"]`);
         const sizeId = sel.value;
         const sizeObj = (pubItemSizes[itemId] || []).find(s=>s.id===sizeId);
         if(!sizeObj) return;
@@ -12127,14 +13398,185 @@ async function loadPublic(slug){
         addToCartRespectingAddons(item, baseKey, sizeObj.size_name, Number(sizeObj.price), null, card ? (card.querySelector('img') || card) : btn);
       });
     });
+    const isTicketDesign = document.body.classList.contains('pub-design-ticket');
+    if(isTicketDesign){
+      body.querySelectorAll('.pub-item').forEach(row=>{
+        if(row.querySelector(':scope > .ticket-stub')) return;
+        const priceEl = row.querySelector('.price');
+        if(!priceEl) return;
+        const stub = document.createElement('div');
+        stub.className = 'ticket-stub';
+        stub.innerHTML = `<span class="stub-price">${priceEl.innerHTML}</span><span class="stub-barcode"></span>`;
+        const front = row.querySelector(':scope > .pub-item-front');
+        if(front && front.nextSibling) front.parentNode.insertBefore(stub, front.nextSibling);
+        else row.appendChild(stub);
+      });
+    }
+    const isDarkDesign = document.body.classList.contains('pub-design-dark');
+    const isAuroraDesign = document.body.classList.contains('pub-design-aurora');
+    const isLuxuryDesign = document.body.classList.contains('pub-design-luxury');
     body.querySelectorAll('.pub-item').forEach(row=>{
       const chevron = row.querySelector('[data-action="toggle"]');
-      if(chevron && chevron.textContent){
+      if(isDarkDesign){
+        // "داكن أنيق": بدل الشرح المطوي جوه الصف، الضغط على الصف بيفتح نافذة تفاصيل سريعة (Quick View) فيها الصورة والوصف وعناصر التحكم نفسها
+        row.addEventListener('click', (e)=>{
+          if(e.target.closest('.item-control') || e.target.closest('.variant-cart-lines')) return;
+          openDarkQuickView(row);
+        });
+      } else if(isAuroraDesign){
+        // "أورورا": مفيش زرار إضافة منفصل للأصناف البسيطة — الضغط في أي مكان في الكارت بيضيفها للسلة على طول
+        row.addEventListener('click', (e)=>{
+          if(e.target.closest('.item-control') || e.target.closest('.variant-cart-lines')) return;
+          const primaryBtn = row.querySelector('.item-control .add-to-cart-btn, .item-control .qty-btn[data-action="inc"]');
+          if(primaryBtn) primaryBtn.click();
+        });
+      } else if(isLuxuryDesign){
+        // "أنيق فاخر": اسحب الصف لليسار عشان تظهر لوحة الإضافة السريعة بدل ما تكون ظاهرة طول الوقت
+        wireLuxurySwipe(row);
+      } else if(chevron && chevron.textContent){
         row.addEventListener('click', ()=> row.classList.toggle('expanded'));
+      }
+      // الضغط على صورة الصنف (في أي تصميم غير الداكن/أورورا/الفاخر، لأن عندهم تفاعل خاص بيهم على الصورة فعلًا)
+      // بيفتح الصورة بحجم أكبر — تفاعل واجهة فقط، مفيش أي بيانات جديدة بتتخزن
+      if(!isDarkDesign && !isAuroraDesign && !isLuxuryDesign){
+        const img = row.querySelector(':scope > .pub-item-front img, :scope .pub-item-front img');
+        if(img){
+          img.style.cursor = 'zoom-in';
+          img.addEventListener('click', (e)=>{
+            e.stopPropagation();
+            openItemImageLightbox(img.currentSrc || img.src, row.querySelector('.name-primary')?.textContent || '');
+          });
+        }
       }
     });
     body.querySelectorAll('.variant-select').forEach(sel=>{
       sel.addEventListener('click', (e)=> e.stopPropagation());
+    });
+    refreshDarkQuickView();
+  }
+
+  // فتح صورة الصنف بحجم أكبر في منتصف الشاشة — نفس فكرة تكبير لوجو المتجر
+  function openItemImageLightbox(src, name){
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay logo-lightbox-overlay';
+    overlay.innerHTML = `
+      <div class="logo-lightbox item-image-lightbox">
+        <button type="button" class="dark-quickview-close" aria-label="${lang==='en' ? 'Close' : 'إغلاق'}">✕</button>
+        <img src="${src}" alt="${escapeHtml(name)}">
+        ${name ? `<div class="logo-lightbox-name">${escapeHtml(name)}</div>` : ''}
+      </div>`;
+    document.body.appendChild(overlay);
+    function close(){ overlay.remove(); }
+    overlay.addEventListener('click', (e)=>{ if(e.target===overlay) close(); });
+    overlay.querySelector('.dark-quickview-close').addEventListener('click', close);
+  }
+
+  // "داكن أنيق": نافذة تفاصيل سريعة — بتنقل عنصر التحكم الحقيقي (بكل مستمعاته) جوه المودال بدل ما تستنسخه.
+  // النافذة بتعيش في document.body (برّه #pubBody) عشان تفضل مفتوحة لما القائمة تتعمل لها إعادة رسم كاملة
+  // (زي تبديل "اطلب بسعر محدد" أو الإضافة للسلة)، وبعد كل إعادة رسم بنسحب عنصر التحكم الجديد المحدّث جواها.
+  var darkQuickViewItemId = null;
+  var darkQuickViewFocusPrice = false;
+
+  function fillDarkQuickView(modal, row){
+    const control = row.querySelector(':scope > .item-control');
+    const front = row.querySelector(':scope > .pub-item-front');
+    if(!control || !front) return false;
+    modal.innerHTML = '';
+    const frontClone = front.cloneNode(true);
+    frontClone.querySelectorAll('.item-control').forEach(n=> n.remove());
+    modal.appendChild(frontClone);
+    control.classList.add('in-quickview');
+    modal.appendChild(control);
+    const closeBtn = document.createElement('button');
+    closeBtn.type = 'button';
+    closeBtn.className = 'dark-quickview-close';
+    closeBtn.setAttribute('aria-label', lang==='en' ? 'Close' : 'إغلاق');
+    closeBtn.textContent = '✕';
+    closeBtn.addEventListener('click', closeDarkQuickView);
+    modal.appendChild(closeBtn);
+    return true;
+  }
+
+  function closeDarkQuickView(){
+    const overlay = document.querySelector('.dark-quickview-overlay');
+    if(overlay){
+      const control = overlay.querySelector('.item-control');
+      const row = darkQuickViewItemId ? Array.from(document.querySelectorAll('#pubBody .pub-item')).find(r=> r.dataset.id === darkQuickViewItemId) : null;
+      if(control){
+        control.classList.remove('in-quickview');
+        if(row && !row.querySelector(':scope > .item-control')) row.appendChild(control);
+      }
+      overlay.remove();
+    }
+    darkQuickViewItemId = null;
+    darkQuickViewFocusPrice = false;
+  }
+
+  // بتتنادى في آخر renderPublicBody: لو نافذة التفاصيل مفتوحة، ننقل عنصر التحكم الجديد للصنف نفسه جواها
+  function refreshDarkQuickView(){
+    if(!darkQuickViewItemId) return;
+    const overlay = document.querySelector('.dark-quickview-overlay');
+    if(!overlay){ darkQuickViewItemId = null; return; }
+    const row = Array.from(document.querySelectorAll('#pubBody .pub-item')).find(r=> r.dataset.id === darkQuickViewItemId);
+    const modal = overlay.querySelector('.dark-quickview-modal');
+    if(!row || !modal || !fillDarkQuickView(modal, row)){ closeDarkQuickView(); return; }
+    if(darkQuickViewFocusPrice){
+      darkQuickViewFocusPrice = false;
+      const inp = modal.querySelector('[data-price-input]');
+      if(inp) inp.focus();
+    }
+  }
+
+  function openDarkQuickView(row){
+    if(document.querySelector('.dark-quickview-overlay')) return;
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay dark-quickview-overlay';
+    const modal = document.createElement('div');
+    modal.className = 'modal dark-quickview-modal';
+    overlay.appendChild(modal);
+    if(!fillDarkQuickView(modal, row)) return;
+    darkQuickViewItemId = row.dataset.id;
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', (e)=>{ if(e.target===overlay) closeDarkQuickView(); });
+  }
+
+  // "أنيق فاخر": سحب الصف يكشف لوحة الإضافة السريعة بدل زرار ثابت — مع دعم اللمس والماوس
+  function wireLuxurySwipe(row){
+    const front = row.querySelector('.pub-item-front');
+    if(!front) return;
+    const REVEAL = 108;
+    let startX = 0, currentX = 0, dragging = false, moved = false;
+    function setOpen(open){
+      row.classList.toggle('swipe-open', open);
+      front.style.transform = '';
+    }
+    // نقرة عادية (بدون سحب فعلي) بتفتح/تقفل اللوحة — ده اللي بيشتغل على شاشات الكمبيوتر بالماوس
+    front.addEventListener('click', (e)=>{
+      if(e.target.closest('.item-control')) return;
+      setOpen(!row.classList.contains('swipe-open'));
+    });
+    // سحب حقيقي باللمس بيكشف اللوحة تدريجيًا مع حركة الإصبع (اللوحة على يسار الصف، فبيتكشف بسحب المحتوى لليمين)
+    front.addEventListener('touchstart', (e)=>{
+      dragging = true; moved = false;
+      startX = e.touches[0].clientX;
+      currentX = row.classList.contains('swipe-open') ? REVEAL : 0;
+    }, { passive:true });
+    front.addEventListener('touchmove', (e)=>{
+      if(!dragging) return;
+      const delta = e.touches[0].clientX - startX;
+      if(Math.abs(delta) > 6) moved = true;
+      let next = currentX + delta;
+      next = Math.max(0, Math.min(REVEAL, next));
+      front.style.transform = `translateX(${next}px)`;
+    }, { passive:true });
+    front.addEventListener('touchend', ()=>{
+      if(!dragging) return;
+      dragging = false;
+      if(!moved){ front.style.transform = ''; return; } // نقرة بسيطة: نسيب حدث click يتصرف فيها لوحده
+      const transform = front.style.transform;
+      const match = /translateX\((-?\d+(?:\.\d+)?)px\)/.exec(transform);
+      const val = match ? parseFloat(match[1]) : 0;
+      setOpen(val > REVEAL/2);
     });
   }
 
@@ -12143,8 +13585,16 @@ async function loadPublic(slug){
     renderPublicBody();
   });
   let pubSearchDebounceId = null;
+  document.getElementById('pubSearchClear').addEventListener('click', ()=>{
+    const inp = document.getElementById('pubSearchInput');
+    inp.value = ''; searchTerm = '';
+    clearTimeout(pubSearchDebounceId);
+    renderPublicBody();
+    inp.focus();
+  });
   document.getElementById('pubSearchInput').addEventListener('input', (e)=>{
     searchTerm = e.target.value.trim();
+    document.getElementById('pubSearchClear').classList.toggle('hidden', !searchTerm);
     clearTimeout(pubSearchDebounceId);
     // يتم تأجيل إعادة الرسم قليلًا (180ms) لتجنّب إعادة بناء كاملة للـ DOM مع كل حرف يكتبه الزبون
     pubSearchDebounceId = setTimeout(()=> renderPublicBody(), 180);
@@ -12173,6 +13623,36 @@ async function loadPublic(slug){
   });
 
   applyMenuDesign();
+  applyUserDarkMode();
+
+  // اختصار كيبورد لتجربة الثيمات من شاشة المنيو نفسها: T = التالي، Shift+T = السابق (معاينة مؤقتة لا تُحفظ)
+  // متاح للمالك فقط (لو فيه جلسة دخول في نفس المتصفح) أو عند فتح الرابط بـ ?preview=1 — الزوار العاديين ما بيتأثروش
+  (async ()=>{
+    let allowed = new URLSearchParams(location.search).get('preview') === '1';
+    try{
+      const { data: { session } } = await sb.auth.getSession();
+      if(session && session.user) allowed = true;
+    }catch(e){}
+    if(!allowed) return;
+    document.addEventListener('keydown', (e)=>{
+      if(e.code !== 'KeyT' || e.ctrlKey || e.metaKey || e.altKey) return;
+      const tag = (e.target && e.target.tagName || '').toUpperCase();
+      if(tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (e.target && e.target.isContentEditable)) return;
+      if(document.querySelector('.overlay')) return;
+      e.preventDefault();
+      const curIdx = Math.max(0, MENU_DESIGNS.findIndex(x=> x.id === getMenuDesignId()));
+      const step = e.shiftKey ? -1 : 1;
+      const next = MENU_DESIGNS[(curIdx + step + MENU_DESIGNS.length) % MENU_DESIGNS.length];
+      previewDesignId = next.id;
+      applyMenuDesign();
+      renderPublicBody();
+      const nm = lang==='en' ? next.nameEn : next.nameAr;
+      toast(`${MENU_DESIGNS.indexOf(next) + 1}/${MENU_DESIGNS.length} — ${nm}`);
+    });
+  })();
+
+  const darkModeBtn = document.getElementById('pubDarkModeBtn');
+  if(darkModeBtn) darkModeBtn.addEventListener('click', ()=> toggleUserDarkMode());
 
   const moreBtn = document.getElementById('pubMoreBtn');
   const moreMenu = document.getElementById('pubMoreMenu');
@@ -12796,8 +14276,39 @@ async function loadPublic(slug){
       return /^01[0125]\d{8}$/.test(p);
     }
 
-    overlay.querySelector('#ordCancel').addEventListener('click', ()=> overlay.remove());
-    overlay.addEventListener('click', (e)=>{ if(e.target===overlay) overlay.remove(); });
+    // ===== تذكير السلة المتروكة: نحفظ نسخة من السلة (مع الرقم الصحيح) لو العميل ما أكملش الطلب، ليقدر صاحب المتجر يراسله على واتساب =====
+    let abandonedSyncOff = false; // يتحول true بعد نجاح الطلب فلا تُحفظ سلة جديدة
+    let lastAbandonSig = '';
+    function syncAbandonedCart(){
+      if(abandonedSyncOff || rest.feature_plan === 'menu_only') return;
+      const phoneEl = overlay.querySelector('#ordPhone');
+      if(!phoneEl) return;
+      const phone = phoneEl.value.trim();
+      if(!isValidEgyptPhone(phone)) return;
+      const lines = Object.values(cart);
+      if(!lines.length) return;
+      const payload = lines.map(c=>({ n: c.item.name, v: c.variantLabel || null, q: c.qty, p: Number(c.unitPrice) }));
+      const nameEl = overlay.querySelector('#ordName');
+      const name = nameEl ? nameEl.value.trim() : '';
+      const sig = phone + '|' + name + '|' + JSON.stringify(payload);
+      if(sig === lastAbandonSig) return; // لا إعادة إرسال لنفس البيانات
+      lastAbandonSig = sig;
+      try{
+        sb.rpc('save_abandoned_cart', { p_restaurant_id: rest.id, p_phone: phone, p_name: name, p_cart: payload, p_subtotal: cartSubtotal() }).then(()=>{}, ()=>{});
+      }catch(e){}
+    }
+    const abPhoneEl = overlay.querySelector('#ordPhone');
+    const abNameEl = overlay.querySelector('#ordName');
+    if(abPhoneEl){ abPhoneEl.addEventListener('blur', syncAbandonedCart); abPhoneEl.addEventListener('change', syncAbandonedCart); }
+    if(abNameEl){ abNameEl.addEventListener('blur', syncAbandonedCart); }
+    const abVisHandler = ()=>{
+      if(!document.body.contains(overlay)){ document.removeEventListener('visibilitychange', abVisHandler); return; }
+      if(document.visibilityState === 'hidden') syncAbandonedCart();
+    };
+    document.addEventListener('visibilitychange', abVisHandler);
+
+    overlay.querySelector('#ordCancel').addEventListener('click', ()=>{ syncAbandonedCart(); overlay.remove(); });
+    overlay.addEventListener('click', (e)=>{ if(e.target===overlay){ syncAbandonedCart(); overlay.remove(); } });
     overlay.querySelector('#ordConfirm').addEventListener('click', async ()=>{
       if(overlay.querySelector('#ordWebsite').value.trim()){
         return; // حقل فخ للبوتات — أي إنسان حقيقي مش هيلاقيه أو يملاه
@@ -12970,6 +14481,7 @@ async function loadPublic(slug){
           itemId: c.item.id, variantLabel: c.variantLabel || null, unitPrice: c.unitPrice, qty: c.qty, weightGrams: c.weightGrams || null
         }));
         localStorage.setItem(`menuLastOrder_${rest.id}`, JSON.stringify(lastOrderSnapshot));
+        localStorage.removeItem(`menuRepeatDismissed_${rest.id}`); // طلب جديد = الزر يرجع يظهر المرة الجاية
       }catch(e){}
       const cartLines = Object.values(cart).map(c=>({
         order_id: orderRow.id, item_id: c.item.id,
@@ -12990,6 +14502,7 @@ async function loadPublic(slug){
         orderMsgText = buildOrderMessage({customer_name, customer_phone, secondary_phone, orderType, city, area, address, notes, fee, total});
       }
 
+      abandonedSyncOff = true; // الطلب اكتمل — السلة لم تعد متروكة (الـ trigger في قاعدة البيانات يعلّمها مُستردّة)
       cart = {};
       renderPublicBody();
       overlay.remove();
@@ -13106,7 +14619,8 @@ async function loadPublic(slug){
     overlay.className = 'overlay';
     const lines = Object.values(cart);
     overlay.innerHTML = `
-      <div class="modal">
+      <div class="modal modal-floating-footer">
+        <div class="modal-scroll">
         <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
           <h3 style="margin:0;">${lang==='en' ? 'Your cart' : 'سلة المشتريات'}</h3>
           ${lines.length > 0 ? `<button type="button" id="cartClearBtn" style="background:#fff; border:1.5px solid var(--line); color:var(--danger); font-family:var(--body); font-weight:700; font-size:12.5px; border-radius:16px; cursor:pointer; padding:7px 12px; display:flex; align-items:center; gap:5px; flex-shrink:0;">🗑 ${lang==='en' ? 'Empty cart' : 'إفراغ السلة'}</button>` : ''}
@@ -13115,10 +14629,14 @@ async function loadPublic(slug){
         <div id="cartLinesWrap">
           ${lines.length === 0 ? `<div class="cart-empty-note">${lang==='en' ? 'Your cart is empty' : 'السلة فارغة'}</div>` : ''}
         </div>
-        <div id="cartSubtotalWrap"></div>
+          <div id="cartSuggestWrap"></div>
+        </div>
         <div class="modal-actions" id="cartActionsWrap">
-          <button class="btn-cancel" id="cartCloseBtn">${lang==='en' ? 'Close' : 'إغلاق'}</button>
-          ${lines.length > 0 ? `<button class="btn-confirm" id="cartProceedBtn">${lang==='en' ? 'Proceed to order' : 'المتابعة للطلب'}</button>` : ''}
+          <div id="cartSubtotalWrap" class="ord-footer-total"></div>
+          <div class="ord-footer-buttons">
+            <button class="btn-cancel" id="cartCloseBtn">${lang==='en' ? 'Close' : 'إغلاق'}</button>
+            ${lines.length > 0 ? `<button class="btn-confirm" id="cartProceedBtn">${lang==='en' ? 'Proceed to order' : 'المتابعة للطلب'}</button>` : ''}
+          </div>
         </div>
       </div>`;
     document.body.appendChild(overlay);
@@ -13155,7 +14673,7 @@ async function loadPublic(slug){
           <span class="cr-line-total">${(c.qty * Number(c.unitPrice)).toFixed(2)} ${getRestaurantCurrency(rest)}</span>
           <button type="button" class="cr-delete-btn" data-action="removeLine" title="${lang==='en' ? 'Remove item' : 'حذف الصنف'}">🗑</button>
         </div>`).join('');
-      subtotalWrap.innerHTML = `<div class="cart-summary-row total"><span>${lang==='en' ? 'Subtotal' : 'المجموع الفرعي'}</span><span>${cartSubtotal().toFixed(2)} ${getRestaurantCurrency(rest)}</span></div>`;
+      subtotalWrap.innerHTML = `<span>${lang==='en' ? 'Subtotal' : 'المجموع الفرعي'}</span><span class="ord-footer-total-amount">${cartSubtotal().toFixed(2)} ${getRestaurantCurrency(rest)}</span>`;
       wrap.querySelectorAll('.cart-row').forEach(row=>{
         const key = row.dataset.cartKey;
         row.querySelector('[data-action="inc"]').addEventListener('click', ()=>{
@@ -13171,6 +14689,37 @@ async function loadPublic(slug){
         });
         row.querySelector('[data-action="removeLine"]').addEventListener('click', ()=>{
           delete cart[key];
+          renderLines();
+          updateCartButton();
+        });
+      });
+      renderSuggestions();
+    }
+    // اقتراحات السلة: أصناف بسيطة (سعر ثابت، بدون أحجام/وزن/إضافات) تُضاف بضغطة واحدة
+    function renderSuggestions(){
+      const wrap = overlay.querySelector('#cartSuggestWrap');
+      if(!wrap) return;
+      const sugg = Object.keys(cart).length ? getCartSuggestions(6) : [];
+      if(!sugg.length){ wrap.innerHTML = ''; return; }
+      const cur = getRestaurantCurrency(rest);
+      wrap.innerHTML = `
+        <div class="cart-suggest">
+          <div class="cart-suggest-title">${lang==='en' ? 'You may also like' : 'قد يعجبك أيضًا'}</div>
+          <div class="cart-suggest-row">
+            ${sugg.map(i=>`
+              <div class="cart-suggest-card" data-suggest-id="${i.id}">
+                ${i.image_url ? `<img src="${i.image_url}" loading="lazy" decoding="async" alt="">` : `<div class="cs-noimg">${biz(rest.business_type,'placeholderIcon')}</div>`}
+                <div class="cs-name">${escapeHtml(tName(i.name, i.name_en))}</div>
+                <div class="cs-price">${Number(i.price).toFixed(2)} ${cur}</div>
+                <button type="button" class="cs-add">${lang==='en' ? '+ Add' : '+ أضف'}</button>
+              </div>`).join('')}
+          </div>
+        </div>`;
+      wrap.querySelectorAll('.cart-suggest-card').forEach(card=>{
+        card.querySelector('.cs-add').addEventListener('click', ()=>{
+          const item = pubItems.find(x=>x.id===card.dataset.suggestId);
+          if(!item || cart[item.id]) return;
+          cart[item.id] = { item, variantLabel: null, unitPrice: Number(item.price), qty: 1 };
           renderLines();
           updateCartButton();
         });
@@ -13193,6 +14742,69 @@ async function loadPublic(slug){
 
   loadCart();
   renderPublicBody();
+
+  // تنبيه العروض: لو فيه أصناف عليها خصم (السعر القديم أعلى من الحالي) يظهر بوب أب مرة واحدة في اليوم عند فتح المنيو
+  // للتجربة أضف ?offers=1 لرابط المنيو عشان يظهر حتى لو اتعرض النهارده
+  function showOffersPopupOnce(){
+    const force = new URLSearchParams(location.search).get('offers') === '1';
+    const offers = pubItems
+      .filter(i=> i.old_price != null && Number(i.old_price) > Number(i.price) && Number(i.price) > 0)
+      .map(i=> ({ item:i, pct: Math.round((1 - Number(i.price)/Number(i.old_price))*100) }))
+      .filter(o=> o.pct > 0)
+      .sort((a,b)=> b.pct - a.pct);
+    if(!offers.length) return;
+    const key = `offersPopup_${rest.id}`;
+    const today = new Date().toLocaleDateString('en-CA');
+    try{ if(!force && localStorage.getItem(key) === today) return; }catch(e){}
+    setTimeout(()=>{
+      if(document.querySelector('.overlay')) return;
+      try{ localStorage.setItem(key, today); }catch(e){}
+      const en = lang === 'en';
+      const n = offers.length;
+      const countTxt = n === 1 ? '' : en ? `${n} items on sale right now` : (n===2 ? 'يتوفر صنفان بأسعار مخفّضة' : n<=10 ? `تتوفر ${n} أصناف بأسعار مخفّضة` : `يتوفر ${n} صنفًا بأسعار مخفّضة`);
+      const cur = getRestaurantCurrency(rest);
+      const overlay = document.createElement('div');
+      overlay.className = 'overlay offers-overlay';
+      overlay.innerHTML = `
+        <div class="modal offers-popup" role="dialog" aria-modal="true">
+          <button type="button" class="offers-close" aria-label="${en ? 'Close' : 'إغلاق'}">✕</button>
+          <div class="offers-icon">🔥</div>
+          <h3>${en ? "Today's offers" : 'عروض اليوم'}</h3>
+          ${countTxt ? `<p class="offers-sub">${countTxt}</p>` : ''}
+          <div class="offers-list">
+            ${offers.slice(0,3).map(o=>`
+              <div class="offers-row">
+                ${o.item.image_url ? `<img class="offers-thumb" src="${escapeHtml(o.item.image_url)}" alt="" loading="lazy">` : `<div class="offers-thumb offers-thumb-empty">🍽️</div>`}
+                <div class="offers-info">
+                  <span class="offers-name">${escapeHtml(tName(o.item.name, o.item.name_en))}</span>
+                  <span class="offers-prices"><span class="offers-old"><small>${en ? 'Was' : 'كان'}</small><s>${Number(o.item.old_price).toFixed(2)}</s></span><span class="offers-now"><small>${en ? 'Now' : 'الآن'}</small><b>${cur} ${Number(o.item.price).toFixed(2)}${o.item.pricing_type === 'weight' ? (en ? ' / kg' : ' / كجم') : ''}</b></span></span>
+                </div>
+              </div>`).join('')}
+          </div>
+          <button type="button" class="offers-go">${en ? 'Browse offers' : 'تصفّح العروض'}</button>
+          <button type="button" class="offers-later">${en ? 'Maybe later' : 'ليس الآن'}</button>
+        </div>`;
+      document.body.appendChild(overlay);
+      function close(){ overlay.remove(); document.removeEventListener('keydown', onKey); }
+      function onKey(e){ if(e.key === 'Escape') close(); }
+      document.addEventListener('keydown', onKey);
+      overlay.addEventListener('click', (e)=>{ if(e.target === overlay) close(); });
+      overlay.querySelector('.offers-close').addEventListener('click', close);
+      overlay.querySelector('.offers-later').addEventListener('click', close);
+      overlay.querySelector('.offers-go').addEventListener('click', ()=>{
+        close();
+        const targetId = offers[0].item.id;
+        const row = Array.from(document.querySelectorAll('#pubBody .pub-item')).find(r=> r.dataset.id === targetId);
+        if(!row) return;
+        const grp = row.closest('.pub-cat-group');
+        if(grp){ document.querySelectorAll('#pubBody .pub-cat-group.open').forEach(g=> g.classList.remove('open')); grp.classList.add('open'); }
+        row.scrollIntoView({ behavior:'smooth', block:'center' });
+        row.classList.add('offer-flash');
+        setTimeout(()=> row.classList.remove('offer-flash'), 2600);
+      });
+    }, 900);
+  }
+  showOffersPopupOnce();
 
   // المفتاح العام لتفعيل/إيقاف كل الإعلانات الجانبية (تتحكم فيه من لوحة السوبر أدمن)
   sb.from('app_settings').select('ads_enabled').eq('id', true).maybeSingle().then(({ data: settingsRow })=>{

@@ -220,7 +220,20 @@ body{margin:0; font-family:var(--body); background:var(--ink); color:var(--ink);
 
 .main{ background:var(--paper); padding:24px 28px; overflow-y:auto; }
 .dash-home{ background:var(--paper-dim); border:1px solid var(--line); border-radius:14px; padding:14px 16px; margin-bottom:18px; }
-.dash-home-head{ display:flex; justify-content:space-between; align-items:center; gap:10px; }
+.dash-home-head{ display:flex; justify-content:space-between; align-items:center; gap:10px; cursor:pointer; user-select:none; -webkit-tap-highlight-color:transparent; }
+.dash-home-head:focus-visible{ outline:2px solid var(--ember); outline-offset:3px; border-radius:8px; }
+.dash-home-head h3{ flex:0 1 auto; }
+.dash-home-summary{ display:none; flex:1 1 auto; min-width:0; font-size:12.5px; font-weight:700; color:var(--stone); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:end; }
+.dash-home.collapsed .dash-home-summary{ display:block; }
+.dash-home-summary .warn{ color:var(--danger); }
+.dash-home-chevron{ flex:0 0 auto; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center; border-radius:50%; background:var(--paper); border:1px solid var(--line); color:var(--stone); font-size:15px; line-height:1; transition:transform .3s ease, background .2s ease; }
+.dash-home-head:hover .dash-home-chevron{ background:var(--line); }
+.dash-home.collapsed .dash-home-chevron{ transform:rotate(90deg); }
+#dashHomeBody{ max-height:1600px; opacity:1; overflow:hidden; transition:max-height .35s ease, opacity .25s ease, margin .25s ease; }
+.dash-home.collapsed #dashHomeBody{ max-height:0; opacity:0; margin:0; pointer-events:none; }
+.dash-home.collapsed{ padding-top:10px; padding-bottom:10px; }
+@media (prefers-reduced-motion:reduce){ #dashHomeBody, .dash-home-chevron{ transition:none; } }
+@media (max-width:700px){ .dash-home.collapsed .dash-home-date{ display:none; } .dash-home-summary{ font-size:12px; } }
 .dash-home-head h3{ margin:0; font-size:16px; }
 .dash-home-date{ font-size:12px; font-weight:600; color:var(--stone); margin-inline-start:8px; }
 .dash-kpis{ display:grid; grid-template-columns:repeat(auto-fit,minmax(125px,1fr)); gap:10px; margin:12px 0; }
@@ -2480,9 +2493,10 @@ body.pub-design-filmstrip .pub-item .item-control .min-weight-note{ flex:0 0 aut
       <div id="setupSteps"></div>
     </section>
     <section class="dash-home" id="dashHome" aria-label="نظرة سريعة">
-      <div class="dash-home-head">
+      <div class="dash-home-head" id="dashHomeHead" role="button" tabindex="0" aria-expanded="true" title="اضغط للفتح / الإغلاق">
         <h3>🏠 نظرة سريعة <span class="dash-home-date" id="dashHomeDate"></span></h3>
-        <button type="button" class="chip-btn" id="dashHomeToggle" aria-expanded="true">إخفاء</button>
+        <span class="dash-home-summary" id="dashHomeSummary"></span>
+        <span class="dash-home-chevron" id="dashHomeToggle" aria-hidden="true">▾</span>
       </div>
       <div id="dashHomeBody">
         <div class="dash-kpis" id="dashKpis"></div>
@@ -9660,6 +9674,8 @@ async function refreshDashHome(){
       { label:'متوسط الطلب', value: c0 ? `${dhMoney(t0 / c0)} ${cur}` : '—', sub: c1 ? `أمس: ${dhMoney(t1 / c1)}` : '' }
     ];
     if(!visitsRes.error) tiles.push({ label:'زيارات المنيو', value: vis0, sub: vis0 && c0 ? `نسبة الطلب: ${Math.round(c0 / vis0 * 100)}%` : `أمس: ${vis1}` });
+    const sumEl = document.getElementById('dashHomeSummary');
+    if(sumEl) sumEl.innerHTML = `📦 ${c0} · 💰 ${dhMoney(t0)} ${cur}` + (dashHomeCounts.overdue ? ` · <span class="warn">⚠️ ${dashHomeCounts.overdue} متأخر</span>` : '');
     kpiEl.innerHTML = tiles.map(t=> `<div class="dash-kpi"><div class="k-label">${t.label}</div><div class="k-value">${t.value}</div><div class="k-sub">${t.sub}</div></div>`).join('');
   }
   const topEl = document.getElementById('dashTop');
@@ -9673,27 +9689,34 @@ function applyDashHomeCollapsed(collapsed){
   const body = document.getElementById('dashHomeBody');
   const btn = document.getElementById('dashHomeToggle');
   if(!body || !btn) return;
-  body.classList.toggle('hidden', collapsed);
-  btn.textContent = collapsed ? 'عرض' : 'إخفاء';
-  btn.setAttribute('aria-expanded', String(!collapsed));
+  const root = document.getElementById('dashHome');
+  const head = document.getElementById('dashHomeHead');
+  if(root) root.classList.toggle('collapsed', collapsed);
+  if(head) head.setAttribute('aria-expanded', String(!collapsed));
+  try{ body.inert = collapsed; }catch(e){}
 }
 function startDashHomeLoop(){
   if(dashHomeTimer) clearInterval(dashHomeTimer);
   refreshSetupChecklist();
-  let collapsed = false;
-  try{ collapsed = localStorage.getItem(DASH_HOME_KEY) === '1'; }catch(e){}
+  // الافتراضي: مفتوح على الشاشات الكبيرة ومغلق على الموبايل (لتوفير المساحة) ما لم يختر المستخدم غير ذلك
+  let collapsed = window.innerWidth < 700;
+  try{ const sv = localStorage.getItem(DASH_HOME_KEY); if(sv === '1') collapsed = true; else if(sv === '0') collapsed = false; }catch(e){}
   applyDashHomeCollapsed(collapsed);
   refreshDashHome();
   dashHomeTimer = setInterval(()=>{ if(!document.hidden){ refreshDashHome(); refreshSetupChecklist(); } }, 60000);
 }
 (function bindDashHome(){
-  const t = document.getElementById('dashHomeToggle');
-  if(t) t.addEventListener('click', ()=>{
-    const body = document.getElementById('dashHomeBody');
-    const next = !body.classList.contains('hidden');
+  const head = document.getElementById('dashHomeHead');
+  const toggle = ()=>{
+    const root = document.getElementById('dashHome');
+    const next = !root.classList.contains('collapsed');
     applyDashHomeCollapsed(next);
     try{ localStorage.setItem(DASH_HOME_KEY, next ? '1' : '0'); }catch(e){}
-  });
+  };
+  if(head){
+    head.addEventListener('click', toggle);
+    head.addEventListener('keydown', (e)=>{ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggle(); } });
+  }
   document.querySelectorAll('#dashHome [data-dq]').forEach(b=> b.addEventListener('click', ()=>{ const target = document.getElementById(b.dataset.dq); if(target) target.click(); }));
 })();
 

@@ -139,6 +139,23 @@ body{margin:0; font-family:var(--body); background:var(--ink); color:var(--ink);
   .brand-group{ flex-wrap:wrap; max-width:100%; min-width:0; row-gap:8px; }
   .account-email-label{ flex:1 1 100%; max-width:100%; text-align:center; }
 }
+/* أزرار لوحة التحكم على الموبايل: شبكة 3 أعمدة بأحجام موحّدة وأهداف لمس مريحة */
+@media (max-width:700px){
+  #dashboardScreen .topbar{ position:relative; }
+  #dashboardScreen .topbar-actions{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); grid-auto-flow:row dense; gap:8px; width:100%; }
+  #dashboardScreen .topbar-actions > .link-btn,
+  #dashboardScreen .dash-menu-trigger{ position:relative; width:100%; min-height:52px; padding:8px 6px; display:flex; align-items:center; justify-content:center; gap:4px; text-align:center; font-size:12.5px; line-height:1.35; border-radius:12px; background:linear-gradient(180deg,#322f2b,#262420); border:1px solid #454138; box-shadow:inset 0 1px 0 rgba(255,255,255,.05); }
+  #dashboardScreen .topbar-actions > .link-btn:active, #dashboardScreen .dash-menu-trigger:active{ transform:scale(.97); }
+  #dashboardScreen .dash-menu-group{ min-width:0; }
+  #dashboardScreen .dash-menu-group.open{ display:contents; }
+  #dashboardScreen .dash-menu-group.open .dash-menu-trigger{ border-color:var(--ember); background:linear-gradient(180deg,#43291f,#34211a); }
+  #dashboardScreen .dash-menu-group.open .dash-menu-dropdown{ position:static; grid-column:1 / -1; width:100%; min-width:0; margin:0; box-shadow:none; background:#211f1c; border-radius:12px; padding:6px; }
+  #dashboardScreen .dash-menu-dropdown .link-btn{ min-height:44px; display:flex; align-items:center; }
+  #dashboardScreen #viewOrdersBtn{ border-color:rgba(184,57,14,.75); background:linear-gradient(180deg,#4d2b1f,#3b241b); }
+  #dashboardScreen #adminPanelBtn:not(.hidden){ grid-column:1 / -1; }
+  #dashboardScreen #dashThemeBtn{ position:absolute; top:12px; left:14px; width:40px; min-height:40px; height:40px; padding:0; border-radius:50%; font-size:17px; justify-content:center; }
+  #dashboardScreen .topbar-actions .new-orders-badge{ position:absolute; top:-7px; inset-inline-end:-4px; margin:0; box-shadow:0 0 0 2px #262420; }
+}
 .switch-link{color:var(--stone); font-size:12px; cursor:pointer; text-decoration:underline; text-underline-offset:3px;}
 .switch-link:hover{color:var(--paper);}
 .topbar-actions{display:flex; gap:10px; flex-wrap:wrap;}
@@ -2389,20 +2406,20 @@ body.pub-design-filmstrip .pub-item .item-control .min-weight-note{ flex:0 0 aut
     <div class="topbar-actions">
       <button class="link-btn" id="dashThemeBtn" type="button" aria-pressed="false" title="الوضع الداكن">🌙</button>
       <button class="link-btn" id="viewOrdersBtn">📦 الطلبات <span id="newOrdersBadge" class="new-orders-badge hidden">0</span></button>
-      <button class="link-btn" id="kitchenScreenBtn">👨‍🍳 شاشة المطبخ</button>
-      <button class="link-btn" id="abandonedCartsBtn">🛒 السلات المتروكة <span id="abandonedCartsBadge" class="new-orders-badge hidden">0</span></button>
-      <button class="link-btn" id="reservationsBtn">📅 الحجوزات <span id="reservationsBadge" class="new-orders-badge hidden">0</span></button>
-      <button class="link-btn" id="ratingsBtn">⭐ التقييمات</button>
 
-      <div class="dash-menu-group" data-menu="menu-reports">
-        <button type="button" class="link-btn dash-menu-trigger">📊 التقارير والإحصائيات <span class="caret">▾</span></button>
+
+
+
+
+      <div class="dash-menu-group" data-menu="menu-ops">
+        <button type="button" class="link-btn dash-menu-trigger">🛎️ التشغيل اليومي <span id="opsGroupBadge" class="new-orders-badge hidden">0</span> <span class="caret">▾</span></button>
         <div class="dash-menu-dropdown">
-          <button class="link-btn" id="viewStatsBtn">الإحصائيات</button>
-          <button class="link-btn" id="reportsBtn">التقارير</button>
-          <button class="link-btn" id="dailyCloseBtn">📊 تقفيل اليوم</button>
-          <button class="link-btn hidden" id="branchCompareBtn">🏢 مقارنة الفروع</button>
+          <button class="link-btn" id="kitchenScreenBtn">👨‍🍳 شاشة المطبخ</button>
+          <button class="link-btn" id="reservationsBtn">📅 الحجوزات <span id="reservationsBadge" class="new-orders-badge hidden">0</span></button>
+          <button class="link-btn" id="abandonedCartsBtn">🛒 السلات المتروكة <span id="abandonedCartsBadge" class="new-orders-badge hidden">0</span></button>
         </div>
       </div>
+
 
       <div class="dash-menu-group" data-menu="menu-share">
         <button type="button" class="link-btn dash-menu-trigger">🔗 القائمة والمشاركة <span class="caret">▾</span></button>
@@ -2419,10 +2436,16 @@ body.pub-design-filmstrip .pub-item .item-control .min-weight-note{ flex:0 0 aut
           <button class="link-btn" id="exportPdfBtn">📄 تحميل المنيو PDF</button>
           <div class="dash-menu-divider"></div>
           <button class="link-btn" id="addonGroupsBtn">🧩 الإضافات والمتغيرات</button>
-          <div class="dash-menu-divider"></div>
-          <button class="link-btn" id="installDashBtn">💻 تثبيت لوحة التحكم كتطبيق</button>
-          <button class="link-btn" id="dashStartupBtn">🚀 تشغيل اللوحة عند فتح الجهاز</button>
-          <button class="link-btn" id="dashShortcutsBtn">⌨️ اختصارات لوحة المفاتيح</button>
+        </div>
+      </div>
+
+      <div class="dash-menu-group" data-menu="menu-reports">
+        <button type="button" class="link-btn dash-menu-trigger">📊 التقارير والإحصائيات <span class="caret">▾</span></button>
+        <div class="dash-menu-dropdown">
+          <button class="link-btn" id="viewStatsBtn">الإحصائيات</button>
+          <button class="link-btn" id="reportsBtn">التقارير</button>
+          <button class="link-btn" id="dailyCloseBtn">📊 تقفيل اليوم</button>
+          <button class="link-btn hidden" id="branchCompareBtn">🏢 مقارنة الفروع</button>
         </div>
       </div>
 
@@ -2430,6 +2453,7 @@ body.pub-design-filmstrip .pub-item .item-control .min-weight-note{ flex:0 0 aut
         <button type="button" class="link-btn dash-menu-trigger">👥 العملاء والتوصيل <span class="caret">▾</span></button>
         <div class="dash-menu-dropdown">
           <button class="link-btn" id="customersBtn">العملاء</button>
+          <button class="link-btn" id="ratingsBtn">⭐ التقييمات</button>
           <button class="link-btn" id="deliveryZonesBtn">مناطق التوصيل</button>
           <button class="link-btn" id="driversBtn">🚴 السائقين</button>
           <button class="link-btn" id="couponsBtn">🏷️ أكواد الخصم</button>
@@ -2446,6 +2470,10 @@ body.pub-design-filmstrip .pub-item .item-control .min-weight-note{ flex:0 0 aut
           <button class="link-btn" id="staffBtn">👤 حسابات الكاشير</button>
           <button class="link-btn" id="subscriptionBtn">💳 الاشتراك</button>
           <button class="link-btn" id="notifPermBtn">🔔 تفعيل تنبيهات المتصفح</button>
+          <div class="dash-menu-divider"></div>
+          <button class="link-btn" id="installDashBtn">💻 تثبيت لوحة التحكم كتطبيق</button>
+          <button class="link-btn" id="dashStartupBtn">🚀 تشغيل اللوحة عند فتح الجهاز</button>
+          <button class="link-btn" id="dashShortcutsBtn">⌨️ اختصارات لوحة المفاتيح</button>
         </div>
       </div>
 
@@ -17740,6 +17768,26 @@ document.querySelectorAll('.dash-menu-group').forEach(group=>{
     btn.addEventListener('click', ()=> group.classList.remove('open'));
   });
 });
+
+// شارة مجمّعة على زر "التشغيل اليومي" (حجوزات + سلات متروكة) + إخفاء أي قائمة تصبح فارغة بسبب صلاحيات/باقة العميل
+(function bindDashMenuSync(){
+  const num = (el)=> (!el || el.classList.contains('hidden')) ? 0 : (parseInt(String(el.textContent).replace(/[^0-9]/g,''), 10) || 0);
+  const sync = ()=>{
+    const total = num(document.getElementById('reservationsBadge')) + num(document.getElementById('abandonedCartsBadge'));
+    const b = document.getElementById('opsGroupBadge');
+    if(b){ const txt = total > 99 ? '99+' : String(total); if(b.textContent !== txt) b.textContent = txt; b.classList.toggle('hidden', total <= 0); }
+    document.querySelectorAll('#dashboardScreen .dash-menu-group').forEach(g=>{
+      const dd = g.querySelector('.dash-menu-dropdown');
+      const isHid = (el)=>{ for(let n = el; n && n !== dd; n = n.parentElement){ if(n.classList && n.classList.contains('hidden')) return true; } return false; };
+      const has = Array.from(dd.querySelectorAll('button')).some(btn=> !isHid(btn));
+      g.classList.toggle('hidden', !has);
+    });
+  };
+  let t = null;
+  const later = ()=>{ clearTimeout(t); t = setTimeout(sync, 60); };
+  try{ new MutationObserver(later).observe(document.getElementById('dashboardScreen'), { subtree:true, attributes:true, attributeFilter:['class'] }); }catch(e){}
+  sync();
+})();
 document.addEventListener('click', (e)=>{
   document.querySelectorAll('.dash-menu-group.open').forEach(g=>{
     if(!g.contains(e.target)) g.classList.remove('open');

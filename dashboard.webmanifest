@@ -1,0 +1,16 @@
+{
+  "id": "./index.html?app=dashboard",
+  "name": "لوحة تحكم منيو m@g",
+  "short_name": "لوحة المنيو",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./index.html",
+  "scope": "./index.html",
+  "display": "standalone",
+  "background_color": "#F6F1E4",
+  "theme_color": "#B8390E",
+  "icons": [
+    { "src": "menu-favicon.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "menu-favicon.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

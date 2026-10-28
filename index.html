@@ -504,6 +504,10 @@ body.dash-dark .overlay button[style*="background:#fff"]{ background:#2A2825 !im
   .preview-col.collapsed .ticket{ display:none; }
   .preview-col .preview-toggle{ display:inline-flex; }
   .ticket-items{ max-height:300px; }
+  /* على الموبايل تنتقل الفئات (بالـ JS) لتصبح مباشرة فوق عنوان الفئة وزر إضافة صنف وقائمة الأصناف */
+  .main > .rail-cats{ background:#2A2825; border:1px solid #3a3733; border-radius:14px; padding:14px 14px 8px; margin-bottom:18px; }
+  .main > .rail-cats h2{ font-family:var(--display); color:var(--paper); font-size:18px; margin:0 0 10px; }
+  #dashboardScreen > .rail-ad-card{ margin:14px 16px 24px; }
 }
 .preview-toggle{ display:none; align-items:center; gap:6px; background:#2A2825; color:var(--paper); border:1px solid #454138; border-radius:999px; padding:8px 16px; font-family:var(--body); font-weight:700; font-size:13px; cursor:pointer; margin-bottom:12px; }
 @media (max-width:560px){
@@ -2459,9 +2463,11 @@ body.pub-design-filmstrip .pub-item .item-control .min-weight-note{ flex:0 0 aut
     </div>
   </div>
   <div class="rail">
+    <div class="rail-cats" id="railCats">
     <h2>الفئات</h2>
     <button class="add-btn" id="addCategoryBtn">+ إضافة فئة جديدة</button>
     <div id="categoryList"></div>
+    </div>
     <div class="rail-ad-card" id="railAdCard">
       <button type="button" class="rail-ad-close" id="railAdCloseBtn" aria-label="إغلاق">✕</button>
       <div class="rail-ad-slides">
@@ -9605,6 +9611,32 @@ async function refreshSetupChecklist(){
     const b = document.getElementById(id);
     if(b) b.addEventListener('click', ()=>{ if(restaurant){ setupSet('linkShared', '1'); renderSetupChecklist(); } });
   });
+})();
+
+// على الشاشات الصغيرة: ننقل كتلة الفئات من العمود الجانبي لتصبح فوق الأصناف مباشرة (بعد "نظرة سريعة")، وتعود لمكانها على الشاشات الكبيرة
+(function bindRailCatsPlacement(){
+  const mq = window.matchMedia('(max-width:980px)');
+  const place = ()=>{
+    const rc = document.getElementById('railCats');
+    const main = document.querySelector('#dashboardScreen .main');
+    const rail = document.querySelector('#dashboardScreen .rail');
+    const anchor = document.getElementById('mainTitle');
+    if(!rc || !main || !rail || !anchor) return;
+    const ad = document.getElementById('railAdCard');
+    const screen = document.getElementById('dashboardScreen');
+    if(mq.matches){
+      if(rc.parentElement !== main) main.insertBefore(rc, anchor);
+      // بطاقة الإعلان في آخر الصفحة على الموبايل، ونخفي العمود الجانبي الفارغ
+      if(ad && ad.parentElement !== screen) screen.appendChild(ad);
+      rail.classList.add('hidden');
+    } else {
+      rail.classList.remove('hidden');
+      if(rc.parentElement !== rail) rail.insertBefore(rc, rail.firstChild);
+      if(ad && ad.parentElement !== rail) rail.appendChild(ad);
+    }
+  };
+  place();
+  if(mq.addEventListener) mq.addEventListener('change', place); else if(mq.addListener) mq.addListener(place);
 })();
 
 // ===== نظرة سريعة (أعلى لوحة التحكم) =====

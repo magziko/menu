@@ -656,6 +656,22 @@ body.dash-dark .overlay button[style*="background:#fff"]{ background:#2A2825 !im
 .pub-filters:empty{ display:none; }
 .pub-filter-chip{ flex:0 0 auto; border:1.5px solid var(--line); background:var(--paper-dim,#fff); color:var(--ink); border-radius:999px; padding:5px 13px; font-family:var(--body); font-weight:700; font-size:12.5px; cursor:pointer; white-space:nowrap; }
 .pub-filter-chip.active{ background:var(--ember); border-color:var(--ember); color:#fff; }
+/* إعلان المنيو (بوستر يظهر للعميل عند الفتح) */
+.promo-overlay .modal.promo-modal{ background:transparent; box-shadow:none; padding:0; width:auto; max-width:none; text-align:center; position:relative; animation:offersIn .5s cubic-bezier(.2,1.3,.4,1) both; }
+.promo-modal img{ display:block; max-width:min(92vw,520px); max-height:72vh; object-fit:contain; border-radius:16px; box-shadow:0 12px 40px rgba(0,0,0,.45); margin:0 auto; background:#fff; }
+.promo-close{ position:absolute; top:-12px; inset-inline-end:-6px; width:34px; height:34px; border-radius:50%; border:none; background:#fff; color:#222; font-size:16px; font-weight:800; cursor:pointer; box-shadow:0 2px 10px rgba(0,0,0,.35); z-index:2; }
+.promo-go{ display:block; margin:14px auto 0; min-width:200px; padding:12px 22px; border:none; border-radius:999px; background:var(--ember,#B8390E); color:#fff; font-family:var(--body); font-weight:800; font-size:15px; cursor:pointer; box-shadow:0 4px 16px rgba(0,0,0,.35); }
+.promo-later{ display:block; margin:8px auto 0; background:none; border:none; color:#fff; font-family:var(--body); font-size:13px; text-decoration:underline; cursor:pointer; opacity:.9; }
+/* تمييز الأصناف في المنيو العام (شارة + شكل لافت) */
+.pub-item.hl{ position:relative; }
+.hl-badge{ position:absolute; top:0; inset-inline-start:12px; z-index:3; background:var(--ember,#B8390E); color:#fff; font-family:var(--body); font-weight:800; font-size:11px; line-height:1; padding:5px 9px 6px; border-radius:0 0 9px 9px; box-shadow:0 2px 6px rgba(0,0,0,.18); pointer-events:none; }
+.pub-item.hl-glow{ border-color:var(--ember,#B8390E) !important; box-shadow:0 0 0 2px var(--ember,#B8390E), 0 4px 18px rgba(184,57,14,.35) !important; }
+.pub-item.hl-gold{ box-shadow:inset 0 0 0 2px #d4a017, 0 3px 14px rgba(212,160,23,.4) !important; }
+.pub-item.hl-gold .hl-badge{ background:linear-gradient(135deg,#d4a017,#f0c94a); color:#3a2a00; }
+.pub-item.hl-soft{ border-inline-start:5px solid var(--ember,#B8390E) !important; background-image:linear-gradient(rgba(255,193,7,.13),rgba(255,193,7,.13)) !important; }
+.pub-item.hl-pulse{ animation:hlPulse 2.2s ease-out infinite; }
+@keyframes hlPulse{ 0%{ box-shadow:0 0 0 0 rgba(184,57,14,.55); } 70%{ box-shadow:0 0 0 12px rgba(184,57,14,0); } 100%{ box-shadow:0 0 0 0 rgba(184,57,14,0); } }
+@media (prefers-reduced-motion:reduce){ .pub-item.hl-pulse{ animation:none; box-shadow:0 0 0 2px var(--ember,#B8390E); } }
 .new-tag{ display:inline-block; background:var(--basil,#3F6247); color:#fff; font-family:var(--body); font-weight:800; font-size:10px; border-radius:5px; padding:1px 6px; margin-inline-start:4px; vertical-align:middle; }
 body.pub-design-sidebar .pub-filters{ max-width:none; padding:0 0 10px; flex-wrap:wrap; overflow:visible; }
 @media (max-width:560px){ .pub-filters{ padding-inline:14px; } }
@@ -899,8 +915,10 @@ body.pub-mobile-ad-open .pub-order-btn{ bottom:calc(22px + 58px); }
 .o-tag.new{ background:var(--ember); color:#fff; }
 .o-tag.today{ background:rgba(63,98,71,.15); color:var(--basil); }
 .o-number{ font-family:var(--mono); direction:ltr; display:inline-block; color:var(--stone); font-weight:800; font-size:12.5px; margin-inline-end:6px; }
-.o-print-btn{ display:inline-flex; align-items:center; gap:5px; margin-inline-start:8px; background:var(--ink); color:#fff; border:none; border-radius:20px; padding:3px 10px; font-size:12px; font-weight:700; cursor:pointer; font-family:var(--body); vertical-align:middle; }
-.o-print-btn:hover{ background:#3a3733; }
+.o-print-btn{ display:inline-flex; align-items:center; gap:6px; margin-inline-start:8px; background:#1858C9 !important; color:#fff !important; border:1px solid #2f73ea; border-radius:20px; padding:4px 12px; font-size:12.5px; font-weight:800; cursor:pointer; font-family:var(--body); vertical-align:middle; box-shadow:0 2px 6px rgba(24,88,201,.35); transition:background .15s ease, transform .1s ease; }
+.o-print-btn span{ color:#dbe7ff !important; opacity:1 !important; font-weight:600; }
+.o-print-btn:hover{ background:#123F94 !important; }
+.o-print-btn:active{ transform:scale(.97); }
 .receipt-width-toggle{ display:flex; gap:6px; margin-bottom:12px; }
 .receipt-width-btn{ flex:1; border:1.5px solid var(--line); background:var(--paper); color:var(--stone); font-family:var(--body); font-size:12.5px; font-weight:700; padding:7px 10px; border-radius:8px; cursor:pointer; }
 .receipt-width-btn.active{ background:var(--ember); border-color:var(--ember); color:#fff; }
@@ -2434,6 +2452,8 @@ body.pub-design-filmstrip .pub-item .item-control .min-weight-note{ flex:0 0 aut
           <button class="link-btn" id="importExcelBtn">📥 استيراد من إكسيل</button>
           <button class="link-btn" id="exportExcelBtn">📤 تصدير إلى إكسيل</button>
           <button class="link-btn" id="exportPdfBtn">📄 تحميل المنيو PDF</button>
+          <button class="link-btn" id="discountPosterBtn">🏷️ بوستر العروض والخصومات</button>
+          <button class="link-btn" id="promoManagerBtn">📣 إعلان المنيو الحالي</button>
           <div class="dash-menu-divider"></div>
           <button class="link-btn" id="addonGroupsBtn">🧩 الإضافات والمتغيرات</button>
         </div>
@@ -2558,6 +2578,8 @@ body.pub-design-filmstrip .pub-item .item-control .min-weight-note{ flex:0 0 aut
       <button type="button" id="bulkSelectAllBtn">تحديد الكل</button>
       <button type="button" id="bulkHideBtn">🚫 إخفاء</button>
       <button type="button" id="bulkShowBtn">👁 إظهار</button>
+      <button type="button" id="bulkPosterBtn">🖼️ بوستر</button>
+      <button type="button" id="bulkHlBtn">✨ تمييز</button>
       <button type="button" id="bulkMoveBtn">📁 نقل لفئة</button>
       <button type="button" id="bulkDeleteBtn" class="danger">🗑 حذف</button>
       <button type="button" id="bulkCancelBtn">إنهاء</button>
@@ -7001,8 +7023,8 @@ async function openOrdersOverlay(){
     attachRowHandlers();
   }
 
-  overlay.querySelector('#ordersStatusFilter').addEventListener('change', (e)=>{ currentStatusFilter = e.target.value; renderList(); });
-  overlay.querySelector('#ordersTypeFilter').addEventListener('change', (e)=>{ currentTypeFilter = e.target.value; renderList(); });
+  overlay.querySelector('#ordersStatusFilter').addEventListener('change', (e)=>{ currentStatusFilter = e.target.value; dashPrefSet('ordStatus', currentStatusFilter); renderList(); });
+  overlay.querySelector('#ordersTypeFilter').addEventListener('change', (e)=>{ currentTypeFilter = e.target.value; dashPrefSet('ordType', currentTypeFilter); renderList(); });
   overlay.querySelector('#ordersLoadMoreBtn').addEventListener('click', async (e)=>{
     const btn = e.currentTarget;
     btn.disabled = true;
@@ -7035,11 +7057,21 @@ async function openOrdersOverlay(){
   overlay.querySelectorAll('.order-filter-btn').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       currentFilter = btn.dataset.filter;
+      dashPrefSet('ordFilter', currentFilter);
       overlay.querySelectorAll('.order-filter-btn').forEach(b=> b.classList.toggle('active', b === btn));
       renderList();
     });
   });
 
+  // استرجاع آخر اختيارات المستخدم في شاشة الطلبات
+  {
+    const sf = dashPrefGet('ordFilter', 'all'), ss = dashPrefGet('ordStatus', 'all'), st = dashPrefGet('ordType', 'all');
+    const fb = [...overlay.querySelectorAll('.order-filter-btn')].find(b=> b.dataset.filter === sf);
+    if(fb){ currentFilter = sf; overlay.querySelectorAll('.order-filter-btn').forEach(b=> b.classList.toggle('active', b === fb)); }
+    const sSel = overlay.querySelector('#ordersStatusFilter'), tSel = overlay.querySelector('#ordersTypeFilter');
+    if([...sSel.options].some(o=> o.value === ss)){ sSel.value = ss; currentStatusFilter = ss; }
+    if([...tSel.options].some(o=> o.value === st)){ tSel.value = st; currentTypeFilter = st; }
+  }
   renderList();
 
   // تحديث لحظي للشاشة المفتوحة (مهم لشاشة المطبخ/الكاشير الكبيرة): طلب جديد يظهر فورًا، وتغيير الحالة من جهاز تاني ينعكس
@@ -10323,8 +10355,12 @@ document.getElementById('reportsBtn').addEventListener('click', async ()=>{
       ${coverage < 100 ? `<div class="orders-empty" style="text-align:right; padding-top:10px; font-size:11.5px;">⚠️ سعر التكلفة مسجَّل حاليًا لِـ ${coverage}% فقط من الكمية المباعة في هذه الفترة؛ الأصناف بلا سعر تكلفة مسجَّل غير محتسَبة ضمن التكلفة أعلاه. أضف سعر التكلفة من شاشة تعديل الصنف لزيادة دقة الحساب.</div>` : ''}
     `;
   }
-  renderProfitSummary(30);
-  overlay.querySelector('#profitPeriod').addEventListener('change', (e)=> renderProfitSummary(parseInt(e.target.value)));
+  {
+    const pSel = overlay.querySelector('#profitPeriod'), sv = String(dashPrefGet('profitPeriod', '30'));
+    if([...pSel.options].some(o=> o.value === sv)) pSel.value = sv;
+    renderProfitSummary(parseInt(pSel.value));
+    pSel.addEventListener('change', (e)=>{ dashPrefSet('profitPeriod', e.target.value); renderProfitSummary(parseInt(e.target.value)); });
+  }
 
   // تقرير المبيعات التفصيلي — فترة تاريخ مخصصة (من — إلى)
   const salesReportWrap = overlay.querySelector('#salesReportWrap');
@@ -12444,25 +12480,29 @@ document.getElementById('importExcelInput').addEventListener('change', async (e)
       .filter(Boolean);
   }
 
-  const parsed = [];
+  const parsed = [], skipped = [], seenKeys = new Set(), dupWarn = [];
+  const noteSkip = (rowNo, label, why)=> skipped.push(`صف ${rowNo}${label ? ' — ' + label : ''}: ${why}`);
+  const isBlankRow = (r)=> !r || r.every(v=> String(v ?? '').trim() === '');
 
   if(isDetailedFormat){
     const colIdx = {};
     DETAILED_IMPORT_HEADERS.forEach(h => { colIdx[h] = firstRowNormalized.indexOf(h); });
-    rows.slice(1).forEach(r=>{
+    rows.slice(1).forEach((r, ri)=>{
+      if(isBlankRow(r)) return;
+      const rowNo = ri + 2;
       const catName = String(r[colIdx['الفئة']] ?? '').trim();
       const itemName = String(r[colIdx['الاسم (عربي)']] ?? '').trim();
-      if(!catName || !itemName) return;
+      if(!catName || !itemName){ noteSkip(rowNo, itemName || catName, 'الفئة أو الاسم فارغ'); return; }
       const pricing_type = pricingTypeValueFromLabel(r[colIdx['طريقة التسعير']]);
       const sizes = pricing_type === 'sizes' ? parseSizesText(r[colIdx['الأحجام والأسعار']]) : [];
       const addons = addonsColIdx !== -1 ? parseAddonsText(r[addonsColIdx]) : [];
       const groupIds = groupsColIdx !== -1 ? parseGroupNames(r[groupsColIdx]) : [];
       let price = parseFloat(r[colIdx['السعر']]);
       if(pricing_type === 'sizes'){
-        if(sizes.length === 0) return; // لازم حجم واحد على الأقل بسعره
+        if(sizes.length === 0){ noteSkip(rowNo, itemName, 'نوع «أحجام» بدون أحجام وأسعار صالحة'); return; } // لازم حجم واحد على الأقل بسعره
         price = 0;
       } else {
-        if(isNaN(price) || price < 0) return;
+        if(isNaN(price) || price < 0){ noteSkip(rowNo, itemName, 'السعر غير صالح'); return; }
       }
       let old_price = null;
       if(pricing_type !== 'sizes'){
@@ -12474,6 +12514,7 @@ document.getElementById('importExcelInput').addEventListener('change', async (e)
         const rawMin = parseInt(r[colIdx['أقل وزن مسموح (جرام)']], 10);
         if(!isNaN(rawMin) && rawMin > 0) min_weight_grams = rawMin;
       }
+      { const dk = catName.toLowerCase() + '::' + itemName.toLowerCase(); if(seenKeys.has(dk)) dupWarn.push(`${catName} — ${itemName}`); seenKeys.add(dk); }
       parsed.push({
         catName, itemName,
         name_en: String(r[colIdx['الاسم (إنجليزي)']] ?? '').trim() || null,
@@ -12496,11 +12537,15 @@ document.getElementById('importExcelInput').addEventListener('change', async (e)
     if(simpleRows.length && isNaN(parseFloat(simpleRows[0][2]))){
       simpleRows = simpleRows.slice(1);
     }
-    simpleRows.forEach(r=>{
+    const simpleOffset = simpleRows === rows ? 1 : 2;
+    simpleRows.forEach((r, ri)=>{
+      if(isBlankRow(r)) return;
+      const rowNo = ri + simpleOffset;
       const catName = String(r[0] ?? '').trim();
       const itemName = String(r[1] ?? '').trim();
       const price = parseFloat(r[2]);
-      if(!catName || !itemName || isNaN(price) || price < 0) return;
+      if(!catName || !itemName || isNaN(price) || price < 0){ noteSkip(rowNo, itemName || catName, 'فئة أو اسم أو سعر غير صالح'); return; }
+      { const dk = catName.toLowerCase() + '::' + itemName.toLowerCase(); if(seenKeys.has(dk)) dupWarn.push(`${catName} — ${itemName}`); seenKeys.add(dk); }
       parsed.push({
         catName, itemName, name_en: null, pricing_type: 'unit', price, old_price: null,
         weight_sale_mode: 'both', min_weight_grams: null, sizes: [], addons: [], groupIds: [], description: '',
@@ -12510,7 +12555,7 @@ document.getElementById('importExcelInput').addEventListener('change', async (e)
   }
 
   if(parsed.length === 0){
-    toast(`لم يتم العثور على صفوف صالحة (فئة، ${biz(restaurant.business_type,'itemIndef')}، سعر)`);
+    toast(`لم يتم العثور على صفوف صالحة (فئة، ${biz(restaurant.business_type,'itemIndef')}، سعر)${skipped.length ? ' — ' + skipped[0] : ''}`);
     return;
   }
 
@@ -12523,25 +12568,66 @@ document.getElementById('importExcelInput').addEventListener('change', async (e)
   }
 
   const uniqueCats = [...new Set(parsed.map(p=>p.catName))];
-  openImportPreviewModal(parsed, uniqueCats, isDetailedFormat);
+  openImportPreviewModal(parsed, uniqueCats, isDetailedFormat, skipped, dupWarn);
 });
 
-function openImportPreviewModal(parsed, uniqueCats, isDetailedFormat){
+function openImportPreviewModal(parsedAll, uniqueCatsAll, isDetailedFormat, skipped, dupWarn){
+  skipped = skipped || []; dupWarn = dupWarn || [];
+  const cur = getRestaurantCurrency(restaurant);
+  const catIdByName = {}; categories.forEach(c=> catIdByName[c.name.trim().toLowerCase()] = c.id);
+  const existingMap = {}; items.forEach(it=> existingMap[`${it.category_id}::${String(it.name).trim().toLowerCase()}`] = it);
+  const num = (v)=> (v == null || v === '') ? null : Number(v);
+  const sizesTxt = (arr)=> (arr || []).map(x=> `${x.size_name}:${Number(x.price)}`).join('|');
+  const classify = (p)=>{
+    const cid = catIdByName[p.catName.trim().toLowerCase()];
+    const ex = cid ? existingMap[`${cid}::${p.itemName.trim().toLowerCase()}`] : null;
+    if(!ex) return { kind:'new', changes:[] };
+    const ch = [];
+    if((ex.pricing_type || 'unit') !== p.pricing_type) ch.push('طريقة التسعير');
+    if(p.pricing_type !== 'sizes' && num(ex.price) !== num(p.price)) ch.push(`السعر ${num(ex.price) ?? '—'} ← ${p.price}`);
+    if(p.pricing_type !== 'sizes' && num(ex.old_price) !== num(p.old_price)) ch.push(`السعر قبل الخصم ${num(ex.old_price) ?? '—'} ← ${p.old_price ?? '—'}`);
+    if(p.pricing_type === 'sizes' && sizesTxt(itemSizes[ex.id]) !== sizesTxt(p.sizes)) ch.push('الأحجام');
+    if((ex.is_available !== false) !== (p.is_available !== false)) ch.push(p.is_available !== false ? 'الحالة ← متاح' : 'الحالة ← غير متاح');
+    if((ex.name_en || '') !== (p.name_en || '')) ch.push('الاسم الإنجليزي');
+    if((ex.description || '') !== (p.description || '')) ch.push('الوصف');
+    if(p.pricing_type === 'weight' && (num(ex.min_weight_grams) !== num(p.min_weight_grams) || (ex.weight_sale_mode || 'both') !== p.weight_sale_mode)) ch.push('إعدادات الوزن');
+    if(p.image_url && p.image_url !== ex.image_url) ch.push('الصورة');
+    const oldAddons = (itemAddons[ex.id] || []).map(x=> `${x.name}:${Number(x.price)}`).join('|'), newAddons = (p.addons || []).map(x=> `${x.name}:${Number(x.price)}`).join('|');
+    if(oldAddons !== newAddons) ch.push('الإضافات');
+    return { kind: ch.length ? 'upd' : 'same', changes: ch };
+  };
+  const info = parsedAll.map(p=> Object.assign({ p }, classify(p)));
+  const cnt = { new:0, upd:0, same:0 }; info.forEach(r=> cnt[r.kind]++);
+  const newCats = uniqueCatsAll.filter(n=> !catIdByName[n.trim().toLowerCase()]);
+  const badge = { new:['جديد', '#1b7f3b'], upd:['تحديث', '#b8750e'], same:['بدون تغيير', '#888'] };
+  const rowsHtml = info.slice(0, 300).map(r=> `
+    <div class="zone-row" data-kind="${r.kind}" style="flex-wrap:wrap; gap:4px;">
+      <span class="zone-name" style="flex:1 1 60%;">${escapeHtml(r.p.catName)} — ${escapeHtml(r.p.itemName)}</span>
+      <span style="font-size:11px; font-weight:800; color:#fff; background:${badge[r.kind][1]}; padding:2px 8px; border-radius:999px;">${badge[r.kind][0]}</span>
+      <span class="zone-fee">${r.p.pricing_type === 'sizes' ? 'أحجام' : Number(r.p.price).toFixed(2) + ' ' + escapeHtml(cur)}</span>
+      ${r.changes.length ? `<div style="flex-basis:100%; font-size:11.5px; color:var(--stone);">${r.changes.map(escapeHtml).join(' · ')}</div>` : ''}
+    </div>`).join('');
   const overlay = document.createElement('div');
   overlay.className = 'overlay';
-  const previewRows = parsed.slice(0, 8).map(p=>`
-    <div class="zone-row">
-      <span class="zone-name">${escapeHtml(p.catName)} — ${escapeHtml(p.itemName)}</span>
-      <span class="zone-fee">${p.pricing_type === 'sizes' ? 'أحجام' : p.price.toFixed(2) + ' ' + getRestaurantCurrency(restaurant)}</span>
-    </div>`).join('');
+  const chip = (txt, color)=> `<span style="font-size:12px; font-weight:800; color:#fff; background:${color}; padding:3px 10px; border-radius:999px;">${txt}</span>`;
   overlay.innerHTML = `
     <div class="modal">
-      <h3>استيراد ${biz(restaurant.business_type,'itemsIndef')} من إكسيل</h3>
-      <div class="orders-empty" style="text-align:right; padding:6px 0 14px;">
-        تم العثور على <b>${parsed.length}</b> ${biz(restaurant.business_type,'itemIndef')} ضمن <b>${uniqueCats.length}</b> فئة.
-        سيتم إنشاء أي فئة غير موجودة تلقائيًا. ${isDetailedFormat ? `أي ${biz(restaurant.business_type,'itemIndef')} موجود بنفس الاسم داخل نفس الفئة سيتم تحديث بياناته بالكامل، وسيُضاف أي صنف جديد بكل تفاصيله.` : `سيتم إضافة ${biz(restaurant.business_type,'itemsDef')} كأسعار ثابتة، وتحديث السعر إذا كان الصنف موجودًا بالفعل بالاسم نفسه.`}
+      <h3>معاينة استيراد ${biz(restaurant.business_type,'itemsIndef')} من إكسيل</h3>
+      <div style="display:flex; gap:6px; flex-wrap:wrap; margin:8px 0;">
+        ${chip(`جديد: ${cnt.new}`, badge.new[1])} ${chip(`تحديث: ${cnt.upd}`, badge.upd[1])} ${chip(`بدون تغيير: ${cnt.same}`, badge.same[1])}
+        ${skipped.length ? chip(`صفوف مُتجاهلة: ${skipped.length}`, '#c0392b') : ''} ${newCats.length ? chip(`فئات جديدة: ${newCats.length}`, '#2a6fb0') : ''}
       </div>
-      <div id="importPreviewWrap">${previewRows}${parsed.length > 8 ? `<div class="orders-empty">و ${parsed.length - 8} ${biz(restaurant.business_type,'itemIndef')} آخر...</div>` : ''}</div>
+      ${newCats.length ? `<div class="orders-empty" style="text-align:right; padding:0 0 8px; font-size:12px;">ستُنشأ الفئات: ${newCats.map(escapeHtml).join('، ')}</div>` : ''}
+      ${dupWarn.length ? `<div style="font-size:12px; color:#b8750e; margin-bottom:8px;">⚠️ أسماء مكرّرة في الملف (آخر صف هو الذي سيبقى): ${dupWarn.slice(0, 5).map(escapeHtml).join('، ')}${dupWarn.length > 5 ? '…' : ''}</div>` : ''}
+      ${isDetailedFormat ? '' : `<div style="font-size:12px; color:#b8750e; margin-bottom:8px;">⚠️ الملف بالصيغة البسيطة (فئة، اسم، سعر): تحديث صنف موجود قد يفرّغ وصفه واسمه الإنجليزي وإضافاته — راجع سطور «تحديث» أدناه.</div>`}
+      <label style="display:block; margin:6px 0; font-size:13px;">المطلوب تنفيذه
+        <select id="importMode" style="width:100%; margin-top:4px;">
+          <option value="all">إضافة الجديد وتحديث الموجود (${cnt.new + cnt.upd})</option>
+          <option value="new">إضافة الجديد فقط (${cnt.new})</option>
+          <option value="upd">تحديث الموجود فقط (${cnt.upd})</option>
+        </select></label>
+      <div id="importPreviewWrap" style="max-height:38vh; overflow:auto; border:1px solid var(--line); border-radius:10px; padding:4px 8px;">${rowsHtml}${info.length > 300 ? `<div class="orders-empty">و ${info.length - 300} آخر...</div>` : ''}</div>
+      ${skipped.length ? `<details style="margin-top:8px; font-size:12px; color:var(--stone);"><summary style="cursor:pointer;">عرض الصفوف المُتجاهلة (${skipped.length})</summary><div style="max-height:18vh; overflow:auto; padding-top:4px;">${skipped.slice(0, 100).map(x=> `<div>${escapeHtml(x)}</div>`).join('')}</div></details>` : ''}
       <div class="modal-actions">
         <button class="btn-cancel" id="importCancelBtn">إلغاء</button>
         <button class="btn-confirm" id="importConfirmBtn">استيراد الآن</button>
@@ -12552,14 +12638,17 @@ function openImportPreviewModal(parsed, uniqueCats, isDetailedFormat){
   overlay.addEventListener('click', (e)=>{ if(e.target===overlay) overlay.remove(); });
 
   overlay.querySelector('#importConfirmBtn').addEventListener('click', async ()=>{
+    const mode = overlay.querySelector('#importMode').value;
+    const chosen = info.filter(r=> r.kind !== 'same' && (mode === 'all' || (mode === 'new' && r.kind === 'new') || (mode === 'upd' && r.kind === 'upd'))).map(r=> r.p);
+    if(!chosen.length){ toast('لا توجد تغييرات لتنفيذها'); return; }
     const btn = overlay.querySelector('#importConfirmBtn');
     btn.disabled = true;
     btn.textContent = 'جارِ الاستيراد...';
     try{
-      await runImport(parsed, uniqueCats);
+      await runImport(chosen, [...new Set(chosen.map(p=> p.catName))]);
       overlay.remove();
       await refreshData();
-      toast(`تم استيراد ${biz(restaurant.business_type,'itemsDef')} بنجاح`);
+      toast(`تم استيراد ${chosen.length} ${biz(restaurant.business_type, chosen.length === 1 ? 'itemIndef' : 'itemsIndef')} بنجاح`);
     }catch(err){
       toast('حدث خطأ أثناء الاستيراد');
       btn.disabled = false;
@@ -12818,6 +12907,45 @@ document.getElementById('exportExcelBtn').addEventListener('click', ()=>{
     toast(`لا توجد فئات أو ${biz(restaurant.business_type,'itemsIndef')} لتصديرها`);
     return;
   }
+  const activeCount = items.filter(i=> i.is_available !== false).length;
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.innerHTML = `
+    <div class="modal">
+      <h3>📤 تصدير إلى إكسيل</h3>
+      <label style="display:flex;gap:8px;align-items:center;margin:12px 0;cursor:pointer;"><input type="radio" name="xlScope" value="all" checked> جميع ${biz(restaurant.business_type,'itemsDef')} (${items.length})</label>
+      <label style="display:flex;gap:8px;align-items:center;margin:12px 0;cursor:pointer;"><input type="radio" name="xlScope" value="active"> المفعّلة (المتاحة) فقط (${activeCount})</label>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px;">
+        <b style="font-size:13px;">الفئات المطلوبة</b>
+        <button type="button" id="xlToggleCats" style="background:none; border:none; padding:0; font:inherit; font-size:12px; color:var(--ember); text-decoration:underline; cursor:pointer;">إلغاء تحديد الكل</button>
+      </div>
+      <div id="xlCatList" style="max-height:30vh; overflow:auto; border:1px solid var(--line); border-radius:10px; padding:4px 10px; margin-top:6px;">
+        ${categories.map(c=> `<label style="display:flex;gap:8px;align-items:center;margin:6px 0;cursor:pointer;"><input type="checkbox" class="xl-cat" value="${c.id}" checked> ${escapeHtml(c.name)} <span style="color:var(--stone); font-size:12px;">(${items.filter(i=> i.category_id === c.id).length})</span></label>`).join('')}
+      </div>
+      <div class="modal-actions">
+        <button class="btn-confirm" id="xlGoBtn">تصدير</button>
+        <button class="btn-cancel" id="xlCancelBtn">إلغاء</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', (e)=>{ if(e.target===overlay) overlay.remove(); });
+  overlay.querySelector('#xlCancelBtn').addEventListener('click', ()=> overlay.remove());
+  const catBoxes = ()=> [...overlay.querySelectorAll('.xl-cat')];
+  overlay.querySelector('#xlToggleCats').addEventListener('click', (e)=>{
+    const allOn = catBoxes().every(b=> b.checked);
+    catBoxes().forEach(b=> b.checked = !allOn);
+    e.target.textContent = allOn ? 'تحديد الكل' : 'إلغاء تحديد الكل';
+  });
+  overlay.querySelector('#xlGoBtn').addEventListener('click', ()=>{
+    const onlyActive = overlay.querySelector('input[name="xlScope"]:checked').value === 'active';
+    const chosen = catBoxes().filter(b=> b.checked).map(b=> b.value);
+    if(!chosen.length){ toast('اختر فئة واحدة على الأقل'); return; }
+    overlay.remove();
+    exportItemsToExcel(onlyActive, chosen.length === categories.length ? null : chosen);
+  });
+});
+
+function exportItemsToExcel(onlyActive, catIds){
   const header = [
     'الفئة',
     'الاسم (عربي)',
@@ -12837,7 +12965,8 @@ document.getElementById('exportExcelBtn').addEventListener('click', ()=>{
   const rows = [header];
   let totalItems = 0;
   categories.forEach(cat=>{
-    const catItems = items.filter(i=>i.category_id === cat.id);
+    if(catIds && !catIds.includes(String(cat.id))) return;
+    const catItems = items.filter(i=>i.category_id === cat.id && (!onlyActive || i.is_available !== false));
     catItems.forEach(item=>{
       totalItems++;
       const isSizesType = item.pricing_type === 'sizes';
@@ -12885,10 +13014,10 @@ document.getElementById('exportExcelBtn').addEventListener('click', ()=>{
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'المنيو');
   const dateTag = new Date().toISOString().slice(0,10);
-  const filename = `${restaurant.slug || 'menu'}-اصناف-${dateTag}.xlsx`;
+  const filename = `${restaurant.slug || 'menu'}-اصناف${onlyActive ? '-مفعلة' : ''}${catIds ? '-فئات-مختارة' : ''}-${dateTag}.xlsx`;
   XLSX.writeFile(wb, filename);
   toast(`تم تصدير ${totalItems} ${biz(restaurant.business_type, totalItems===1?'itemIndef':'itemsIndef')} بنجاح`);
-});
+}
 
 function renderDashboard(){
   setupInstallableDashboard();
@@ -13027,6 +13156,1737 @@ function renderItems(){
   initItemSortable();
 }
 
+/* ============ بوستر تسويقي (صنف واحد أو عدة أصناف) ============ */
+const POSTER_CUR_AR = { EGP:['ج.م','جنيه'], SAR:['ر.س','ريال'], AED:['د.إ','درهم'], KWD:['د.ك','دينار'], QAR:['ر.ق','ريال'], BHD:['د.ب','دينار'], OMR:['ر.ع','ريال'], JOD:['د.أ','دينار'], USD:['$','دولار'], EUR:['€','يورو'] };
+const POSTER_SIZES = { square:[1080,1080,'مربع (منشور)'], portrait:[1080,1350,'عمودي (إنستجرام)'], story:[1080,1920,'ستوري / ريلز'], tall:[1080,1620,'عمودي طويل 2:3 (بنترست)'], a4:[1240,1754,'ورقة A4 للطباعة'], wide:[1920,1080,'أفقي 16:9 (شاشة / تلفزيون / يوتيوب)'], land43:[1600,1200,'أفقي 4:3 (عرض تقديمي)'],
+  link:[1200,630,'منشور فيسبوك / مشاركة رابط 1.91:1'], ultra:[2100,900,'أفقي واسع 21:9 (شاشة عريضة)'],
+  p57:[1500,2100,'بوستر كبير 5:7 (50×70 سم)',1080], sqhd:[2160,2160,'مربع بدقة عالية 2160',1080], a4hd:[2480,3508,'A4 بدقة طباعة عالية (300dpi)',1240],
+  p34:[1080,1440,'عمودي 3:4 (شبكة إنستجرام الجديدة)'], story4k:[2160,3840,'ستوري بدقة 4K',1080], tv4k:[3840,2160,'شاشة 4K أفقي',1920], banner:[1800,600,'بانر عريض 3:1 (موقع / غلاف)'] };
+const POSTER_PREFS_KEY = 'posterPrefs_v2';
+const POSTER_MAX_ITEMS = 9;
+const POSTER_TEMPLATES = {
+  classic: { name:'كلاسيك', accent:'#B8390E', bg:'#fbf7ec', fg:'#B8390E' },
+  bold:    { name:'جريء',   accent:'#C2410C', bg:'#C2410C', fg:'#ffd27a' },
+  elegant: { name:'أنيق',   accent:'#D4AF37', bg:'#1a1714', fg:'#D4AF37' },
+  fresh:   { name:'عصري',   accent:'#16A36A', bg:'#ffffff', fg:'#16A36A' },
+  royal:   { name:'ملكي',   accent:'#E0B84C', bg:'linear-gradient(135deg,#14213d,#0b1327)', fg:'#E0B84C', fixed:true },
+  ramadan: { name:'رمضان',  accent:'#E9C46A', bg:'linear-gradient(135deg,#0f3d2e,#06241b)', fg:'#E9C46A', fixed:true },
+  sunset:  { name:'غروب',   accent:'#FF6B35', bg:'linear-gradient(135deg,#FF6B35,#D6336C)', fg:'#ffffff', fixed:true },
+  ocean:   { name:'محيط',   accent:'#0E8FA8', bg:'linear-gradient(135deg,#0E8FA8,#064E5E)', fg:'#ffffff', fixed:true },
+  candy:   { name:'حلويات', accent:'#E83E8C', bg:'linear-gradient(135deg,#fff0f6,#ffd3e8)', fg:'#E83E8C', fixed:true },
+  fastfood:{ name:'فاست فود',accent:'#D92D20', bg:'repeating-linear-gradient(45deg,#FFC72C 0 10px,#FFB300 10px 20px)', fg:'#D92D20', fixed:true },
+  noir:    { name:'ستيك',   accent:'#E03131', bg:'linear-gradient(135deg,#1a1a1a,#050505)', fg:'#E03131', fixed:true },
+  minimal: { name:'بسيط',   accent:'#111827', bg:'#ffffff', fg:'#111827' },
+  cine:    { name:'سينمائي', accent:'#F5B700', bg:'linear-gradient(160deg,#444,#000)', fg:'#F5B700', fixed:true },
+  orbit:   { name:'دائري',  accent:'#F97316', bg:'radial-gradient(circle at 50% 50%,#F97316 0 38%,#FFE2B8 40%)', fg:'#ffffff', fixed:true },
+  sale:    { name:'عرض خاص', accent:'#E11D48', bg:'repeating-conic-gradient(#E11D48 0 8deg,#c4153c 8deg 16deg)', fg:'#FFD60A', fixed:true },
+  polaroid:{ name:'بولارويد', accent:'#E4572E', bg:'linear-gradient(135deg,#d8c2a0,#c9b08a)', fg:'#2b2118', fixed:true },
+  board:   { name:'سبورة',  accent:'#F2C94C', bg:'linear-gradient(135deg,#23312b,#161f1b)', fg:'#F2C94C', fixed:true },
+  bistro:  { name:'بيسترو', accent:'#7A1F2B', bg:'linear-gradient(135deg,#FBF5EA,#F3E8D2)', fg:'#7A1F2B', fixed:true },
+  spotlight:{ name:'مميّز', accent:'#2563EB', bg:'linear-gradient(135deg,#F4F6FB,#DDE3F3)', fg:'#2563EB', fixed:true },
+  eid:     { name:'العيد',  accent:'#F4C430', bg:'linear-gradient(135deg,#3b1d6e,#1f0f42)', fg:'#F4C430', fixed:true },
+  friday:  { name:'تخفيضات', accent:'#FFD60A', bg:'repeating-linear-gradient(45deg,#111 0 10px,#1c1c1c 10px 20px)', fg:'#FFD60A', fixed:true },
+  school:  { name:'المدارس', accent:'#1D4ED8', bg:'linear-gradient(135deg,#EAF3FF,#CFE3FF)', fg:'#1D4ED8', fixed:true },
+  mother:  { name:'يوم الأم', accent:'#D6336C', bg:'linear-gradient(135deg,#FFE9F1,#FFC9DD)', fg:'#D6336C', fixed:true },
+  arch:    { name:'قوس',    accent:'#5F7A61', bg:'linear-gradient(135deg,#F4EFE6,#E1D9C6)', fg:'#5F7A61', fixed:true },
+  mag:     { name:'مجلة',   accent:'#FF6B57', bg:'linear-gradient(135deg,#0F1B3D,#0A1229)', fg:'#FF6B57', fixed:true },
+  stripe:  { name:'شريط',   accent:'#0F766E', bg:'linear-gradient(90deg,#0F766E 50%,#FFF8EC 50%)', fg:'#ffffff', fixed:true },
+  pop:     { name:'بوب',    accent:'#111111', bg:'#FFE14D', fg:'#111111', fixed:true },
+  collage: { name:'كولاج',  accent:'#E8B26A', bg:'linear-gradient(135deg,#2B1D16,#150E0B)', fg:'#E8B26A', fixed:true },
+  lilac:   { name:'ليلكي',  accent:'#7C3AED', bg:'linear-gradient(135deg,#F3EEFF,#DCCEFF)', fg:'#7C3AED', fixed:true },
+  grill:   { name:'مشويات', accent:'#FF6A00', bg:'linear-gradient(180deg,#141414,#3a1405)', fg:'#FF8A2B', fixed:true },
+  pizza:   { name:'بيتزا',  accent:'#C8281E', bg:'repeating-conic-gradient(#fff 0 25%,#f6c6c2 0 50%) 0 0/20px 20px', fg:'#C8281E', fixed:true },
+  asia:    { name:'آسيوي',  accent:'#B3202A', bg:'linear-gradient(90deg,#B3202A 50%,#F7F2EA 50%)', fg:'#ffffff', fixed:true },
+  cafe:    { name:'كوفي',   accent:'#6F4E37', bg:'linear-gradient(135deg,#F3E7D8,#D9C2A4)', fg:'#6F4E37', fixed:true },
+  dessert: { name:'حلويات', accent:'#FF6FA5', bg:'linear-gradient(135deg,#FFF1F5,#FFD0E1)', fg:'#E0457F', fixed:true },
+  juice:   { name:'عصائر',  accent:'#FF8A00', bg:'linear-gradient(135deg,#FFFFFF,#FFE3B8)', fg:'#E26A00', fixed:true },
+  market:  { name:'سوبرماركت', accent:'#16A34A', bg:'linear-gradient(135deg,#16A34A,#0B6B2D)', fg:'#FFE600', fixed:true },
+  fashion: { name:'أزياء',  accent:'#C9A96E', bg:'linear-gradient(90deg,#111 50%,#F5F3EF 50%)', fg:'#C9A96E', fixed:true },
+  tech:    { name:'تقنية',  accent:'#00E5FF', bg:'linear-gradient(135deg,#0B1020,#050812)', fg:'#00E5FF', fixed:true },
+  kids:    { name:'أطفال',  accent:'#FF5C8A', bg:'linear-gradient(135deg,#BDE7FF,#8FD3FF)', fg:'#FF5C8A', fixed:true },
+  health:  { name:'صحة',    accent:'#0EA5A4', bg:'linear-gradient(135deg,#F3FBFB,#CBEDED)', fg:'#0EA5A4', fixed:true },
+  butcher: { name:'جزارة',  accent:'#E03A3E', bg:'repeating-linear-gradient(0deg,#4A2C1A 0 6px,#3d2314 6px 12px)', fg:'#F8EEDC', fixed:true },
+  poultry: { name:'طازج',   accent:'#F59E0B', bg:'repeating-conic-gradient(#F59E0B 0 8deg,#e08a00 8deg 16deg)', fg:'#ffffff', fixed:true },
+  veg:     { name:'خضار وفاكهة', accent:'#2F9E44', bg:'linear-gradient(135deg,#FFFFFF,#DDF3DF)', fg:'#2F9E44', fixed:true },
+  frozen:  { name:'مجمدات', accent:'#38BDF8', bg:'linear-gradient(135deg,#0B3A5B,#06263D)', fg:'#7DD3FC', fixed:true },
+  coupon:  { name:'كوبون',  accent:'#C9184A', bg:'linear-gradient(135deg,#FF4D6D,#C9184A)', fg:'#ffffff', fixed:true },
+  gallery: { name:'معرض',   accent:'#D4AF37', bg:'linear-gradient(135deg,#12261E,#0A1812)', fg:'#D4AF37', fixed:true },
+  band:    { name:'لافتة',  accent:'#FFD60A', bg:'linear-gradient(135deg,#0B3D91,#07265e)', fg:'#FFD60A', fixed:true },
+  menu:    { name:'قائمة',  accent:'#8B1E2D', bg:'linear-gradient(135deg,#F8F1E3,#EFE3C8)', fg:'#8B1E2D', fixed:true },
+  snap:    { name:'لقطة',   accent:'#FFD166', bg:'linear-gradient(135deg,#2A9D8F,#1f7a6f)', fg:'#ffffff', fixed:true },
+  mosaic:  { name:'فسيفساء', accent:'#FF8C42', bg:'linear-gradient(135deg,#1F4D3A,#12301F)', fg:'#FF8C42', fixed:true },
+  neon:    { name:'نيون',   accent:'#FF2EC4', bg:'linear-gradient(135deg,#160B2E,#0B0518)', fg:'#FF2EC4', fixed:true },
+  retro:   { name:'ريترو',  accent:'#E76F51', bg:'linear-gradient(135deg,#F6E7CB,#EBD3A6)', fg:'#E76F51', fixed:true },
+  marble:  { name:'رخام',   accent:'#B08D57', bg:'linear-gradient(135deg,#F4F4F2,#DADAD5)', fg:'#B08D57', fixed:true }
+};
+// تصنيف القوالب حسب النشاط: r مطاعم، c كافيهات وحلويات، s متاجر، o مناسبات
+const POSTER_TPL_CATS = { classic:'rcsf', bold:'rsf', elegant:'rcs', fresh:'rcsf', royal:'rs', ramadan:'o', sunset:'rc', ocean:'rs', candy:'c', fastfood:'r', noir:'rf', minimal:'cs', cine:'rcs', orbit:'rc', sale:'sof', polaroid:'cs', board:'rc', bistro:'rc', spotlight:'s', eid:'o', friday:'so', school:'so', mother:'cso', arch:'cs', mag:'srf', stripe:'srf', pop:'rsf', collage:'cr', lilac:'cs', grill:'rf', pizza:'r', asia:'r', cafe:'c', dessert:'c', juice:'c', market:'sf', fashion:'s', tech:'s', kids:'s', health:'s', butcher:'sf', poultry:'sf', veg:'sf', frozen:'sf', coupon:'rsfo', gallery:'cs', band:'srf', menu:'rc', snap:'cs', mosaic:'rcf', neon:'rc', retro:'rc', marble:'s' };
+const POSTER_GROUPS = [['all','الكل'], ['fav','⭐ المفضلة'], ['r','🍽 مطاعم'], ['c','☕ كافيهات وحلويات'], ['s','🛍 متاجر'], ['f','🥩 جزارة وغذائية'], ['o','🎉 مناسبات']];
+function posterPattern(ctx, W, H, type, color){
+  ctx.save(); ctx.fillStyle = color; ctx.strokeStyle = color;
+  if(type === 'dots'){
+    for(let y = 30; y < H; y += 54) for(let x = ((y / 54) % 2 ? 30 : 57); x < W; x += 54){ ctx.beginPath(); ctx.arc(x, y, 5, 0, 6.2832); ctx.fill(); }
+  } else if(type === 'stripes'){
+    ctx.lineWidth = 26; for(let x = -H; x < W + H; x += 96){ ctx.beginPath(); ctx.moveTo(x, H); ctx.lineTo(x + H, 0); ctx.stroke(); }
+  } else if(type === 'stars'){
+    for(let y = 60; y < H; y += 120) for(let x = ((y / 120) % 2 ? 60 : 120); x < W; x += 120){
+      ctx.beginPath(); for(let k = 0; k < 16; k++){ const a = k * Math.PI / 8, r = k % 2 ? 9 : 20; ctx.lineTo(x + Math.cos(a) * r, y + Math.sin(a) * r); } ctx.closePath(); ctx.fill();
+    }
+  } else if(type === 'confetti'){
+    let sd = 7; const rnd = ()=> (sd = (sd * 16807) % 2147483647) / 2147483647;
+    const cols = ['#FFD166', '#EF476F', '#06D6A0', '#4CC9F0', '#ffffff'];
+    for(let k = 0; k < 110; k++){ ctx.save(); ctx.globalAlpha = .45; ctx.fillStyle = cols[k % cols.length]; ctx.translate(rnd() * W, rnd() * H); ctx.rotate(rnd() * 6.28); ctx.fillRect(-8, -4, 16, 8); ctx.restore(); }
+  } else if(type === 'grid'){
+    ctx.lineWidth = 2; for(let x = 0; x < W; x += 54){ ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); } for(let y = 0; y < H; y += 54){ ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+  } else if(type === 'hearts'){
+    for(let y = 50; y < H; y += 110) for(let x = ((y - 50) / 110 % 2 ? 50 : 105); x < W; x += 110){
+      ctx.beginPath(); ctx.moveTo(x, y + 12); ctx.bezierCurveTo(x - 26, y - 6, x - 14, y - 24, x, y - 10); ctx.bezierCurveTo(x + 14, y - 24, x + 26, y - 6, x, y + 12); ctx.fill();
+    }
+  } else if(type === 'flames'){
+    let sd = 11; const rnd = ()=> (sd = (sd * 16807) % 2147483647) / 2147483647;
+    for(let layer = 0; layer < 2; layer++){
+      const base = H * 0.84, g = ctx.createLinearGradient(0, base - H * 0.2, 0, base); g.addColorStop(0, layer ? 'rgba(255,210,60,0)' : 'rgba(255,90,0,0)'); g.addColorStop(1, layer ? 'rgba(255,200,40,.4)' : 'rgba(255,70,0,.45)');
+      ctx.fillStyle = g;
+      for(let x = -40; x < W + 40; x += 84){
+        const fh = H * (0.12 + rnd() * 0.12) * (layer ? 0.7 : 1), bx = x + layer * 40;
+        ctx.beginPath(); ctx.moveTo(bx - 46, base); ctx.bezierCurveTo(bx - 40, base - fh * 0.5, bx + 20, base - fh * 0.6, bx, base - fh); ctx.bezierCurveTo(bx + 14, base - fh * 0.55, bx + 56, base - fh * 0.4, bx + 46, base); ctx.closePath(); ctx.fill();
+      }
+    }
+  } else if(type === 'checks'){
+    const sq = 60; for(let y = 0, r = 0; y < H; y += sq, r++) for(let x = 0, c = 0; x < W; x += sq, c++) if((r + c) % 2 === 0) ctx.fillRect(x, y, sq, sq);
+  } else if(type === 'beans'){
+    let sd = 5; const rnd = ()=> (sd = (sd * 16807) % 2147483647) / 2147483647;
+    for(let y = 40; y < H + 60; y += 110) for(let x = ((y - 40) / 110 % 2 ? 40 : 100); x < W + 60; x += 120){
+      ctx.save(); ctx.translate(x + rnd() * 20, y + rnd() * 20); ctx.rotate(rnd() * 6.28);
+      ctx.beginPath(); ctx.ellipse(0, 0, 22, 14, 0, 0, 6.2832); ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(-18, 0); ctx.bezierCurveTo(-6, -7, 6, 7, 18, 0); ctx.stroke(); ctx.restore();
+    }
+  } else if(type === 'sprinkles'){
+    let sd = 3; const rnd = ()=> (sd = (sd * 16807) % 2147483647) / 2147483647;
+    const cols = ['#FF6FA5', '#FFC83D', '#5CC8FF', '#7BE0AD', '#B38CFF'];
+    ctx.lineCap = 'round'; ctx.lineWidth = 9;
+    for(let k = 0; k < 130; k++){ const x = rnd() * W, y = rnd() * H, a = rnd() * 6.28; ctx.strokeStyle = cols[k % cols.length]; ctx.globalAlpha = .5; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + Math.cos(a) * 18, y + Math.sin(a) * 18); ctx.stroke(); }
+  } else if(type === 'bubbles'){
+    let sd = 9; const rnd = ()=> (sd = (sd * 16807) % 2147483647) / 2147483647;
+    ctx.lineWidth = 4; for(let k = 0; k < 40; k++){ ctx.beginPath(); ctx.arc(rnd() * W, rnd() * H, 14 + rnd() * 50, 0, 6.2832); ctx.stroke(); }
+  } else if(type === 'wood'){
+    ctx.lineWidth = 3; for(let y = 14; y < H; y += 26){ ctx.beginPath(); for(let x = 0; x <= W; x += 12){ const yy = y + Math.sin(x / 130 + y * 0.35) * 5 + Math.sin(x / 41 + y) * 1.5; x ? ctx.lineTo(x, yy) : ctx.moveTo(x, yy); } ctx.stroke(); }
+  } else if(type === 'leaves'){
+    for(let y = 50; y < H; y += 120) for(let x = ((y - 50) / 120 % 2 ? 50 : 110); x < W; x += 120){
+      ctx.save(); ctx.translate(x, y); ctx.rotate(((x + y) / 120 % 2) ? -0.7 : 0.7);
+      ctx.beginPath(); ctx.moveTo(0, -24); ctx.bezierCurveTo(22, -10, 22, 12, 0, 24); ctx.bezierCurveTo(-22, 12, -22, -10, 0, -24); ctx.fill(); ctx.restore();
+    }
+  } else if(type === 'snow'){
+    let sd = 13; const rnd = ()=> (sd = (sd * 16807) % 2147483647) / 2147483647;
+    ctx.lineWidth = 3; ctx.lineCap = 'round';
+    for(let k = 0; k < 46; k++){ const x = rnd() * W, y = rnd() * H, r = 10 + rnd() * 18; for(let a = 0; a < 3; a++){ const t = a * Math.PI / 3; ctx.beginPath(); ctx.moveTo(x - Math.cos(t) * r, y - Math.sin(t) * r); ctx.lineTo(x + Math.cos(t) * r, y + Math.sin(t) * r); ctx.stroke(); } }
+  } else if(type === 'arcs'){
+    const cols = ['#E76F51', '#F4A261', '#E9C46A', '#2A9D8F']; ctx.lineWidth = 22; ctx.globalAlpha = .3;
+    for(let k = 0; k < 8; k++){ ctx.strokeStyle = cols[k % 4]; ctx.beginPath(); ctx.arc(W * 0.5, H * 1.02, 70 + k * 23, Math.PI, 0); ctx.stroke(); }
+  } else if(type === 'marble'){
+    let sd = 17; const rnd = ()=> (sd = (sd * 16807) % 2147483647) / 2147483647;
+    ctx.lineCap = 'round';
+    for(let k = 0; k < 26; k++){ ctx.lineWidth = 1 + rnd() * 3; ctx.globalAlpha = .35 + rnd() * .5; ctx.beginPath(); let x = rnd() * W, y = rnd() * H; ctx.moveTo(x, y); for(let j = 0; j < 4; j++){ const nx = x + (rnd() - .5) * 420, ny = y + (rnd() - .3) * 380; ctx.quadraticCurveTo(x + (rnd() - .5) * 200, y + (rnd() - .5) * 200, nx, ny); x = nx; y = ny; } ctx.stroke(); }
+  } else if(type === 'crosses'){
+    for(let y = 40; y < H; y += 100) for(let x = ((y - 40) / 100 % 2 ? 40 : 90); x < W; x += 100){ ctx.fillRect(x - 3, y - 14, 6, 28); ctx.fillRect(x - 14, y - 3, 28, 6); }
+  } else if(type === 'waves'){
+    ctx.lineWidth = 4; for(let y = 40; y < H; y += 70){ ctx.beginPath(); for(let x = 0; x <= W; x += 10){ const yy = y + Math.sin(x / 55) * 14; x ? ctx.lineTo(x, yy) : ctx.moveTo(x, yy); } ctx.stroke(); }
+  }
+  ctx.restore();
+}
+
+async function posterLoadImage(url){
+  if(!url) return null;
+  try{
+    const res = await fetch(url, { mode:'cors' });
+    if(!res.ok) throw new Error('http ' + res.status);
+    return await createImageBitmap(await res.blob());
+  }catch(e){
+    try{
+      return await new Promise((resolve, reject)=>{
+        const im = new Image(); im.crossOrigin = 'anonymous';
+        im.onload = ()=> resolve(im); im.onerror = reject; im.src = url;
+        setTimeout(reject, 8000);
+      });
+    }catch(e2){ return null; }
+  }
+}
+// رمز QR للمنيو: المكتبة الموجودة في التطبيق أولاً، ثم خدمة qrserver (نفس زر "QR Code")، ثم تحميل المكتبة عند الحاجة
+async function posterMakeQr(link){
+  const viaLib = async ()=>{
+    const cv = document.createElement('canvas');
+    await new Promise((res, rej)=> QRCode.toCanvas(cv, link, { width:420, margin:1, errorCorrectionLevel:'M' }, (err)=> err ? rej(err) : res()));
+    return cv;
+  };
+  try{ if(window.QRCode && QRCode.toCanvas) return await viaLib(); }catch(e){}
+  try{
+    const res = await fetch(`https://api.qrserver.com/v1/create-qr-code/?size=420x420&margin=1&data=${encodeURIComponent(link)}`, { mode:'cors' });
+    if(res.ok) return await createImageBitmap(await res.blob());
+  }catch(e){}
+  try{
+    if(!window.QRCode){
+      await new Promise((res, rej)=>{
+        const sc = document.createElement('script');
+        sc.src = 'https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js';
+        sc.onload = res; sc.onerror = rej; document.head.appendChild(sc);
+        setTimeout(rej, 8000);
+      });
+    }
+    return await viaLib();
+  }catch(e){}
+  return null;
+}
+function posterRRect(ctx, x, y, w, h, r){
+  const [tl, tr, br, bl] = Array.isArray(r) ? r : [r, r, r, r];
+  const m = Math.min(w, h) / 2;
+  const c = (v)=> Math.max(0, Math.min(v, m));
+  const a = c(tl), b = c(tr), d = c(br), e = c(bl);
+  ctx.beginPath();
+  ctx.moveTo(x + a, y);
+  ctx.lineTo(x + w - b, y); ctx.arcTo(x + w, y, x + w, y + b, b);
+  ctx.lineTo(x + w, y + h - d); ctx.arcTo(x + w, y + h, x + w - d, y + h, d);
+  ctx.lineTo(x + e, y + h); ctx.arcTo(x, y + h, x, y + h - e, e);
+  ctx.lineTo(x, y + a); ctx.arcTo(x, y, x + a, y, a);
+  ctx.closePath();
+}
+function posterWrap(ctx, text, maxW, maxLines){
+  const words = String(text || '').split(/\s+/).filter(Boolean);
+  const lines = []; let cur = '';
+  for(const w of words){
+    const t = cur ? cur + ' ' + w : w;
+    if(ctx.measureText(t).width <= maxW || !cur){ cur = t; } else { lines.push(cur); cur = w; }
+  }
+  if(cur) lines.push(cur);
+  if(lines.length > maxLines){
+    const kept = lines.slice(0, maxLines);
+    let last = kept[maxLines - 1];
+    while(last.length > 1 && ctx.measureText(last + '…').width > maxW) last = last.slice(0, -1);
+    kept[maxLines - 1] = last + '…';
+    return kept;
+  }
+  return lines;
+}
+// إزالة الخلفية الموحّدة (بيضاء/ملونة) من حواف الصورة: تعبئة فيضية من الحواف مع تنعيم بسيط. ترجع null لو الخلفية غير موحّدة
+function posterCutout(img){
+  try{
+    const iw = img.width || img.naturalWidth, ih = img.height || img.naturalHeight;
+    if(!iw || !ih) return null;
+    const sc = Math.min(1, 900 / Math.max(iw, ih)), w = Math.max(1, Math.round(iw * sc)), h = Math.max(1, Math.round(ih * sc));
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    const x = c.getContext('2d', { willReadFrequently:true }); x.drawImage(img, 0, 0, w, h);
+    const id = x.getImageData(0, 0, w, h), d = id.data;
+    const pts = [];
+    for(let i = 0; i < w; i += 3){ pts.push(i, 0, i, h - 1); }
+    for(let j = 0; j < h; j += 3){ pts.push(0, j, w - 1, j); }
+    let r = 0, g = 0, b = 0, a = 0, n = pts.length / 2;
+    for(let k = 0; k < pts.length; k += 2){ const o = (pts[k + 1] * w + pts[k]) * 4; r += d[o]; g += d[o + 1]; b += d[o + 2]; a += d[o + 3]; }
+    r /= n; g /= n; b /= n; a /= n;
+    const vis = new Uint8Array(w * h);
+    if(a > 40){
+      let ok = 0;
+      for(let k = 0; k < pts.length; k += 2){ const o = (pts[k + 1] * w + pts[k]) * 4; if(Math.hypot(d[o] - r, d[o + 1] - g, d[o + 2] - b) < 40) ok++; }
+      if(ok / n < 0.9) return null;
+      const tol = 46, st = new Int32Array(w * h); let sp = 0;
+      const tryPush = (px, py)=>{ if(px < 0 || py < 0 || px >= w || py >= h) return; const idx = py * w + px; if(vis[idx]) return; const o = idx * 4; if(Math.hypot(d[o] - r, d[o + 1] - g, d[o + 2] - b) <= tol){ vis[idx] = 1; st[sp++] = idx; } };
+      for(let i = 0; i < w; i++){ tryPush(i, 0); tryPush(i, h - 1); }
+      for(let j = 0; j < h; j++){ tryPush(0, j); tryPush(w - 1, j); }
+      while(sp){ const idx = st[--sp], px = idx % w, py = (idx - px) / w; tryPush(px + 1, py); tryPush(px - 1, py); tryPush(px, py + 1); tryPush(px, py - 1); }
+      let removed = 0; for(let i = 0; i < vis.length; i++) if(vis[i]) removed++;
+      const ratio = removed / vis.length; if(ratio < 0.03 || ratio > 0.93) return null;
+      for(let i = 0; i < vis.length; i++) if(vis[i]) d[i * 4 + 3] = 0;
+      // تنعيم الحافة: حلقتان بشفافية جزئية
+      const ring = new Uint8Array(w * h);
+      const nb = (i)=>{ const px = i % w, py = (i - px) / w; return (px > 0 && vis[i - 1]) || (px < w - 1 && vis[i + 1]) || (py > 0 && vis[i - w]) || (py < h - 1 && vis[i + w]); };
+      for(let i = 0; i < vis.length; i++) if(!vis[i] && nb(i)){ ring[i] = 1; d[i * 4 + 3] = 120; }
+      for(let i = 0; i < vis.length; i++) if(!vis[i] && !ring[i]){ const px = i % w, py = (i - px) / w; if((px > 0 && ring[i - 1]) || (px < w - 1 && ring[i + 1]) || (py > 0 && ring[i - w]) || (py < h - 1 && ring[i + w])) d[i * 4 + 3] = 225; }
+      x.putImageData(id, 0, 0);
+    }
+    // قص الحواف الفارغة
+    let x0 = w, y0 = h, x1 = 0, y1 = 0;
+    for(let py = 0; py < h; py++) for(let px = 0; px < w; px++) if(d[(py * w + px) * 4 + 3] > 30){ if(px < x0) x0 = px; if(px > x1) x1 = px; if(py < y0) y0 = py; if(py > y1) y1 = py; }
+    if(x1 <= x0 || y1 <= y0) return null;
+    const cw2 = x1 - x0 + 1, ch2 = y1 - y0 + 1;
+    const out = document.createElement('canvas'); out.width = cw2; out.height = ch2;
+    out.getContext('2d').drawImage(c, x0, y0, cw2, ch2, 0, 0, cw2, ch2);
+    out.__cut = true; return out;
+  }catch(e){ return null; }
+}
+function posterDrawCover(ctx, img, x, y, w, h){
+  const iw = img.width || img.naturalWidth, ih = img.height || img.naturalHeight;
+  if(!iw || !ih) return;
+  if(img.__cut){
+    ctx.save();
+    ctx.fillStyle = 'rgba(128,128,128,.13)'; ctx.fillRect(x, y, w, h);
+    const rg = ctx.createRadialGradient(x + w / 2, y + h / 2, 0, x + w / 2, y + h / 2, Math.max(w, h) * 0.6);
+    rg.addColorStop(0, 'rgba(255,255,255,.35)'); rg.addColorStop(1, 'rgba(255,255,255,0)'); ctx.fillStyle = rg; ctx.fillRect(x, y, w, h);
+    const k = Math.min(w * 0.88 / iw, h * 0.88 / ih), dw = iw * k, dh = ih * k;
+    ctx.shadowColor = 'rgba(0,0,0,.4)'; ctx.shadowBlur = Math.max(10, Math.min(w, h) * 0.04); ctx.shadowOffsetY = Math.max(4, Math.min(w, h) * 0.02);
+    ctx.drawImage(img, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
+    ctx.restore(); return;
+  }
+  const s = Math.max(w / iw, h / ih); const dw = iw * s, dh = ih * s;
+  ctx.drawImage(img, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
+}
+// أكبر حجم خط (بين الحد الأقصى والأدنى) يتسع فيه النص في العرض المعطى
+function posterFit(ctx, text, maxW, size, minSize, fontFn){
+  let s = size;
+  ctx.font = fontFn(s);
+  while(s > minSize && ctx.measureText(text).width > maxW){ s -= 2; ctx.font = fontFn(s); }
+  return s;
+}
+function posterPalette(o){
+  const t = POSTER_TEMPLATES[o.template] ? o.template : 'classic';
+  const A = o.accent || POSTER_TEMPLATES[t].accent;
+  const dark = o.theme === 'dark';
+  if(t === 'bold') return { t, bg1:A, bg2:A, deco:true, topBar:null, frame:false, ink:'#ffffff', muted:'rgba(255,255,255,.92)', line:'#ffffff', imgBorder:10, imgRadius:44,
+    priceStyle:'pill', priceBg:'#ffd27a', priceInk:'#201F1D', footerBg:'#201F1D', footerInk:'#ffffff',
+    cardBg:'#ffffff', cardInk:'#201F1D', cardMuted:'#6b655a', cardLine:'#ffd27a', titleBg:'#ffd27a', titleInk:'#201F1D', disp:'Lalezar', hero:false, ornament:false };
+  if(t === 'elegant') return { t, bg1:'#1d1915', bg2:'#0e0c0a', deco:false, topBar:null, frame:true, ink:'#f6efe0', muted:'#bdb29a', line:A, imgBorder:4, imgRadius:10,
+    priceStyle:'text', priceBg:null, priceInk:A, footerBg:null, footerInk:'#e9dfc7',
+    cardBg:'#26211c', cardInk:'#f6efe0', cardMuted:'#bdb29a', cardLine:A, titleBg:null, titleInk:A, disp:'Amiri', hero:false, ornament:true };
+  if(t === 'fresh') return { t, bg1:dark?'#161616':'#ffffff', bg2:dark?'#161616':'#ffffff', deco:false, topBar:null, frame:false, ink:dark?'#f5f5f5':'#1c1c1c', muted:dark?'#a8a8a8':'#6d6d6d', line:A, imgBorder:0, imgRadius:0,
+    priceStyle:'pill', priceBg:A, priceInk:'#ffffff', footerBg:dark?'#232323':'#f2f2f2', footerInk:dark?'#f5f5f5':'#1c1c1c',
+    cardBg:dark?'#232323':'#f4f4f4', cardInk:dark?'#f5f5f5':'#1c1c1c', cardMuted:dark?'#a8a8a8':'#6d6d6d', cardLine:null, titleBg:A, titleInk:'#ffffff', disp:'Cairo', hero:true, ornament:false };
+  const mk = (o2)=> Object.assign({ t, deco:false, topBar:null, frame:false, imgBorder:6, imgRadius:30, priceStyle:'pill', hero:false, ornament:false, disp:'Lalezar', cardLine:null, titleBg:null, pattern:null, patternColor:'rgba(255,255,255,.07)', layout:'stack', mlayout:'grid', accentSoft:null, leader:false, noShadow:false, ribbon:null, panelBg:null, panelInk:'#ffffff', glow:false, bandInk:'#111111' }, o2);
+  if(t === 'royal') return mk({ bg1:'#14213d', bg2:'#0b1327', pattern:'dots', patternColor:'rgba(224,184,76,.10)', ink:'#ffffff', muted:'#c9d1e6', line:A, imgBorder:6, imgRadius:30,
+    priceBg:A, priceInk:'#14213d', footerBg:'#0a1124', footerInk:'#ffffff', cardBg:'#1d2d52', cardInk:'#ffffff', cardMuted:'#b8c3df', cardLine:A, titleBg:A, titleInk:'#14213d', disp:'Cairo', ornament:true });
+  if(t === 'ramadan') return mk({ bg1:'#0f3d2e', bg2:'#06241b', pattern:'stars', patternColor:'rgba(233,196,106,.10)', frame:true, ink:'#fdf3d8', muted:'#d4c6a0', line:A, imgBorder:4, imgRadius:60,
+    priceBg:A, priceInk:'#06241b', footerBg:null, footerInk:'#fdf3d8', cardBg:'#14503c', cardInk:'#fdf3d8', cardMuted:'#d4c6a0', cardLine:A, titleBg:null, titleInk:A, disp:'Amiri', ornament:true });
+  if(t === 'sunset') return mk({ bg1:A, bg2:'#D6336C', pattern:'dots', patternColor:'rgba(255,255,255,.14)', ink:'#ffffff', muted:'rgba(255,255,255,.92)', line:'#ffffff', imgBorder:10, imgRadius:48,
+    priceBg:'#ffffff', priceInk:A, cardPriceBg:A, cardPriceInk:'#ffffff', footerBg:'rgba(0,0,0,.30)', footerInk:'#ffffff', cardBg:'#ffffff', cardInk:'#2b2020', cardMuted:'#6b5a5a', titleBg:'#ffffff', titleInk:A });
+  if(t === 'ocean') return mk({ bg1:A, bg2:'#064E5E', pattern:'waves', patternColor:'rgba(255,255,255,.09)', ink:'#ffffff', muted:'rgba(255,255,255,.92)', line:'#ffffff', imgBorder:8, imgRadius:36,
+    priceBg:'#FFD166', priceInk:'#05303a', footerBg:'rgba(0,0,0,.28)', footerInk:'#ffffff', cardBg:'#ffffff', cardInk:'#05303a', cardMuted:'#4b6e77', titleBg:'#FFD166', titleInk:'#05303a' });
+  if(t === 'candy') return mk({ bg1:'#fff0f6', bg2:'#ffd3e8', pattern:'dots', patternColor:'rgba(232,62,140,.13)', ink:'#4a1d33', muted:'#8a5670', line:'#ffffff', imgBorder:10, imgRadius:70,
+    priceBg:A, priceInk:'#ffffff', footerBg:A, footerInk:'#ffffff', cardBg:'#ffffff', cardInk:'#4a1d33', cardMuted:'#8a5670', cardLine:'#ffc2e2', titleBg:A, titleInk:'#ffffff' });
+  if(t === 'fastfood') return mk({ bg1:'#FFC72C', bg2:'#FFB300', pattern:'stripes', patternColor:'rgba(255,255,255,.14)', ink:'#2b1a00', muted:'#5a3d00', line:A, imgBorder:8, imgRadius:30,
+    priceBg:A, priceInk:'#ffffff', footerBg:'#2b1a00', footerInk:'#FFC72C', cardBg:'#ffffff', cardInk:'#2b1a00', cardMuted:'#6b5320', cardLine:A, titleBg:A, titleInk:'#ffffff' });
+  if(t === 'noir') return mk({ bg1:'#1a1a1a', bg2:'#050505', topBar:A, ink:'#ffffff', muted:'#b5b5b5', line:A, imgBorder:5, imgRadius:18,
+    priceBg:A, priceInk:'#ffffff', footerBg:'#000000', footerInk:'#ffffff', cardBg:'#242424', cardInk:'#ffffff', cardMuted:'#b5b5b5', cardLine:A, titleBg:A, titleInk:'#ffffff', disp:'Changa' });
+  if(t === 'cine') return mk({ layout:'full', bg1:'#0b0b0d', bg2:'#000000', ink:'#ffffff', muted:'#e6e6e6', line:A, imgBorder:5, imgRadius:18,
+    priceBg:A, priceInk:'#111111', footerBg:'rgba(0,0,0,.62)', footerInk:'#ffffff', cardBg:'#1a1a1d', cardInk:'#ffffff', cardMuted:'#b0b0b0', cardLine:A, titleBg:A, titleInk:'#111111', disp:'Changa', topBar:A });
+  if(t === 'orbit') return mk({ layout:'circle', bg1:'#FFF4E0', bg2:'#FFE2B8', accentSoft:'rgba(249,115,22,.18)', ink:'#3b1d0a', muted:'#8a5a35', line:A, imgBorder:6, imgRadius:30,
+    priceBg:A, priceInk:'#ffffff', footerBg:A, footerInk:'#ffffff', cardBg:'#ffffff', cardInk:'#3b1d0a', cardMuted:'#8a5a35', titleBg:A, titleInk:'#ffffff', disp:'Lalezar' });
+  if(t === 'sale') return mk({ layout:'burst', bg1:A, bg2:'#BE123C', ink:'#ffffff', muted:'#ffe4ea', line:'#ffffff', imgBorder:8, imgRadius:30,
+    priceBg:'#FFD60A', priceInk:'#7f0d27', footerBg:'#7f0d27', footerInk:'#ffffff', cardBg:'#ffffff', cardInk:'#3a0a14', cardMuted:'#7a4a55', cardLine:'#FFD60A', titleBg:'#FFD60A', titleInk:'#7f0d27', disp:'Lalezar' });
+  if(t === 'polaroid') return mk({ layout:'polaroid', bg1:'#d8c2a0', bg2:'#c9b08a', pattern:'dots', patternColor:'rgba(60,40,10,.07)', ink:'#2b2118', muted:'#5b4a38', line:A, imgBorder:0, imgRadius:10,
+    priceBg:A, priceInk:'#ffffff', footerBg:'#2b2118', footerInk:'#f6ead6', cardBg:'#fffdf8', cardInk:'#2b2118', cardMuted:'#6b5a46', titleBg:A, titleInk:'#ffffff', disp:'Changa' });
+  if(t === 'board') return mk({ mlayout:'rows', frame:true, leader:true, noShadow:true, bg1:'#23312b', bg2:'#161f1b', ink:'#f4f1e8', muted:'#c9c5b8', line:A, imgBorder:4, imgRadius:14,
+    priceStyle:'text', priceInk:A, footerBg:null, footerInk:'#f4f1e8', cardBg:'rgba(255,255,255,.06)', cardInk:'#f4f1e8', cardMuted:'#b9b5a8', cardLine:'rgba(255,255,255,.22)', titleBg:null, titleInk:A, disp:'Changa', ornament:true });
+  if(t === 'bistro') return mk({ mlayout:'rows', leader:true, topBar:A, bg1:'#FBF5EA', bg2:'#F3E8D2', ink:'#2b1b14', muted:'#7a6552', line:A, imgBorder:5, imgRadius:30,
+    priceBg:A, priceInk:'#ffffff', footerBg:A, footerInk:'#ffffff', cardBg:'#ffffff', cardInk:'#2b1b14', cardMuted:'#7a6552', cardLine:'#e9dcc2', titleBg:A, titleInk:'#ffffff', disp:'Amiri' });
+  if(t === 'spotlight') return mk({ mlayout:'feature', topBar:A, bg1:'#F4F6FB', bg2:'#DDE3F3', ink:'#0f172a', muted:'#5b6478', line:A, imgBorder:6, imgRadius:30,
+    priceBg:A, priceInk:'#ffffff', footerBg:'#0f172a', footerInk:'#ffffff', cardBg:'#ffffff', cardInk:'#0f172a', cardMuted:'#5b6478', titleBg:A, titleInk:'#ffffff', disp:'Cairo' });
+  if(t === 'eid') return mk({ bg1:'#3b1d6e', bg2:'#1f0f42', pattern:'confetti', ink:'#ffffff', muted:'#dcd0f5', line:A, imgBorder:6, imgRadius:40,
+    priceBg:A, priceInk:'#2a1450', footerBg:'#190c36', footerInk:'#ffffff', cardBg:'#4a2a86', cardInk:'#ffffff', cardMuted:'#d4c6f2', cardLine:A, titleBg:A, titleInk:'#2a1450', disp:'Lalezar', ornament:true });
+  if(t === 'friday') return mk({ layout:'burst', ribbon:'تخفيضات كبرى', bg1:'#161616', bg2:'#050505', pattern:'stripes', patternColor:'rgba(255,214,10,.07)', ink:'#ffffff', muted:'#d6d6d6', line:A, imgBorder:8, imgRadius:30,
+    priceBg:A, priceInk:'#111111', footerBg:'#000000', footerInk:A, cardBg:'#1b1b1b', cardInk:'#ffffff', cardMuted:'#b5b5b5', cardLine:A, titleBg:A, titleInk:'#111111', disp:'Lalezar', topBar:A });
+  if(t === 'school') return mk({ layout:'circle', bg1:'#EAF3FF', bg2:'#CFE3FF', pattern:'grid', patternColor:'rgba(29,78,216,.09)', accentSoft:'rgba(29,78,216,.14)', ink:'#0f2a5c', muted:'#4a6491', line:A, imgBorder:6, imgRadius:30,
+    priceBg:A, priceInk:'#ffffff', footerBg:A, footerInk:'#ffffff', cardBg:'#ffffff', cardInk:'#0f2a5c', cardMuted:'#4a6491', cardLine:'#bcd3f7', titleBg:'#FFC400', titleInk:'#0f2a5c', disp:'Lalezar' });
+  if(t === 'mother') return mk({ bg1:'#FFE9F1', bg2:'#FFC9DD', pattern:'hearts', patternColor:'rgba(214,51,108,.16)', ink:'#5a1630', muted:'#9b4565', line:A, imgBorder:10, imgRadius:80,
+    priceBg:A, priceInk:'#ffffff', footerBg:A, footerInk:'#ffffff', cardBg:'#ffffff', cardInk:'#5a1630', cardMuted:'#9b4565', cardLine:'#ffc2d8', titleBg:A, titleInk:'#ffffff', disp:'Amiri' });
+  if(t === 'arch') return mk({ layout:'arch', mlayout:'rows', bg1:'#F4EFE6', bg2:'#E1D9C6', accentSoft:'rgba(95,122,97,.18)', ink:'#2f3b30', muted:'#6b786c', line:A, imgBorder:6, imgRadius:30,
+    priceBg:A, priceInk:'#ffffff', footerBg:'#2f3b30', footerInk:'#F4EFE6', cardBg:'#ffffff', cardInk:'#2f3b30', cardMuted:'#6b786c', cardLine:'#d8d2c0', titleBg:A, titleInk:'#ffffff', disp:'Amiri', ornament:true });
+  if(t === 'mag') return mk({ layout:'mag', mlayout:'feature', bg1:'#0F1B3D', bg2:'#0A1229', ink:'#ffffff', muted:'#c3cbe3', line:A, imgBorder:6, imgRadius:24,
+    priceBg:A, priceInk:'#ffffff', footerBg:'#070d20', footerInk:'#ffffff', cardBg:'#18274f', cardInk:'#ffffff', cardMuted:'#aab4d6', titleBg:A, titleInk:'#ffffff', disp:'Changa' });
+  if(t === 'stripe') return mk({ layout:'stripe', bg1:'#FFF8EC', bg2:'#F6EBD3', panelBg:A, panelInk:'#ffffff', ink:'#10332f', muted:'#4d6b66', line:A, imgBorder:6, imgRadius:24,
+    priceBg:'#FFD166', priceInk:'#10332f', footerBg:'#0b3d38', footerInk:'#ffffff', cardBg:'#ffffff', cardInk:'#10332f', cardMuted:'#4d6b66', cardLine:'#e6dcc4', titleBg:A, titleInk:'#ffffff', disp:'Cairo' });
+  if(t === 'pop') return mk({ layout:'brutal', mlayout:'tiles', bg1:'#FFE14D', bg2:'#FFD21F', pattern:'dots', patternColor:'rgba(0,0,0,.08)', ink:'#111111', muted:'#3b3410', line:'#111111', imgBorder:8, imgRadius:18,
+    priceBg:'#111111', priceInk:'#FFE14D', footerBg:'#111111', footerInk:'#FFE14D', cardBg:'#ffffff', cardInk:'#111111', cardMuted:'#4a4420', cardLine:'#111111', titleBg:'#111111', titleInk:'#FFE14D', disp:'Lalezar', noShadow:true });
+  if(t === 'collage') return mk({ layout:'full', mlayout:'tiles', noShadow:true, bg1:'#2B1D16', bg2:'#150E0B', ink:'#F6EBDD', muted:'#e2d3bf', line:A, imgBorder:5, imgRadius:18,
+    priceBg:A, priceInk:'#2B1D16', footerBg:'rgba(21,14,11,.9)', footerInk:'#F6EBDD', cardBg:'#3b2a21', cardInk:'#F6EBDD', cardMuted:'#cdbba3', cardLine:null, titleBg:A, titleInk:'#2B1D16', disp:'Amiri' });
+  if(t === 'lilac') return mk({ layout:'circle', mlayout:'feature', bg1:'#F3EEFF', bg2:'#DCCEFF', pattern:'dots', patternColor:'rgba(124,58,237,.10)', accentSoft:'rgba(124,58,237,.16)', ink:'#2a1659', muted:'#6b55a3', line:A, imgBorder:6, imgRadius:30,
+    priceBg:A, priceInk:'#ffffff', footerBg:'#2a1659', footerInk:'#ffffff', cardBg:'#ffffff', cardInk:'#2a1659', cardMuted:'#6b55a3', cardLine:'#d9cbfa', titleBg:A, titleInk:'#ffffff', disp:'Cairo' });
+  if(t === 'grill') return mk({ layout:'mag', mlayout:'tiles', bg1:'#141414', bg2:'#0a0a0a', pattern:'flames', ink:'#ffffff', muted:'#e0d6cc', line:A, imgBorder:6, imgRadius:24, noShadow:true,
+    priceBg:A, priceInk:'#ffffff', footerBg:'#000000', footerInk:'#ffffff', cardBg:'#1d1d1d', cardInk:'#ffffff', cardMuted:'#bdb3a8', cardLine:A, titleBg:A, titleInk:'#ffffff', disp:'Changa' });
+  if(t === 'pizza') return mk({ layout:'circle', bg1:'#FFFBF2', bg2:'#FFF0D9', pattern:'checks', patternColor:'rgba(200,40,30,.09)', accentSoft:'rgba(200,40,30,.14)', ink:'#3a0d08', muted:'#8a4a3f', line:A, imgBorder:6, imgRadius:30,
+    priceBg:A, priceInk:'#ffffff', footerBg:'#2d7a3a', footerInk:'#ffffff', cardBg:'#ffffff', cardInk:'#3a0d08', cardMuted:'#8a4a3f', cardLine:'#f1c9a8', titleBg:'#2d7a3a', titleInk:'#ffffff', disp:'Lalezar' });
+  if(t === 'asia') return mk({ layout:'stripe', mlayout:'rows', bg1:'#F7F2EA', bg2:'#EDE4D4', panelBg:A, panelInk:'#ffffff', ink:'#111111', muted:'#5a5247', line:A, imgBorder:5, imgRadius:16,
+    priceBg:'#F7F2EA', priceInk:'#111111', footerBg:'#111111', footerInk:'#ffffff', cardBg:'#ffffff', cardInk:'#111111', cardMuted:'#5a5247', cardLine:'#e4d9c6', titleBg:A, titleInk:'#ffffff', disp:'Cairo', leader:true });
+  if(t === 'cafe') return mk({ layout:'arch', mlayout:'feature', bg1:'#F3E7D8', bg2:'#E6D3BC', pattern:'beans', patternColor:'rgba(111,78,55,.10)', accentSoft:'rgba(111,78,55,.16)', ink:'#3b2a1e', muted:'#7a6250', line:A, imgBorder:6, imgRadius:30,
+    priceBg:A, priceInk:'#ffffff', footerBg:'#3b2a1e', footerInk:'#F3E7D8', cardBg:'#fffaf3', cardInk:'#3b2a1e', cardMuted:'#7a6250', cardLine:'#dcc7a8', titleBg:A, titleInk:'#ffffff', disp:'Amiri', ornament:true });
+  if(t === 'dessert') return mk({ layout:'circle', mlayout:'feature', bg1:'#FFF1F5', bg2:'#FFD9E6', pattern:'sprinkles', accentSoft:'rgba(255,111,165,.2)', ink:'#4a1d33', muted:'#8a5670', line:A, imgBorder:6, imgRadius:60,
+    priceBg:A, priceInk:'#ffffff', footerBg:'#4a1d33', footerInk:'#ffffff', cardBg:'#ffffff', cardInk:'#4a1d33', cardMuted:'#8a5670', cardLine:'#ffc2d8', titleBg:A, titleInk:'#ffffff', disp:'Lalezar' });
+  if(t === 'juice') return mk({ hero:true, bg1:'#FFFFFF', bg2:'#FFF1DA', pattern:'bubbles', patternColor:'rgba(255,138,0,.14)', ink:'#3a1f00', muted:'#8a5a2a', line:A, imgBorder:0, imgRadius:0,
+    priceBg:A, priceInk:'#ffffff', footerBg:'#FFF1DA', footerInk:'#5a2d00', cardBg:'#FFF8EC', cardInk:'#3a1f00', cardMuted:'#8a5a2a', cardLine:null, titleBg:A, titleInk:'#ffffff', disp:'Cairo' });
+  if(t === 'market') return mk({ layout:'burst', ribbon:'أسعار مميزة', bg1:'#16A34A', bg2:'#0B6B2D', ink:'#ffffff', muted:'#dcfce7', line:'#ffffff', imgBorder:8, imgRadius:30,
+    priceBg:'#FFE600', priceInk:'#b00000', footerBg:'#07451d', footerInk:'#ffffff', cardBg:'#ffffff', cardInk:'#0b3d1c', cardMuted:'#4d7a5c', cardLine:'#FFE600', titleBg:'#FFE600', titleInk:'#0B6B2D', disp:'Lalezar' });
+  if(t === 'fashion') return mk({ layout:'stripe', mlayout:'tiles', bg1:'#F5F3EF', bg2:'#E9E5DD', panelBg:'#111111', panelInk:'#ffffff', ink:'#111111', muted:'#6a655c', line:A, imgBorder:4, imgRadius:4, noShadow:true,
+    priceBg:A, priceInk:'#111111', footerBg:'#111111', footerInk:A, cardBg:'#2a2a2a', cardInk:'#ffffff', cardMuted:'#bdb7ab', cardLine:null, titleBg:'#111111', titleInk:A, disp:'Amiri' });
+  if(t === 'tech') return mk({ layout:'circle', mlayout:'grid', bg1:'#0B1020', bg2:'#050812', pattern:'grid', patternColor:'rgba(0,229,255,.07)', accentSoft:'rgba(0,229,255,.16)', ink:'#ffffff', muted:'#9fb4d9', line:A, imgBorder:6, imgRadius:20,
+    priceBg:A, priceInk:'#001018', footerBg:'#03050d', footerInk:'#9fefff', cardBg:'#121a33', cardInk:'#ffffff', cardMuted:'#9fb4d9', cardLine:'rgba(0,229,255,.45)', titleBg:A, titleInk:'#001018', disp:'Changa' });
+  if(t === 'kids') return mk({ layout:'polaroid', mlayout:'grid', bg1:'#BDE7FF', bg2:'#8FD3FF', pattern:'confetti', ink:'#1b2a4a', muted:'#3f5a8a', line:A, imgBorder:0, imgRadius:16,
+    priceBg:A, priceInk:'#ffffff', footerBg:'#1b2a4a', footerInk:'#ffffff', cardBg:'#ffffff', cardInk:'#1b2a4a', cardMuted:'#5a6f9a', cardLine:'#ffd0de', titleBg:A, titleInk:'#ffffff', disp:'Lalezar' });
+  if(t === 'health') return mk({ layout:'arch', mlayout:'rows', bg1:'#F3FBFB', bg2:'#CBEDED', pattern:'crosses', patternColor:'rgba(14,165,164,.12)', accentSoft:'rgba(14,165,164,.16)', ink:'#0b3b3a', muted:'#4f7d7c', line:A, imgBorder:6, imgRadius:30,
+    priceBg:A, priceInk:'#ffffff', footerBg:A, footerInk:'#ffffff', cardBg:'#ffffff', cardInk:'#0b3b3a', cardMuted:'#4f7d7c', cardLine:'#bfe3e2', titleBg:A, titleInk:'#ffffff', disp:'Cairo', ornament:false });
+  if(t === 'butcher') return mk({ layout:'circle', mlayout:'rows', leader:true, bg1:'#4A2C1A', bg2:'#2E1A0F', pattern:'wood', patternColor:'rgba(0,0,0,.2)', accentSoft:'rgba(224,58,62,.28)', ink:'#F8EEDC', muted:'#e6d6bb', line:A, imgBorder:6, imgRadius:24,
+    priceBg:A, priceInk:'#ffffff', footerBg:'#1d0f08', footerInk:'#F8EEDC', cardBg:'#F8EEDC', cardInk:'#3a1c10', cardMuted:'#7a5a44', cardLine:'#d9c3a0', titleBg:A, titleInk:'#ffffff', disp:'Lalezar' });
+  if(t === 'poultry') return mk({ layout:'burst', ribbon:'طازج يومياً', bg1:'#F59E0B', bg2:'#D97706', ink:'#ffffff', muted:'#fff3d6', line:'#ffffff', imgBorder:8, imgRadius:30,
+    priceBg:'#B91C1C', priceInk:'#ffffff', footerBg:'#7C2D12', footerInk:'#ffffff', cardBg:'#ffffff', cardInk:'#4a1f08', cardMuted:'#8a5a3a', cardLine:'#fde68a', titleBg:'#7C2D12', titleInk:'#ffffff', disp:'Lalezar' });
+  if(t === 'veg') return mk({ hero:true, mlayout:'tiles', bg1:'#FFFFFF', bg2:'#EAF7EA', pattern:'leaves', patternColor:'rgba(47,158,68,.10)', ink:'#12351c', muted:'#4d7a5c', line:A, imgBorder:0, imgRadius:0,
+    priceBg:A, priceInk:'#ffffff', footerBg:'#E3F4E5', footerInk:'#1b4d2b', cardBg:'#F2FAF2', cardInk:'#12351c', cardMuted:'#4d7a5c', cardLine:null, titleBg:A, titleInk:'#ffffff', disp:'Cairo' });
+  if(t === 'frozen') return mk({ layout:'mag', mlayout:'feature', bg1:'#0B3A5B', bg2:'#06263D', pattern:'snow', patternColor:'rgba(255,255,255,.14)', ink:'#ffffff', muted:'#cfe9fb', line:A, imgBorder:6, imgRadius:24,
+    priceBg:A, priceInk:'#06263D', footerBg:'#041a2b', footerInk:'#e6f6ff', cardBg:'#0f4a73', cardInk:'#ffffff', cardMuted:'#a9d4f2', cardLine:'rgba(125,211,252,.5)', titleBg:A, titleInk:'#06263D', disp:'Changa' });
+  if(t === 'coupon') return mk({ layout:'coupon', bg1:'#FF4D6D', bg2:'#C9184A', pattern:'dots', patternColor:'rgba(255,255,255,.12)', ink:'#ffffff', muted:'#ffe0e8', line:'#C9184A', imgBorder:6, imgRadius:24,
+    priceBg:'#FFD60A', priceInk:'#7a0a26', footerBg:'#7a0a26', footerInk:'#ffffff', cardBg:'#ffffff', cardInk:'#3a0b18', cardMuted:'#8a4a5a', cardLine:'#ffc2d0', titleBg:'#FFD60A', titleInk:'#7a0a26', disp:'Lalezar' });
+  if(t === 'gallery') return mk({ layout:'frame', mlayout:'tilesfeature', noShadow:true, bg1:'#12261E', bg2:'#0A1812', ink:'#F2E6C9', muted:'#cdbf9d', line:A, imgBorder:6, imgRadius:10,
+    priceBg:A, priceInk:'#12261E', footerBg:'#07110d', footerInk:'#F2E6C9', cardBg:'#1b3a2d', cardInk:'#F2E6C9', cardMuted:'#cdbf9d', cardLine:A, titleBg:null, titleInk:A, disp:'Amiri', ornament:true });
+  if(t === 'band') return mk({ layout:'band', mlayout:'tiles', noShadow:true, bg1:'#0B3D91', bg2:'#07265e', ink:'#ffffff', muted:'#cfe0ff', line:A, bandInk:'#0b2a66', imgBorder:6, imgRadius:20,
+    priceBg:'#FF3B3B', priceInk:'#ffffff', footerBg:'#051a40', footerInk:'#ffffff', cardBg:'#10449f', cardInk:'#ffffff', cardMuted:'#cfe0ff', cardLine:null, titleBg:A, titleInk:'#0b2a66', disp:'Lalezar' });
+  if(t === 'menu') return mk({ mlayout:'plain', frame:true, ornament:true, bg1:'#F8F1E3', bg2:'#EFE3C8', ink:'#2b1a12', muted:'#7a6250', line:A, imgBorder:4, imgRadius:10,
+    priceStyle:'text', priceInk:A, footerBg:null, footerInk:'#2b1a12', cardBg:'rgba(255,255,255,.55)', cardInk:'#2b1a12', cardMuted:'#7a6250', cardLine:A, titleBg:null, titleInk:A, disp:'Amiri', noShadow:true, leader:true });
+  if(t === 'snap') return mk({ layout:'polaroid', mlayout:'scatter', bg1:'#2A9D8F', bg2:'#1f7a6f', pattern:'dots', patternColor:'rgba(255,255,255,.10)', ink:'#ffffff', muted:'#d8f3ef', line:A, imgBorder:0, imgRadius:10,
+    priceBg:A, priceInk:'#264653', footerBg:'#264653', footerInk:'#ffffff', cardBg:'#fffdf8', cardInk:'#264653', cardMuted:'#5b7480', titleBg:A, titleInk:'#264653', disp:'Changa' });
+  if(t === 'mosaic') return mk({ layout:'full', mlayout:'tilesfeature', noShadow:true, bg1:'#1F4D3A', bg2:'#12301F', ink:'#ffffff', muted:'#e3f3ea', line:A, imgBorder:5, imgRadius:18,
+    priceBg:A, priceInk:'#1b2a12', footerBg:'rgba(10,25,15,.9)', footerInk:'#ffffff', cardBg:'#2b5f48', cardInk:'#ffffff', cardMuted:'#cfe6d9', cardLine:null, titleBg:A, titleInk:'#1b2a12', disp:'Cairo', topBar:A });
+  if(t === 'neon') return mk({ layout:'circle', glow:true, bg1:'#160B2E', bg2:'#0B0518', pattern:'grid', patternColor:'rgba(255,46,196,.08)', accentSoft:'rgba(255,46,196,.2)', ink:'#ffffff', muted:'#d8b8ee', line:A, imgBorder:6, imgRadius:20,
+    priceBg:A, priceInk:'#ffffff', footerBg:'#080314', footerInk:'#ffd6f4', cardBg:'#1e1040', cardInk:'#ffffff', cardMuted:'#c9a8e6', cardLine:A, titleBg:A, titleInk:'#ffffff', disp:'Changa' });
+  if(t === 'retro') return mk({ layout:'arch', mlayout:'rows', bg1:'#F6E7CB', bg2:'#EBD3A6', pattern:'arcs', accentSoft:'rgba(231,111,81,.18)', ink:'#264653', muted:'#5b7480', line:A, imgBorder:6, imgRadius:30,
+    priceBg:A, priceInk:'#ffffff', footerBg:'#264653', footerInk:'#F6E7CB', cardBg:'#FFF6E5', cardInk:'#264653', cardMuted:'#5b7480', cardLine:'#E9C46A', titleBg:'#2A9D8F', titleInk:'#ffffff', disp:'Lalezar', leader:true });
+  if(t === 'marble') return mk({ layout:'frame', mlayout:'feature', bg1:'#F4F4F2', bg2:'#E4E4E0', pattern:'marble', patternColor:'rgba(90,90,90,.3)', ink:'#222222', muted:'#6b6b66', line:A, imgBorder:6, imgRadius:10,
+    priceBg:A, priceInk:'#ffffff', footerBg:'#222222', footerInk:A, cardBg:'#ffffff', cardInk:'#222222', cardMuted:'#6b6b66', cardLine:'#e2d6bd', titleBg:'#222222', titleInk:A, disp:'Amiri', ornament:true });
+  if(t === 'minimal') return mk({ bg1:dark?'#141414':'#ffffff', bg2:dark?'#141414':'#ffffff', ink:dark?'#f5f5f5':'#111111', muted:dark?'#a0a0a0':'#6b7280', line:dark?'#f5f5f5':A, imgBorder:0, imgRadius:14,
+    priceStyle:'text', priceInk:dark?'#f5f5f5':A, footerBg:null, footerInk:dark?'#f5f5f5':'#111111', cardBg:dark?'#1f1f1f':'#f7f7f8', cardInk:dark?'#f5f5f5':'#111111', cardMuted:dark?'#a0a0a0':'#6b7280', cardLine:dark?'#333':'#e5e7eb', titleBg:null, titleInk:dark?'#f5f5f5':A, disp:'Cairo' });
+  return { t:'classic', bg1:dark?'#1d1b19':'#fbf7ec', bg2:dark?'#2b2724':'#f1e8d2', deco:false, topBar:A, frame:false, ink:dark?'#f6f1e4':'#201F1D', muted:dark?'#b9b2a0':'#6b655a', line:A, imgBorder:6, imgRadius:36,
+    priceStyle:'pill', priceBg:A, priceInk:'#ffffff', footerBg:A, footerInk:'#ffffff',
+    cardBg:dark?'#34302c':'#ffffff', cardInk:dark?'#f6f1e4':'#201F1D', cardMuted:dark?'#b9b2a0':'#6b655a', cardLine:A, titleBg:A, titleInk:'#ffffff', disp:'Lalezar', hero:false, ornament:false };
+}
+function posterPriceInfo(item, T, multi, showOld){
+  let text = '', oldText = '', discount = 0;
+  if(item.pricing_type === 'sizes'){
+    const sz = itemSizes[item.id] || [];
+    if(sz.length){
+      if(multi){ text = `من ${T.fmt(Math.min(...sz.map(s=> Number(s.price))))} ${T.cur}`; }
+      else text = sz.map(s=> `${s.size_name} ${T.fmt(s.price)}`).join('  ·  ') + ' ' + T.cur;
+    }
+  } else if(item.price != null){
+    text = `${T.fmt(item.price)} ${T.cur}` + (item.pricing_type === 'weight' ? ' / كجم' : '');
+    if(showOld && item.old_price != null && Number(item.old_price) > Number(item.price)){
+      oldText = `${T.fmt(item.old_price)} ${T.cur}`;
+      discount = Math.round((Number(item.old_price) - Number(item.price)) / Number(item.old_price) * 100);
+    }
+  }
+  return { text, oldText, discount };
+}
+
+let __posterBrandLogo;
+function posterBrandLogo(){
+  if(!__posterBrandLogo) __posterBrandLogo = new Promise(res=>{
+    const im = new Image(); im.crossOrigin = 'anonymous';
+    im.onload = ()=> res(im); im.onerror = ()=> res(null);
+    setTimeout(()=> res(null), 4000);
+    im.src = 'favicon.png';
+  });
+  return __posterBrandLogo;
+}
+async function renderPoster(canvas, list, o){
+  // إجباري طالما رمز QR أو لوجو المتجر مفعّل؛ يمكن إلغاؤه فقط عند تعطيلهما معًا
+  const creditOn = !!(o.showQr || o.showLogo) || o.showCredit !== false;
+  const brandImg = creditOn ? await posterBrandLogo() : null;
+  const multi = list.length > 1;
+  const SZ = POSTER_SIZES[o.size] || POSTER_SIZES.square;
+  const SK = SZ[3] ? SZ[0] / SZ[3] : 1;
+  const W = SZ[3] || SZ[0], H = Math.round(SZ[1] / SK);
+  canvas.width = SZ[0]; canvas.height = SZ[1];
+  const ctx = canvas.getContext('2d');
+  ctx.scale(SK, SK);
+  const short = H < 800;
+  const pal = posterPalette(o);
+  const body = o.font === 'auto' ? 'Tajawal' : o.font;
+  const disp = o.font === 'auto' ? pal.disp : o.font;
+  const F = (w, s)=> `${w} ${s}px "${body}", sans-serif`;
+  const D = (s)=> disp === 'Lalezar' ? `400 ${s}px "Lalezar", "${body}", sans-serif` : `700 ${s}px "${disp}", "${body}", sans-serif`;
+  const cur = getRestaurantCurrency(restaurant);
+  const curKey = cur.toUpperCase();
+  const curTxt = (o.currency === 'asis' || !POSTER_CUR_AR[curKey]) ? cur : POSTER_CUR_AR[curKey][o.currency === 'full' ? 1 : 0];
+  const dig = (t)=> o.digits === 'ar' ? String(t).replace(/[0-9]/g, d=> '٠١٢٣٤٥٦٧٨٩'[d]) : String(t);
+  const fmt = (n)=> { const v = Number(n); return dig(Number.isInteger(v) ? v : v.toFixed(2)); };
+  const T = { fmt, cur: curTxt, latin: /[A-Za-z$€]/.test(curTxt) };
+  const wide = W > H;
+  const pad = pal.frame ? 92 : 64, cw = W - pad * 2;
+  const topStart = short ? (pal.frame ? 58 : 26) : (pal.frame ? 80 : (pal.topBar ? 38 : 40));
+  const creditPos = o.creditPos || 'bc', creditSide = creditPos === 'sr' || creditPos === 'sl';
+  const creditH = (creditOn && !creditSide) ? (short ? 36 : 54) : 0;
+  const bottomMargin = (pal.frame ? (short ? 46 : 60) : 0) + creditH;
+
+  // ---------- الخلفية ----------
+  const g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, pal.bg1); g.addColorStop(1, pal.bg2);
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  if(pal.pattern) posterPattern(ctx, W, H, pal.pattern, pal.patternColor);
+  if(pal.deco){
+    ctx.fillStyle = 'rgba(255,255,255,.08)';
+    [[W * .92, H * .10, 300], [W * .04, H * .52, 230], [W * .84, H * .88, 280]].forEach(([cx, cy, r])=>{ ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill(); });
+  }
+  if(pal.topBar){ ctx.fillStyle = pal.topBar; ctx.fillRect(0, 0, W, 14); }
+  if(pal.frame){ ctx.strokeStyle = pal.line; ctx.lineWidth = 3; ctx.strokeRect(28, 28, W - 56, H - 56 - creditH); ctx.lineWidth = 1.5; ctx.strokeRect(42, 42, W - 84, H - 84 - creditH); }
+  ctx.direction = 'rtl'; ctx.textBaseline = 'alphabetic';
+
+  // ---------- التذييل (عنوان + هاتف + QR) ----------
+  const infoLines = [];
+  if(o.showAddress && restaurant.address) infoLines.push('📍 ' + restaurant.address);
+  if(o.showPhone && restaurant.phone) infoLines.push('📞 ' + dig(restaurant.phone));
+  const qrOn = !!o.qrImg;
+  const qrMul = { s:0.78, m:1, l:1.35, xl:1.7 }[o.qrSize] || 1;
+  const qrPosK = o.qrPos === 'r' ? 'r' : ((o.qrPos === 'c' && !short) ? 'c' : 'l');
+  const qrBox = Math.min(Math.round((o.size === 'story' ? 170 : (short ? 84 : 124)) * qrMul), Math.round(H * (short ? 0.3 : 0.2)));
+  const qrBlockH = qrOn ? qrBox + (short ? 30 : 36) : 0;
+  const ifs = short ? 25 : 32, ilh = short ? 34 : 46;
+  ctx.font = F(700, ifs);
+  const infoWrapped = infoLines.flatMap(t=> posterWrap(ctx, t, ((qrOn && qrPosK !== 'c') ? cw - qrBox - 40 : cw) - 40, 2));
+  const infoH = infoWrapped.length * ilh;
+  const footerH0 = (infoWrapped.length || qrOn) ? ((qrOn && qrPosK === 'c') ? qrBlockH + (infoH ? infoH + 8 : 0) : Math.max(infoH + 12, qrBlockH)) + 40 : 0;
+  // شريط مدة العرض (يُضاف أعلى التذييل)
+  const fmtD = (iso)=>{ const d = new Date(iso + 'T12:00:00'); if(!iso || isNaN(d)) return ''; return d.toLocaleDateString(o.digits === 'ar' ? 'ar-EG' : 'ar-EG-u-nu-latn', d.getFullYear() === new Date().getFullYear() ? { day:'numeric', month:'long' } : { day:'numeric', month:'long', year:'numeric' }); };
+  let offerText = '';
+  if(o.showOffer){ const a = fmtD(o.offerStart), b = fmtD(o.offerEnd); offerText = a && b ? `⏰ العرض من ${a} إلى ${b}` : (b ? `⏰ العرض ساري حتى ${b}` : (a ? `⏰ العرض يبدأ من ${a}` : '')); }
+  const offerH = offerText ? (short ? 50 : 76) : 0;
+  const footerH = footerH0 + offerH;
+  const drawCredit = ()=>{
+    if(!creditOn) return;
+    const en = o.creditLang === 'en', cst = o.creditStyle || 'dark';
+    const k = creditSide ? 0.8 : 1;
+    const fz = Math.round((short ? 17 : 24) * k), ih = Math.round((short ? 24 : 34) * k), gap = 10;
+    const t1 = en ? 'Designed by' : 'تصميم بواسطة', t2 = en ? 'M@g Menu' : 'منيو m@g';
+    ctx.save();
+    const f1 = `700 ${fz}px "${body}", sans-serif`, f2 = `800 ${fz + 2}px "${body}", sans-serif`;
+    ctx.font = f1; const w1 = ctx.measureText(t1).width;
+    ctx.font = f2; const w2 = ctx.measureText(t2).width;
+    const iw = brandImg ? ih : 0;
+    const tw = w1 + gap + (iw ? iw + gap : 0) + w2, padX = cst === 'plain' ? 6 : 18, bw = tw + padX * 2, bh = ih + 12;
+    const inkC = pal.footerBg ? pal.footerInk : pal.ink;
+    let fill = null, txt = '#ffffff', brand = '#ffd9a8', stroke = null;
+    if(cst === 'dark'){ fill = 'rgba(15,15,15,.62)'; }
+    else if(cst === 'light'){ fill = 'rgba(255,255,255,.93)'; txt = '#333333'; brand = '#b8390e'; }
+    else if(cst === 'accent'){ fill = pal.priceBg || pal.line; txt = pal.priceBg ? pal.priceInk : '#111111'; brand = txt; }
+    else if(cst === 'outline'){ stroke = inkC; txt = inkC; brand = inkC; }
+    else { txt = inkC; brand = inkC; ctx.globalAlpha = 0.85; }
+    // موضع مركز الشريط
+    let cx, cy;
+    const zoneCy = H - (creditH + (pal.frame ? 28 : 0)) / 2;
+    if(creditPos === 'br'){ cx = W - pad - bw / 2; cy = zoneCy; }
+    else if(creditPos === 'bl'){ cx = pad + bw / 2; cy = zoneCy; }
+    else if(creditSide){ cx = creditPos === 'sr' ? W - bh / 2 - 8 : bh / 2 + 8; cy = H / 2; }
+    else { cx = W / 2; cy = zoneCy; }
+    if(creditSide){ ctx.translate(cx, cy); ctx.rotate(creditPos === 'sr' ? -Math.PI / 2 : Math.PI / 2); cx = 0; cy = 0; }
+    const bx = cx - bw / 2, by = cy - bh / 2;
+    if(fill){ ctx.fillStyle = fill; posterRRect(ctx, bx, by, bw, bh, bh / 2); ctx.fill(); }
+    if(stroke){ ctx.strokeStyle = stroke; ctx.lineWidth = 2; ctx.globalAlpha = 0.75; posterRRect(ctx, bx, by, bw, bh, bh / 2); ctx.stroke(); ctx.globalAlpha = 1; }
+    ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
+    const pieces = en ? [['t', t1, w1, f1, 'ltr', txt], ['i'], ['t', t2, w2, f2, 'ltr', brand]] : [['t', t2, w2, f2, 'rtl', brand], ['i'], ['t', t1, w1, f1, 'rtl', txt]];
+    let x = bx + padX;
+    pieces.forEach(pc=>{
+      if(pc[0] === 'i'){ if(iw){ ctx.save(); ctx.beginPath(); ctx.arc(x + iw / 2, cy, iw / 2, 0, Math.PI * 2); ctx.clip(); ctx.drawImage(brandImg, x, cy - iw / 2, iw, iw); ctx.restore(); x += iw + gap; } return; }
+      ctx.font = pc[3]; ctx.direction = pc[4]; ctx.fillStyle = pc[5]; ctx.fillText(pc[1], x, cy + 1); x += pc[2] + gap;
+    });
+    ctx.restore();
+  };
+  const drawFooter = ()=>{
+    if(!footerH){ drawCredit(); return; }
+    const fy = H - bottomMargin - footerH;
+    if(pal.footerBg){ ctx.fillStyle = pal.footerBg; ctx.fillRect(0, fy, W, footerH + bottomMargin); }
+    else if(footerH0){ ctx.strokeStyle = pal.line; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(pad, fy + offerH); ctx.lineTo(W - pad, fy + offerH); ctx.stroke(); }
+    if(offerH){
+      let sbg = pal.priceBg || pal.line, sink = pal.priceBg ? pal.priceInk : '#111111';
+      if(pal.footerBg && pal.footerBg === sbg){ sbg = '#ffffff'; sink = '#111111'; }
+      const fz = short ? 26 : 38; ctx.font = F(800, fz);
+      const bw = Math.min(cw, ctx.measureText(offerText).width + 90), bh = offerH - (short ? 14 : 20);
+      ctx.fillStyle = sbg; posterRRect(ctx, W / 2 - bw / 2, fy + (offerH - bh) / 2, bw, bh, bh / 2); ctx.fill();
+      ctx.fillStyle = sink; ctx.textAlign = 'center'; ctx.direction = 'rtl'; ctx.fillText(offerText, W / 2, fy + offerH / 2 + fz * 0.34);
+    }
+    const midY = fy + offerH + footerH0 / 2;
+    let textL = pad, textR = W - pad, textMidY = midY;
+    if(qrOn){
+      const qx = qrPosK === 'r' ? W - pad - qrBox : (qrPosK === 'c' ? W / 2 - qrBox / 2 : pad);
+      const qy = qrPosK === 'c' ? fy + offerH + 20 : midY - qrBlockH / 2;
+      ctx.fillStyle = '#ffffff'; posterRRect(ctx, qx, qy, qrBox, qrBox, 16); ctx.fill();
+      ctx.drawImage(o.qrImg, qx + 10, qy + 10, qrBox - 20, qrBox - 20);
+      ctx.fillStyle = pal.footerBg ? pal.footerInk : pal.muted; ctx.textAlign = 'center'; ctx.font = F(700, 22);
+      ctx.fillText('امسح لتصفح المنيو', qx + qrBox / 2, qy + qrBox + 28);
+      if(qrPosK === 'l') textL = pad + qrBox + 40;
+      else if(qrPosK === 'r') textR = W - pad - qrBox - 40;
+      else textMidY = qy + qrBlockH + 8 + infoH / 2;
+    }
+    if(infoWrapped.length){
+      ctx.fillStyle = pal.footerInk; ctx.textAlign = 'center'; ctx.font = F(700, ifs);
+      const cx = (textL + textR) / 2, startY = textMidY - infoH / 2 + ilh * 0.74;
+      infoWrapped.forEach((ln, i)=> ctx.fillText(ln, cx, startY + i * ilh));
+    }
+    drawCredit();
+  };
+
+  // ---------- الرأس (لوجو + اسم المحل) ----------
+  const hasLogo = !!(o.showLogo && o.logoImg), hasName = !!(o.showName && restaurant.name);
+  const hs = short ? 0.62 : ((multi && o.size !== 'story') ? 0.86 : 1);
+  const headerH = (hasLogo || hasName) ? Math.round(112 * hs) : 0;
+  const drawHeader = (hy, onImage)=>{
+    if(!headerH) return;
+    const cy = hy + headerH / 2;
+    const hst = onImage ? 'pill' : (o.hdrStyle || 'row');
+    const hpos = onImage ? (o.hdrPos === 'center' ? 'center' : 'right') : (hst === 'lined' ? 'center' : (o.hdrPos || 'right'));
+    let fs = Math.round(46 * hs), nmW = 0;
+    if(hasName){
+      fs = posterFit(ctx, restaurant.name, cw - (hasLogo ? 118 : 0) - (onImage ? 70 : 0) - (hst === 'lined' ? 160 : 0), Math.round(46 * hs), 26, (s)=> F(800, s));
+      ctx.font = F(800, fs); nmW = ctx.measureText(restaurant.name).width;
+    }
+    const lr = Math.round(46 * hs) * (hst === 'ring' ? 1.0 : 1);
+    const logoW = hasLogo ? 2 * lr + (hasName ? 20 : 0) : 0;
+    const total = logoW + nmW;
+    const boxed = hst === 'pill';
+    const pw = total + 56;
+    // الحافة اليمنى للمحتوى حسب المكان (يمين / وسط / يسار)
+    let right = hpos === 'center' ? W / 2 + total / 2 : (hpos === 'left' ? pad + total + (boxed ? 28 : 0) : W - pad - (boxed ? 28 : 0));
+    if(boxed){
+      const left0 = right + 28 - pw;
+      ctx.fillStyle = 'rgba(255,255,255,.95)'; posterRRect(ctx, left0, hy + 4, pw, headerH - 8, (headerH - 8) / 2); ctx.fill();
+    }
+    if(hst === 'lined'){
+      ctx.strokeStyle = pal.line; ctx.lineWidth = 2.5;
+      const l1 = right - total - 26, r1 = right + 26;
+      ctx.beginPath(); ctx.moveTo(pad, cy); ctx.lineTo(Math.max(pad, l1), cy); ctx.moveTo(Math.min(W - pad, r1), cy); ctx.lineTo(W - pad, cy); ctx.stroke();
+    }
+    if(hasLogo){
+      const r = lr, cx = right - r;
+      ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.closePath(); ctx.fillStyle = '#fff'; ctx.fill(); ctx.clip();
+      posterDrawCover(ctx, o.logoImg, cx - r, cy - r, 2 * r, 2 * r); ctx.restore();
+      ctx.lineWidth = hst === 'ring' ? 8 : 4; ctx.strokeStyle = (onImage || hst === 'ring') ? (pal.priceBg || pal.line) : pal.line; ctx.beginPath(); ctx.arc(cx, cy, hst === 'ring' ? r - 2 : r, 0, Math.PI * 2); ctx.stroke();
+      if(hst === 'ring'){ ctx.lineWidth = 2; ctx.strokeStyle = pal.line; ctx.beginPath(); ctx.arc(cx, cy, r + 5, 0, Math.PI * 2); ctx.stroke(); }
+      right -= 2 * r + 20;
+    }
+    if(hasName){ ctx.fillStyle = boxed ? '#1c1c1c' : pal.ink; ctx.textAlign = 'right'; ctx.font = F(800, fs); ctx.fillText(restaurant.name, right, cy + fs * 0.35); }
+  };
+  const drawBadge = (bx, by, r, pct)=>{
+    if(!(pct > 0)) return;
+    ctx.fillStyle = '#d93025'; ctx.beginPath(); ctx.arc(bx, by, r, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.textAlign = 'center';
+    ctx.font = F(800, Math.round(r * 0.6)); ctx.fillText(dig(pct) + '%', bx, by + r * 0.08);
+    ctx.font = F(700, Math.round(r * 0.32)); ctx.fillText('خصم', bx, by + r * 0.5);
+  };
+  const dirFor = (isSizes)=> (T.latin && !isSizes) ? 'ltr' : 'rtl';
+
+  // =====================================================================
+  if(!multi){
+    const item = list[0], img = o.imgs[0];
+    const hasImg = !!(o.showImage && img);
+    const P = o.showPrice ? posterPriceInfo(item, T, false, o.showOld) : { text:'', oldText:'', discount:0 };
+    const hasPrice = !!P.text, isSizes = item.pricing_type === 'sizes';
+    let nameSize = o.size === 'story' ? 96 : 84, nameLines = [], nameH = 0;
+    const recalcName = ()=>{ ctx.font = D(nameSize); nameLines = posterWrap(ctx, item.name || '', cw, 2); nameH = nameLines.length * nameSize * 1.2; };
+    recalcName();
+    const ornH = pal.ornament ? 34 : 0;
+    let descLines = [];
+    if(o.showDesc && item.description){ ctx.font = F(500, 34); descLines = posterWrap(ctx, item.description, cw - 20, o.size === 'story' ? 4 : 2); }
+    let descH = descLines.length ? descLines.length * 48 + 10 : 0;
+    const gap = 28;
+    let chipH = 108;
+    const hero = pal.hero && hasImg;
+
+    const drawChip = (top)=>{
+      let fs = Math.min(72, Math.round(chipH * 0.66)); ctx.font = F(800, fs);
+      while(ctx.measureText(P.text).width > cw - 90 && fs > 34){ fs -= 4; ctx.font = F(800, fs); }
+      const tw = ctx.measureText(P.text).width;
+      ctx.direction = dirFor(isSizes); ctx.textAlign = 'center';
+      if(pal.priceStyle === 'text'){
+        ctx.fillStyle = pal.priceInk; ctx.fillText(P.text, W / 2, top + chipH / 2 + fs * 0.33);
+        ctx.strokeStyle = pal.line; ctx.lineWidth = 2; const ly = top + chipH / 2;
+        ctx.beginPath(); ctx.moveTo(pad + 30, ly); ctx.lineTo(Math.max(pad + 40, W / 2 - tw / 2 - 40), ly); ctx.moveTo(Math.min(W - pad - 40, W / 2 + tw / 2 + 40), ly); ctx.lineTo(W - pad - 30, ly); ctx.stroke();
+      } else {
+        const bw = Math.min(cw, tw + 90);
+        ctx.fillStyle = pal.priceBg; posterRRect(ctx, W / 2 - bw / 2, top, bw, chipH, chipH / 2); ctx.fill();
+        ctx.fillStyle = pal.priceInk; ctx.fillText(P.text, W / 2, top + chipH / 2 + fs * 0.33);
+      }
+      ctx.direction = 'rtl';
+    };
+    const drawOld = (base)=>{
+      ctx.font = F(600, 40); ctx.fillStyle = pal.muted; ctx.textAlign = 'center'; ctx.direction = dirFor(false);
+      const w = ctx.measureText(P.oldText).width; ctx.fillText(P.oldText, W / 2, base);
+      ctx.strokeStyle = '#d93025'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(W / 2 - w / 2 - 6, base - 12); ctx.lineTo(W / 2 + w / 2 + 6, base - 12); ctx.stroke();
+      ctx.direction = 'rtl';
+    };
+    const drawNameDesc = (y0)=>{
+      let y = y0;
+      ctx.fillStyle = pal.ink; ctx.textAlign = 'center'; ctx.font = D(nameSize);
+      if(pal.glow){ ctx.shadowColor = pal.line; ctx.shadowBlur = 24; }
+      nameLines.forEach((ln, i)=> ctx.fillText(ln, W / 2, y + nameSize * (0.95 + i * 1.2)));
+      ctx.shadowBlur = 0; ctx.shadowColor = 'transparent';
+      y += nameH + 6;
+      if(pal.ornament){
+        ctx.strokeStyle = pal.line; ctx.lineWidth = 2; const oy = y + 8;
+        ctx.beginPath(); ctx.moveTo(W / 2 - 150, oy); ctx.lineTo(W / 2 - 20, oy); ctx.moveTo(W / 2 + 20, oy); ctx.lineTo(W / 2 + 150, oy); ctx.stroke();
+        ctx.fillStyle = pal.line; ctx.beginPath(); ctx.moveTo(W / 2, oy - 9); ctx.lineTo(W / 2 + 9, oy); ctx.lineTo(W / 2, oy + 9); ctx.lineTo(W / 2 - 9, oy); ctx.closePath(); ctx.fill();
+        y += ornH;
+      }
+      if(descLines.length){
+        ctx.fillStyle = pal.muted; ctx.font = F(500, 34);
+        descLines.forEach((ln, i)=> ctx.fillText(ln, W / 2, y + 38 + i * 48)); y += descH;
+      }
+      return y;
+    };
+
+    const drawPriceDisc = (bx, by, rb, star)=>{
+      ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.28)'; ctx.shadowBlur = 18; ctx.shadowOffsetY = 6; ctx.fillStyle = pal.priceBg || pal.line; ctx.beginPath();
+      if(star){ for(let k = 0; k < 36; k++){ const a = k * Math.PI / 18 - Math.PI / 2, r = k % 2 ? rb * 0.86 : rb; k ? ctx.lineTo(bx + Math.cos(a) * r, by + Math.sin(a) * r) : ctx.moveTo(bx + Math.cos(a) * r, by + Math.sin(a) * r); } ctx.closePath(); }
+      else ctx.arc(bx, by, rb, 0, Math.PI * 2);
+      ctx.fill(); ctx.restore();
+      if(!star){ ctx.lineWidth = 6; ctx.strokeStyle = '#fff'; ctx.beginPath(); ctx.arc(bx, by, rb - 3, 0, Math.PI * 2); ctx.stroke(); }
+      const fs = posterFit(ctx, P.text, rb * 1.55, Math.round(rb * 0.42), 16, (s2)=> F(800, s2));
+      ctx.direction = dirFor(false); ctx.textAlign = 'center'; ctx.font = F(800, fs); ctx.fillStyle = pal.priceInk;
+      ctx.fillText(P.text, bx, by + fs * (P.oldText ? 0.55 : 0.33));
+      if(P.oldText){
+        const os = Math.round(rb * 0.2), oy = by - fs * 0.4; ctx.font = F(600, os); const w = ctx.measureText(P.oldText).width;
+        ctx.globalAlpha = .85; ctx.fillText(P.oldText, bx, oy); ctx.globalAlpha = 1;
+        ctx.strokeStyle = '#d93025'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(bx - w / 2 - 3, oy - os * 0.3); ctx.lineTo(bx + w / 2 + 3, oy - os * 0.3); ctx.stroke();
+      }
+      ctx.direction = 'rtl';
+    };
+    if(wide){
+      const areaTop = topStart, areaBot = H - bottomMargin - footerH - 30, areaH = areaBot - areaTop;
+      const imgW = hasImg ? Math.round(cw * 0.46) : 0;
+      if(hasImg){
+        const rr = Math.max(pal.imgRadius, 24);
+        ctx.save(); posterRRect(ctx, pad, areaTop, imgW, areaH, rr); ctx.clip(); posterDrawCover(ctx, img, pad, areaTop, imgW, areaH); ctx.restore();
+        if(pal.imgBorder){ ctx.lineWidth = pal.imgBorder; ctx.strokeStyle = pal.line; posterRRect(ctx, pad, areaTop, imgW, areaH, rr); ctx.stroke(); }
+        drawBadge(pad + 84, areaTop + 84, 66, P.discount);
+      }
+      const tx0 = pad + imgW + (hasImg ? 56 : 0), tx1 = W - pad, pw = tx1 - tx0, tcx = (tx0 + tx1) / 2;
+      let yy = areaTop; if(headerH){ drawHeader(areaTop, false); yy += headerH + 10; }
+      const room = areaBot - yy;
+      let ns = Math.min(Math.round(H * (short ? 0.1 : 0.115)), 120), lines = [];
+      const refit = ()=>{ ctx.font = D(ns); lines = posterWrap(ctx, item.name || '', pw, short ? 2 : 3); };
+      refit(); while(lines.length * ns * 1.2 > room * (short ? 0.42 : 0.46) && ns > (short ? 34 : 48)){ ns -= 6; refit(); }
+      let dl = []; if(o.showDesc && item.description && !short){ ctx.font = F(500, 36); dl = posterWrap(ctx, item.description, pw, 3); }
+      const ch = short ? 76 : 112;
+      const total = lines.length * ns * 1.2 + 10 + (dl.length ? dl.length * 52 + 10 : 0) + (hasPrice ? (short ? 18 : 34) + (P.oldText ? (short ? 40 : 54) : 0) + ch : 0);
+      let y0 = yy + Math.max(0, (room - total) / 2);
+      ctx.fillStyle = pal.ink; ctx.textAlign = 'center'; ctx.font = D(ns);
+      lines.forEach((ln, i)=> ctx.fillText(ln, tcx, y0 + ns * (0.95 + i * 1.2)));
+      y0 += lines.length * ns * 1.2 + 10;
+      if(dl.length){ ctx.fillStyle = pal.muted; ctx.font = F(500, 36); dl.forEach((ln, i)=> ctx.fillText(ln, tcx, y0 + 40 + i * 52)); y0 += dl.length * 52 + 10; }
+      if(hasPrice){
+        y0 += short ? 18 : 34;
+        if(P.oldText){
+          ctx.font = F(600, short ? 32 : 42); ctx.fillStyle = pal.muted; ctx.direction = dirFor(false);
+          const ow = ctx.measureText(P.oldText).width; ctx.fillText(P.oldText, tcx, y0 + 12);
+          ctx.strokeStyle = '#d93025'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(tcx - ow / 2 - 6, y0); ctx.lineTo(tcx + ow / 2 + 6, y0); ctx.stroke(); ctx.direction = 'rtl'; y0 += short ? 40 : 54;
+        }
+        let fs = short ? 50 : 74; ctx.font = F(800, fs);
+        while(ctx.measureText(P.text).width > pw - 90 && fs > 34){ fs -= 4; ctx.font = F(800, fs); }
+        const tw = ctx.measureText(P.text).width; ctx.direction = dirFor(isSizes); ctx.textAlign = 'center';
+        if(pal.priceStyle === 'text'){ ctx.fillStyle = pal.priceInk; ctx.fillText(P.text, tcx, y0 + ch / 2 + fs * 0.33); }
+        else { const bw = Math.min(pw, tw + 90); ctx.fillStyle = pal.priceBg; posterRRect(ctx, tcx - bw / 2, y0, bw, ch, ch / 2); ctx.fill(); ctx.fillStyle = pal.priceInk; ctx.fillText(P.text, tcx, y0 + ch / 2 + fs * 0.33); }
+        ctx.direction = 'rtl';
+      }
+      drawFooter(); ctx.textAlign = 'start';
+      return;
+    }
+    const L = hasImg ? pal.layout : 'stack';
+    const discMode = hasPrice && !isSizes && P.text.length <= 15;
+    const shrinkFor = (calc, min)=>{ let v = calc(); while(v < min && (nameSize > 54 || descLines.length)){ if(descLines.length){ descLines = []; descH = 0; } else { nameSize -= 6; recalcName(); } v = calc(); } return v; };
+    if(L === 'full'){
+      posterDrawCover(ctx, img, 0, 0, W, H);
+      let gr = ctx.createLinearGradient(0, 0, 0, H * 0.26); gr.addColorStop(0, 'rgba(0,0,0,.6)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = gr; ctx.fillRect(0, 0, W, H * 0.26);
+      gr = ctx.createLinearGradient(0, H * 0.34, 0, H); gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(.5, 'rgba(0,0,0,.72)'); gr.addColorStop(1, 'rgba(0,0,0,.94)'); ctx.fillStyle = gr; ctx.fillRect(0, H * 0.34, W, H * 0.66);
+      drawHeader(30, true); drawBadge(pad + 74, 100, 66, P.discount);
+      let yb = H - footerH - bottomMargin - 36;
+      if(hasPrice){ yb -= chipH; drawChip(yb); yb -= 18; if(P.oldText){ drawOld(yb); yb -= 52; } }
+      while(nameSize > 54 && yb - (nameH + 6 + descH) < H * 0.42){ nameSize -= 6; recalcName(); }
+      drawNameDesc(yb - (nameH + 6 + descH) - 6);
+    } else if(L === 'circle'){
+      let y = topStart; if(headerH){ drawHeader(y, false); y += headerH + 6; } else y += 20;
+      const calcD = ()=> Math.min(cw * 0.86, H - y - (nameH + 6 + descH + gap + (!discMode && hasPrice ? chipH + (P.oldText ? 50 : 0) + gap : 0) + footerH + bottomMargin + 56));
+      let Dm = calcD();
+      while(Dm < 380 && (nameSize > 54 || descLines.length)){ if(descLines.length){ descLines = []; descH = 0; } else { nameSize -= 6; recalcName(); } Dm = calcD(); }
+      Dm = Math.max(Dm, 280);
+      const cx = W / 2, cy = y + Dm / 2 + 24;
+      ctx.fillStyle = pal.accentSoft || 'rgba(0,0,0,.06)'; ctx.beginPath(); ctx.arc(cx, cy, Dm / 2 + 46, 0, Math.PI * 2); ctx.fill();
+      ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.3)'; ctx.shadowBlur = 30; ctx.shadowOffsetY = 12; ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(cx, cy, Dm / 2, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+      ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, Dm / 2 - 8, 0, Math.PI * 2); ctx.clip(); posterDrawCover(ctx, img, cx - Dm / 2, cy - Dm / 2, Dm, Dm); ctx.restore();
+      ctx.save(); if(pal.glow){ ctx.shadowColor = pal.line; ctx.shadowBlur = 36; } ctx.lineWidth = 10; ctx.strokeStyle = pal.line; ctx.beginPath(); ctx.arc(cx, cy, Dm / 2 + 2, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
+      drawBadge(cx + Dm * 0.36, cy - Dm * 0.36, Math.max(50, Dm * 0.12), P.discount);
+      if(discMode) drawPriceDisc(cx - Dm * 0.36, cy + Dm * 0.36, Math.max(78, Math.min(125, Dm * 0.21)), false);
+      let yy = drawNameDesc(cy + Dm / 2 + 34);
+      if(hasPrice && !discMode){ yy += gap - 6; if(P.oldText){ drawOld(yy + 36); yy += 50; } drawChip(yy); }
+    } else if(L === 'burst'){
+      ctx.save(); ctx.fillStyle = 'rgba(255,255,255,.09)'; const rcx = W / 2, rcy = H * 0.45;
+      for(let k = 0; k < 28; k += 2){ const a1 = k * Math.PI * 2 / 28, a2 = (k + 1) * Math.PI * 2 / 28; ctx.beginPath(); ctx.moveTo(rcx, rcy); ctx.lineTo(rcx + Math.cos(a1) * H * 1.3, rcy + Math.sin(a1) * H * 1.3); ctx.lineTo(rcx + Math.cos(a2) * H * 1.3, rcy + Math.sin(a2) * H * 1.3); ctx.closePath(); ctx.fill(); }
+      ctx.restore();
+      let y = topStart; if(headerH){ drawHeader(y, false); y += headerH + 6; } else y += 14;
+      const rtxt = pal.ribbon || 'عرض خاص';
+      const rfs = o.size === 'story' ? 96 : 72; ctx.font = D(rfs);
+      const rbh = Math.round(rfs * 1.45), rw = Math.min(cw, ctx.measureText(rtxt).width + 170);
+      ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.3)'; ctx.shadowBlur = 14; ctx.shadowOffsetY = 5; ctx.fillStyle = pal.titleBg; posterRRect(ctx, W / 2 - rw / 2, y, rw, rbh, 16); ctx.fill(); ctx.restore();
+      ctx.fillStyle = pal.titleInk; ctx.textAlign = 'center'; ctx.fillText(rtxt, W / 2, y + rbh / 2 + rfs * 0.32);
+      y += rbh + 22;
+      const chipOnly = hasPrice && !discMode;
+      const calcI = ()=> H - y - (nameH + 6 + descH + gap + (chipOnly ? chipH + (P.oldText ? 50 : 0) + gap : 0) + footerH + bottomMargin + 34);
+      while(calcI() < 300 && (nameSize > 54 || descLines.length)){ if(descLines.length){ descLines = []; descH = 0; } else { nameSize -= 6; recalcName(); } }
+      const imgH = Math.max(260, calcI());
+      ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.35)'; ctx.shadowBlur = 24; ctx.shadowOffsetY = 10; ctx.fillStyle = '#fff'; posterRRect(ctx, pad, y, cw, imgH, 36); ctx.fill(); ctx.restore();
+      ctx.save(); posterRRect(ctx, pad + 10, y + 10, cw - 20, imgH - 20, 28); ctx.clip(); posterDrawCover(ctx, img, pad + 10, y + 10, cw - 20, imgH - 20); ctx.restore();
+      if(discMode){ const R = Math.max(105, Math.min(165, cw * 0.19)); drawPriceDisc(pad + R * 0.9, y + imgH - R * 0.9, R, true); }
+      drawBadge(W - pad - 80, y + 80, 62, P.discount);
+      y += imgH + gap; y = drawNameDesc(y);
+      if(chipOnly){ y += gap - 6; if(P.oldText){ drawOld(y + 36); y += 50; } drawChip(y); }
+    } else if(L === 'polaroid'){
+      let y = topStart; if(headerH){ drawHeader(y, false); y += headerH + 6; } else y += 20;
+      const calcF = ()=> H - y - 30 - (footerH + bottomMargin) - (!discMode && hasPrice ? chipH + (P.oldText ? 50 : 0) + gap : 0);
+      const capOf = ()=> nameH + 6 + descH + 40;
+      while(calcF() - 26 - capOf() < 260 && (nameSize > 54 || descLines.length)){ if(descLines.length){ descLines = []; descH = 0; } else { nameSize -= 6; recalcName(); } }
+      const fw = cw * 0.9, fh = Math.max(420, calcF()), imgH = Math.max(200, fh - 26 - capOf());
+      const cx = W / 2, cy = y + fh / 2 + 12;
+      ctx.save(); ctx.translate(cx, cy); ctx.rotate(-0.035);
+      ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.35)'; ctx.shadowBlur = 28; ctx.shadowOffsetY = 12; ctx.fillStyle = '#fffdf8'; posterRRect(ctx, -fw / 2, -fh / 2, fw, fh, 10); ctx.fill(); ctx.restore();
+      ctx.save(); posterRRect(ctx, -fw / 2 + 26, -fh / 2 + 26, fw - 52, imgH, 4); ctx.clip(); posterDrawCover(ctx, img, -fw / 2 + 26, -fh / 2 + 26, fw - 52, imgH); ctx.restore();
+      ctx.fillStyle = pal.cardInk; ctx.textAlign = 'center'; ctx.font = D(nameSize);
+      const capTop = -fh / 2 + 26 + imgH + 14;
+      nameLines.forEach((ln, i)=> ctx.fillText(ln, 0, capTop + nameSize * (0.95 + i * 1.2)));
+      if(descLines.length){ ctx.fillStyle = pal.cardMuted; ctx.font = F(500, 34); descLines.forEach((ln, i)=> ctx.fillText(ln, 0, capTop + nameH + 6 + 38 + i * 48)); }
+      ctx.fillStyle = 'rgba(255,236,170,.8)';
+      [[-fw * 0.32, -0.5], [fw * 0.32, 0.5]].forEach(([tx, rot])=>{ ctx.save(); ctx.translate(tx, -fh / 2 + 2); ctx.rotate(rot); ctx.fillRect(-75, -22, 150, 44); ctx.restore(); });
+      if(discMode){ const rb = Math.max(80, Math.min(118, fw * 0.14)); ctx.save(); ctx.translate(-fw / 2 + rb * 0.75, -fh / 2 + 26 + imgH - rb * 0.55); ctx.rotate(0.12); drawPriceDisc(0, 0, rb, false); ctx.restore(); }
+      ctx.restore();
+      drawBadge(cx + fw / 2 - 20, y + 66, 60, P.discount);
+      let yy = cy + fh / 2 + 22;
+      if(hasPrice && !discMode){ if(P.oldText){ drawOld(yy + 36); yy += 50; } drawChip(yy); }
+    } else if(L === 'arch'){
+      if(nameSize > 66 && o.size !== 'story'){ nameSize = 66; recalcName(); }
+      let y = topStart; if(headerH){ drawHeader(y, false); y += headerH + 6; } else y += 20;
+      const calcA = ()=> H - y - (nameH + ornH + 6 + descH + gap + (!discMode && hasPrice ? chipH + (P.oldText ? 50 : 0) + gap : 0) + footerH + bottomMargin + 56);
+      const Ha = Math.max(300, shrinkFor(calcA, 380));
+      const Wa = Math.min(cw * 0.8, Ha * 0.86), ax = (W - Wa) / 2, ay = y + 18;
+      const archPath = (x0, y0, w0, h0)=>{ const rr = w0 / 2; ctx.beginPath(); ctx.moveTo(x0, y0 + h0); ctx.lineTo(x0, y0 + rr); ctx.arc(x0 + rr, y0 + rr, rr, Math.PI, 0); ctx.lineTo(x0 + w0, y0 + h0); ctx.closePath(); };
+      ctx.save(); ctx.strokeStyle = pal.line; ctx.lineWidth = 4; archPath(ax - 18, ay - 18, Wa + 36, Ha + 18); ctx.stroke(); ctx.restore();
+      ctx.save(); archPath(ax, ay, Wa, Ha); ctx.fillStyle = pal.accentSoft || 'rgba(0,0,0,.06)'; ctx.fill(); ctx.clip(); posterDrawCover(ctx, img, ax, ay, Wa, Ha); ctx.restore();
+      drawBadge(ax + Wa * 0.86, ay + Wa * 0.22, 60, P.discount);
+      if(discMode) drawPriceDisc(ax + Wa * 0.08, ay + Ha - Math.max(70, Wa * 0.1), Math.max(78, Math.min(118, Wa * 0.2)), false);
+      let yy = drawNameDesc(ay + Ha + 36);
+      if(hasPrice && !discMode){ yy += gap - 6; if(P.oldText){ drawOld(yy + 36); yy += 50; } drawChip(yy); }
+    } else if(L === 'mag'){
+      if(nameSize > 70 && o.size !== 'story'){ nameSize = 70; recalcName(); }
+      const diag = Math.round(H * 0.07), tagH = Math.round(chipH * 0.9);
+      const lowerNeed = ()=> (hasPrice ? tagH / 2 - diag / 2 + (P.oldText ? 52 : 20) : 24) + nameH + 6 + descH + footerH + bottomMargin + 34;
+      const calcM = ()=> H - lowerNeed();
+      let imgB = shrinkFor(calcM, H * 0.42);
+      imgB = Math.max(imgB, H * 0.36);
+      ctx.fillStyle = pal.line; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(W, 0); ctx.lineTo(W, imgB - diag + 24); ctx.lineTo(0, imgB + 24); ctx.closePath(); ctx.fill();
+      ctx.save(); ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(W, 0); ctx.lineTo(W, imgB - diag); ctx.lineTo(0, imgB); ctx.closePath(); ctx.clip(); posterDrawCover(ctx, img, 0, 0, W, imgB); ctx.restore();
+      drawHeader(30, true); drawBadge(pad + 74, 100, 66, P.discount);
+      let nameTop = imgB - diag / 2 + 24;
+      if(hasPrice){
+        let fs = Math.round(tagH * 0.62); ctx.font = F(800, fs);
+        while(ctx.measureText(P.text).width > cw * 0.6 && fs > 26){ fs -= 4; ctx.font = F(800, fs); }
+        const tw = Math.min(cw, ctx.measureText(P.text).width + 100), sk = 26, xc = W - pad - tw / 2;
+        const slantY = imgB - diag * (xc / W), ty = slantY - tagH / 2 + 12, tx = W - pad - tw;
+        ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.3)'; ctx.shadowBlur = 14; ctx.shadowOffsetY = 5; ctx.fillStyle = pal.priceBg;
+        ctx.beginPath(); ctx.moveTo(tx + sk, ty); ctx.lineTo(tx + tw, ty); ctx.lineTo(tx + tw - sk, ty + tagH); ctx.lineTo(tx, ty + tagH); ctx.closePath(); ctx.fill(); ctx.restore();
+        ctx.direction = dirFor(isSizes); ctx.textAlign = 'center'; ctx.fillStyle = pal.priceInk; ctx.fillText(P.text, tx + tw / 2, ty + tagH / 2 + fs * 0.33); ctx.direction = 'rtl';
+        nameTop = ty + tagH + 16;
+        if(P.oldText){
+          ctx.font = F(600, 34); ctx.fillStyle = pal.muted; ctx.direction = dirFor(false); const ow = ctx.measureText(P.oldText).width;
+          ctx.fillText(P.oldText, tx + tw / 2, nameTop + 30); ctx.strokeStyle = '#d93025'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(tx + tw / 2 - ow / 2 - 4, nameTop + 18); ctx.lineTo(tx + tw / 2 + ow / 2 + 4, nameTop + 18); ctx.stroke(); ctx.direction = 'rtl';
+          nameTop += 42;
+        }
+      }
+      drawNameDesc(nameTop);
+    } else if(L === 'stripe'){
+      const panelW = Math.round(W * 0.48), areaBot = H - footerH - bottomMargin, imgW = W - panelW;
+      ctx.save(); ctx.beginPath(); ctx.rect(0, 0, imgW, areaBot); ctx.clip(); posterDrawCover(ctx, img, 0, 0, imgW, areaBot); ctx.restore();
+      ctx.fillStyle = pal.panelBg || pal.line; ctx.fillRect(imgW, 0, panelW, areaBot);
+      ctx.fillStyle = pal.priceBg; ctx.fillRect(imgW - 10, 0, 10, areaBot);
+      const pw = panelW - 88, pcx = imgW + panelW / 2;
+      let yy = 44;
+      if(hasLogo){ const r = 46; ctx.save(); ctx.beginPath(); ctx.arc(pcx, yy + r, r, 0, Math.PI * 2); ctx.fillStyle = '#fff'; ctx.fill(); ctx.clip(); posterDrawCover(ctx, o.logoImg, pcx - r, yy, 2 * r, 2 * r); ctx.restore(); ctx.lineWidth = 4; ctx.strokeStyle = pal.priceBg; ctx.beginPath(); ctx.arc(pcx, yy + r, r, 0, Math.PI * 2); ctx.stroke(); yy += 2 * r + 14; }
+      if(hasName){ const fs = posterFit(ctx, restaurant.name, pw, 34, 20, (s2)=> F(800, s2)); ctx.font = F(800, fs); ctx.fillStyle = pal.panelInk; ctx.textAlign = 'center'; ctx.fillText(restaurant.name, pcx, yy + fs); yy += fs + 20; }
+      const ns0 = Math.min(o.size === 'story' ? 92 : 76, 96); let ns = ns0, lines = [];
+      const refit = ()=>{ ctx.font = D(ns); lines = posterWrap(ctx, item.name || '', pw, 4); };
+      const roomS = areaBot - yy - 30; refit();
+      const chS = Math.min(chipH, 96);
+      const needS = ()=> lines.length * ns * 1.2 + 14 + (descLines.length && ns >= 56 ? 0 : 0) + (hasPrice ? 30 + (P.oldText ? 46 : 0) + chS : 0);
+      while(needS() > roomS && ns > 34){ ns -= 4; refit(); }
+      let dl = []; if(o.showDesc && item.description && needS() + 120 < roomS){ ctx.font = F(500, 30); dl = posterWrap(ctx, item.description, pw, 3); }
+      const totalS = needS() + (dl.length ? dl.length * 42 + 8 : 0);
+      let y0 = yy + Math.max(0, (roomS - totalS) / 2);
+      ctx.fillStyle = pal.panelInk; ctx.textAlign = 'center'; ctx.font = D(ns);
+      lines.forEach((ln, i)=> ctx.fillText(ln, pcx, y0 + ns * (0.95 + i * 1.2)));
+      y0 += lines.length * ns * 1.2 + 14;
+      if(dl.length){ ctx.font = F(500, 30); ctx.fillStyle = 'rgba(255,255,255,.85)'; dl.forEach((ln, i)=> ctx.fillText(ln, pcx, y0 + 30 + i * 42)); y0 += dl.length * 42 + 8; }
+      if(hasPrice){
+        y0 += 30;
+        if(P.oldText){ ctx.font = F(600, 34); ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.direction = dirFor(false); const ow = ctx.measureText(P.oldText).width; ctx.fillText(P.oldText, pcx, y0 - 6); ctx.strokeStyle = '#ffb4a8'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(pcx - ow / 2 - 4, y0 - 18); ctx.lineTo(pcx + ow / 2 + 4, y0 - 18); ctx.stroke(); ctx.direction = 'rtl'; y0 += 46; }
+        let fs = Math.round(chS * 0.62); ctx.font = F(800, fs);
+        while(ctx.measureText(P.text).width > pw - 40 && fs > 24){ fs -= 3; ctx.font = F(800, fs); }
+        const bw = Math.min(pw, ctx.measureText(P.text).width + 60);
+        ctx.fillStyle = pal.priceBg; posterRRect(ctx, pcx - bw / 2, y0, bw, chS, chS / 2); ctx.fill();
+        ctx.direction = dirFor(isSizes); ctx.textAlign = 'center'; ctx.fillStyle = pal.priceInk; ctx.fillText(P.text, pcx, y0 + chS / 2 + fs * 0.33); ctx.direction = 'rtl';
+      }
+      drawBadge(78, 90, 62, P.discount);
+    } else if(L === 'brutal'){
+      if(nameSize > 66 && o.size !== 'story'){ nameSize = 66; recalcName(); }
+      let y = topStart; if(headerH){ drawHeader(y, false); y += headerH + 8; } else y += 16;
+      const stH = hasPrice ? Math.round(chipH * 1.05) + (P.oldText ? 34 : 0) : 0;
+      const calcB = ()=> H - y - (nameH + 6 + descH + (stH ? stH * 0.45 + 18 : 22) + footerH + bottomMargin + 56);
+      const imgH = Math.max(260, shrinkFor(calcB, 360));
+      const bx = pad + 8, bw = cw - 24;
+      ctx.fillStyle = pal.line; posterRRect(ctx, bx + 18, y + 18, bw, imgH, 18); ctx.fill();
+      ctx.save(); posterRRect(ctx, bx, y, bw, imgH, 18); ctx.clip(); posterDrawCover(ctx, img, bx, y, bw, imgH); ctx.restore();
+      ctx.lineWidth = pal.imgBorder; ctx.strokeStyle = pal.line; posterRRect(ctx, bx, y, bw, imgH, 18); ctx.stroke();
+      drawBadge(bx + bw - 56, y + 60, 56, P.discount);
+      if(hasPrice){
+        let fs = Math.round(chipH * 0.74); ctx.font = F(800, fs);
+        while(ctx.measureText(P.text).width > bw * 0.7 && fs > 30){ fs -= 4; ctx.font = F(800, fs); }
+        const sw = Math.min(bw * 0.8, ctx.measureText(P.text).width + 90), sx = bx + 30, sy = y + imgH - stH * 0.55;
+        ctx.save(); ctx.translate(sx + sw / 2, sy + stH / 2); ctx.rotate(-0.06);
+        ctx.fillStyle = pal.line; posterRRect(ctx, -sw / 2 + 8, -stH / 2 + 8, sw, stH, 12); ctx.fill();
+        ctx.fillStyle = pal.priceBg === pal.line ? '#fff' : pal.priceBg; ctx.strokeStyle = pal.line; ctx.lineWidth = 6; posterRRect(ctx, -sw / 2, -stH / 2, sw, stH, 12); ctx.fill(); ctx.stroke();
+        ctx.direction = dirFor(isSizes); ctx.textAlign = 'center'; ctx.fillStyle = pal.priceInk;
+        ctx.font = F(800, fs); ctx.fillText(P.text, 0, (P.oldText ? 17 : 0) + fs * 0.33);
+        if(P.oldText){ ctx.font = F(600, 30); ctx.fillStyle = pal.priceInk; ctx.globalAlpha = .8; const ow = ctx.measureText(P.oldText).width; ctx.fillText(P.oldText, 0, -stH / 2 + 38); ctx.globalAlpha = 1; ctx.strokeStyle = '#ff5a4d'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(-ow / 2 - 3, -stH / 2 + 28); ctx.lineTo(ow / 2 + 3, -stH / 2 + 28); ctx.stroke(); }
+        ctx.direction = 'rtl'; ctx.restore();
+      }
+      drawNameDesc(y + imgH + (stH ? stH * 0.45 + 18 : 22));
+    } else if(L === 'coupon'){
+      let y = topStart; if(headerH){ drawHeader(y, false); y += headerH + 6; } else y += 18;
+      const stubOn = hasPrice && !isSizes && P.text.length <= 16;
+      const cardH = H - y - footerH - bottomMargin - 36;
+      const stubW = stubOn ? Math.round(cw * 0.29) : 0, mx = pad + stubW, mw = cw - stubW, mcx = mx + mw / 2;
+      let ns = Math.min(nameSize, 60), nl = [], dl = [];
+      const refit = ()=>{ ctx.font = D(ns); nl = posterWrap(ctx, item.name || '', mw - 60, 2); };
+      refit(); if(o.showDesc && item.description){ ctx.font = F(500, 32); dl = posterWrap(ctx, item.description, mw - 60, 2); }
+      const textH = ()=> nl.length * ns * 1.2 + (dl.length ? dl.length * 44 + 8 : 0) + (!stubOn && hasPrice ? chipH + (P.oldText ? 44 : 0) + 16 : 0) + 26;
+      let imgH = cardH - 44 - textH();
+      while(imgH < 240 && (ns > 40 || dl.length)){ if(dl.length) dl = []; else ns -= 6; refit(); imgH = cardH - 44 - textH(); }
+      imgH = Math.max(imgH, 180);
+      ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.3)'; ctx.shadowBlur = 26; ctx.shadowOffsetY = 10; ctx.fillStyle = pal.cardBg; posterRRect(ctx, pad, y, cw, cardH, 36); ctx.fill(); ctx.restore();
+      if(stubOn){
+        ctx.save(); posterRRect(ctx, pad, y, cw, cardH, 36); ctx.clip(); ctx.fillStyle = pal.line; ctx.fillRect(pad, y, stubW, cardH); ctx.restore();
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(mx, y, 26, 0, Math.PI * 2); ctx.fill(); ctx.beginPath(); ctx.arc(mx, y + cardH, 26, 0, Math.PI * 2); ctx.fill();
+        ctx.save(); ctx.setLineDash([12, 10]); ctx.lineWidth = 3; ctx.strokeStyle = pal.cardMuted; ctx.globalAlpha = .7; ctx.beginPath(); ctx.moveTo(mx, y + 36); ctx.lineTo(mx, y + cardH - 36); ctx.stroke(); ctx.restore();
+        const scx = pad + stubW / 2, scy = y + cardH / 2;
+        let fs = Math.round(stubW * 0.3); ctx.font = F(800, fs);
+        while(ctx.measureText(P.text).width > stubW - 36 && fs > 22){ fs -= 3; ctx.font = F(800, fs); }
+        ctx.direction = dirFor(false); ctx.textAlign = 'center'; ctx.fillStyle = '#ffffff';
+        ctx.fillText(P.text, scx, scy + fs * 0.33 + (P.oldText ? 22 : 0));
+        if(P.oldText){ const os = Math.round(fs * 0.55); ctx.font = F(600, os); ctx.globalAlpha = .85; const ow = ctx.measureText(P.oldText).width; ctx.fillText(P.oldText, scx, scy - fs * 0.45); ctx.globalAlpha = 1; ctx.strokeStyle = '#ffd60a'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(scx - ow / 2 - 3, scy - fs * 0.45 - os * 0.3); ctx.lineTo(scx + ow / 2 + 3, scy - fs * 0.45 - os * 0.3); ctx.stroke(); }
+        ctx.direction = 'rtl';
+      }
+      ctx.save(); posterRRect(ctx, mx + 24, y + 24, mw - 48, imgH, 24); ctx.clip(); posterDrawCover(ctx, img, mx + 24, y + 24, mw - 48, imgH); ctx.restore();
+      drawBadge(mx + mw - 24 - 56, y + 24 + 56, 48, P.discount);
+      let ty = y + 24 + imgH + 14;
+      ctx.fillStyle = pal.cardInk; ctx.textAlign = 'center'; ctx.font = D(ns);
+      nl.forEach((ln, i)=> ctx.fillText(ln, mcx, ty + ns * (0.95 + i * 1.2))); ty += nl.length * ns * 1.2 + 4;
+      if(dl.length){ ctx.fillStyle = pal.cardMuted; ctx.font = F(500, 32); dl.forEach((ln, i)=> ctx.fillText(ln, mcx, ty + 34 + i * 44)); ty += dl.length * 44 + 8; }
+      if(hasPrice && !stubOn){
+        if(P.oldText){ ctx.font = F(600, 36); ctx.fillStyle = pal.cardMuted; ctx.direction = dirFor(false); const ow = ctx.measureText(P.oldText).width; ctx.fillText(P.oldText, mcx, ty + 30); ctx.strokeStyle = '#d93025'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(mcx - ow / 2 - 4, ty + 18); ctx.lineTo(mcx + ow / 2 + 4, ty + 18); ctx.stroke(); ctx.direction = 'rtl'; ty += 44; }
+        drawChip(ty + 8);
+      }
+    } else if(L === 'frame'){
+      let y = topStart; if(headerH){ drawHeader(y, false); y += headerH + 6; } else y += 18;
+      const FT = 24, MAT = 16, plaqueW = Math.min(cw * 0.84, 880);
+      let ns = Math.min(nameSize, 64), nl = [], dl = [];
+      const refit = ()=>{ ctx.font = D(ns); nl = posterWrap(ctx, item.name || '', plaqueW - 70, 2); };
+      refit(); if(o.showDesc && item.description){ ctx.font = F(500, 30); dl = posterWrap(ctx, item.description, plaqueW - 70, 2); }
+      const plH = ()=> nl.length * ns * 1.2 + (dl.length ? dl.length * 40 + 6 : 0) + 34;
+      const priceBlock = hasPrice ? chipH + (P.oldText ? 46 : 0) + 22 : 0;
+      const calcB = ()=> H - y - (plH() + 26 + priceBlock + footerH + bottomMargin + 40 + 2 * (FT + MAT));
+      while(calcB() < 300 && (ns > 44 || dl.length)){ if(dl.length) dl = []; else ns -= 6; refit(); }
+      const boxH = Math.max(240, calcB()), boxW = Math.min(cw - 2 * (FT + MAT) - 20, boxH * 1.15);
+      const fw = boxW + 2 * (FT + MAT), fh = boxH + 2 * (FT + MAT), fx = (W - fw) / 2, fy = y + 10;
+      ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.45)'; ctx.shadowBlur = 28; ctx.shadowOffsetY = 10; ctx.fillStyle = pal.line; posterRRect(ctx, fx, fy, fw, fh, 8); ctx.fill(); ctx.restore();
+      const sh = ctx.createLinearGradient(fx, fy, fx + fw, fy + fh); sh.addColorStop(0, 'rgba(255,255,255,.45)'); sh.addColorStop(.5, 'rgba(255,255,255,0)'); sh.addColorStop(1, 'rgba(0,0,0,.28)');
+      ctx.fillStyle = sh; posterRRect(ctx, fx, fy, fw, fh, 8); ctx.fill();
+      ctx.strokeStyle = 'rgba(0,0,0,.35)'; ctx.lineWidth = 3; ctx.strokeRect(fx + FT - 4, fy + FT - 4, fw - 2 * FT + 8, fh - 2 * FT + 8);
+      ctx.fillStyle = '#F4EDDC'; ctx.fillRect(fx + FT, fy + FT, fw - 2 * FT, fh - 2 * FT);
+      const ix = fx + FT + MAT, iy = fy + FT + MAT;
+      ctx.save(); ctx.beginPath(); ctx.rect(ix, iy, boxW, boxH); ctx.clip(); posterDrawCover(ctx, img, ix, iy, boxW, boxH); ctx.restore();
+      ctx.strokeStyle = 'rgba(0,0,0,.35)'; ctx.lineWidth = 2; ctx.strokeRect(ix, iy, boxW, boxH);
+      drawBadge(fx + fw - 30, fy + 40, 50, P.discount);
+      const py = fy + fh + 24, px = (W - plaqueW) / 2;
+      ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.3)'; ctx.shadowBlur = 14; ctx.shadowOffsetY = 5; ctx.fillStyle = pal.cardBg; posterRRect(ctx, px, py, plaqueW, plH(), 12); ctx.fill(); ctx.restore();
+      ctx.strokeStyle = pal.line; ctx.lineWidth = 3; posterRRect(ctx, px, py, plaqueW, plH(), 12); ctx.stroke();
+      ctx.fillStyle = pal.cardInk; ctx.textAlign = 'center'; ctx.font = D(ns);
+      nl.forEach((ln, i)=> ctx.fillText(ln, W / 2, py + 14 + ns * (0.95 + i * 1.2)));
+      if(dl.length){ ctx.fillStyle = pal.cardMuted; ctx.font = F(500, 30); dl.forEach((ln, i)=> ctx.fillText(ln, W / 2, py + 14 + nl.length * ns * 1.2 + 32 + i * 40)); }
+      let yy = py + plH() + 22;
+      if(hasPrice){ if(P.oldText){ drawOld(yy + 36); yy += 46; } drawChip(yy); }
+    } else if(L === 'band'){
+      const areaBot = H - footerH - bottomMargin;
+      ctx.save(); ctx.beginPath(); ctx.rect(0, 0, W, areaBot); ctx.clip(); posterDrawCover(ctx, img, 0, 0, W, areaBot); ctx.restore();
+      let gr = ctx.createLinearGradient(0, 0, 0, H * 0.22); gr.addColorStop(0, 'rgba(0,0,0,.55)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = gr; ctx.fillRect(0, 0, W, H * 0.22);
+      drawHeader(30, true); drawBadge(pad + 74, 100, 66, P.discount);
+      while(nameH + 6 + descH + 70 > areaBot * 0.4 && (nameSize > 52 || descLines.length)){ if(descLines.length){ descLines = []; descH = 0; } else { nameSize -= 6; recalcName(); } }
+      const bandH = nameH + 6 + descH + 70, bandY = areaBot - bandH;
+      ctx.fillStyle = pal.priceBg; ctx.beginPath(); ctx.moveTo(0, bandY + 12); ctx.lineTo(W, bandY - 36); ctx.lineTo(W, bandY - 14); ctx.lineTo(0, bandY + 34); ctx.closePath(); ctx.fill();
+      ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.35)'; ctx.shadowBlur = 20; ctx.shadowOffsetY = -4; ctx.fillStyle = pal.line; ctx.beginPath(); ctx.moveTo(0, bandY + 34); ctx.lineTo(W, bandY - 14); ctx.lineTo(W, areaBot); ctx.lineTo(0, areaBot); ctx.closePath(); ctx.fill(); ctx.restore();
+      ctx.fillStyle = pal.bandInk; ctx.textAlign = 'center'; ctx.font = D(nameSize);
+      nameLines.forEach((ln, i)=> ctx.fillText(ln, W / 2, bandY + 52 + nameSize * (0.95 + i * 1.2)));
+      if(descLines.length){ ctx.fillStyle = pal.bandInk; ctx.globalAlpha = .8; ctx.font = F(500, 34); descLines.forEach((ln, i)=> ctx.fillText(ln, W / 2, bandY + 52 + nameH + 6 + 38 + i * 48)); ctx.globalAlpha = 1; }
+      if(hasPrice){
+        let fs = Math.round(chipH * 0.66); ctx.font = F(800, fs);
+        while(ctx.measureText(P.text).width > cw * 0.62 && fs > 28){ fs -= 4; ctx.font = F(800, fs); }
+        const tw = Math.min(cw, ctx.measureText(P.text).width + 80), tx = W - pad - tw, ty = bandY - 14 - chipH - 4;
+        ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.4)'; ctx.shadowBlur = 16; ctx.shadowOffsetY = 6; ctx.fillStyle = pal.priceBg; posterRRect(ctx, tx, ty, tw, chipH, 16); ctx.fill(); ctx.restore();
+        ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 5; posterRRect(ctx, tx, ty, tw, chipH, 16); ctx.stroke();
+        ctx.direction = dirFor(isSizes); ctx.textAlign = 'center'; ctx.fillStyle = pal.priceInk; ctx.fillText(P.text, tx + tw / 2, ty + chipH / 2 + fs * 0.33); ctx.direction = 'rtl';
+        if(P.oldText){ ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.8)'; ctx.shadowBlur = 8; ctx.font = F(700, 38); ctx.fillStyle = '#ffffff'; ctx.textAlign = 'right'; ctx.direction = dirFor(false); const ow = ctx.measureText(P.oldText).width; ctx.fillText(P.oldText, tx - 22, ty + chipH / 2 + 12); ctx.shadowBlur = 0; ctx.strokeStyle = '#ff5a4d'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(tx - 22 - ow - 4, ty + chipH / 2); ctx.lineTo(tx - 18, ty + chipH / 2); ctx.stroke(); ctx.restore(); }
+      }
+    } else if(hero){
+      const after = (hasPrice ? chipH / 2 + (P.oldText ? 50 : 0) : 0) + gap + nameH + 6 + descH + gap;
+      const imgH = Math.max(320, H - after - footerH - bottomMargin - 20);
+      ctx.save(); posterRRect(ctx, 0, 0, W, imgH, [0, 0, 70, 70]); ctx.clip(); posterDrawCover(ctx, img, 0, 0, W, imgH); ctx.restore();
+      drawHeader(30, true);
+      drawBadge(pad + 74, 86, 66, P.discount);
+      let y = imgH + gap;
+      if(hasPrice){ drawChip(imgH - chipH / 2); y = imgH + chipH / 2 + gap; if(P.oldText){ drawOld(imgH + chipH / 2 + 42); y += 50; } }
+      drawNameDesc(y);
+    } else {
+      let y = topStart;
+      if(headerH){ drawHeader(y, false); y += headerH + 6; } else y += 20;
+      const calcImg = ()=> H - y - (nameH + ornH + 6 + descH + gap + (gap - 6) + (hasPrice ? chipH + (P.oldText ? 50 : 0) + gap : 0) + footerH + bottomMargin + 28);
+      const minImg = o.size === 'story' ? 460 : (o.size === 'portrait' ? 380 : 330);
+      let avail = calcImg();
+      // لو المساحة ضيقة نصغّر الخط/الشريحة/الوصف تدريجياً بدل أن تتداخل العناصر
+      while(hasImg && avail < minImg && (nameSize > 52 || chipH > 84 || descLines.length > 1)){
+        if(descLines.length > 1){ ctx.font = F(500, 34); descLines = posterWrap(ctx, item.description || '', cw - 20, 1); descH = 58; }
+        else if(nameSize > 52){ nameSize -= 6; recalcName(); }
+        else { chipH -= 6; }
+        avail = calcImg();
+      }
+      const imgH = hasImg ? Math.max(220, avail) : 0;
+      if(hasImg){
+        ctx.save(); posterRRect(ctx, pad, y, cw, imgH, pal.imgRadius); ctx.clip(); posterDrawCover(ctx, img, pad, y, cw, imgH); ctx.restore();
+        ctx.lineWidth = pal.imgBorder; ctx.strokeStyle = pal.line; posterRRect(ctx, pad, y, cw, imgH, pal.imgRadius); ctx.stroke();
+        if(pal.ornament){ ctx.lineWidth = 1.5; posterRRect(ctx, pad + 14, y + 14, cw - 28, imgH - 28, 6); ctx.stroke(); }
+        drawBadge(pad + 90, y + 90, 74, P.discount);
+        y += imgH + gap;
+      } else y += 20;
+      y = drawNameDesc(y);
+      y += gap - 6;
+      if(hasPrice){
+        if(P.oldText){ drawOld(y + 36); y += 50; }
+        drawChip(y);
+      }
+    }
+    drawFooter();
+    ctx.textAlign = 'start';
+    return;
+  }
+
+  // =====================  عدة أصناف  =====================
+  let y = topStart;
+  if(headerH){ drawHeader(y, false); y += headerH + 10; } else y += 10;
+  if(o.showTitle && o.title && o.title.trim()){
+    const txt = o.title.trim();
+    const fs = posterFit(ctx, txt, cw - 140, o.size === 'story' ? 100 : 64, 36, D);
+    ctx.font = D(fs); const tw = ctx.measureText(txt).width, bh = Math.round(fs * 1.45);
+    ctx.textAlign = 'center';
+    if(pal.titleBg){
+      const bw = Math.min(cw, tw + 120);
+      ctx.fillStyle = pal.titleBg; posterRRect(ctx, W / 2 - bw / 2, y, bw, bh, bh / 2); ctx.fill();
+      ctx.fillStyle = pal.titleInk; ctx.fillText(txt, W / 2, y + bh / 2 + fs * 0.32);
+    } else {
+      ctx.fillStyle = pal.titleInk; ctx.fillText(txt, W / 2, y + bh / 2 + fs * 0.32);
+      ctx.strokeStyle = pal.line; ctx.lineWidth = 2; const ly = y + bh / 2;
+      ctx.beginPath(); ctx.moveTo(pad, ly); ctx.lineTo(Math.max(pad + 20, W / 2 - tw / 2 - 40), ly); ctx.moveTo(Math.min(W - pad - 20, W / 2 + tw / 2 + 40), ly); ctx.lineTo(W - pad, ly); ctx.stroke();
+    }
+    y += bh + 18;
+  }
+  const n = list.length;
+  const clamp = (v, a, b)=> Math.max(a, Math.min(b, v));
+  const gGap = 22;
+  const gridBottom = H - bottomMargin - footerH - 30;
+  const lay = pal.mlayout || 'grid';
+  const drawCell = (item, i, x, cy0, cellW, cellH, big)=>{
+    const rad = 26;
+    // البطاقة
+    ctx.save();
+    if(pal.t !== 'elegant' && pal.t !== 'bold' && !pal.noShadow){ ctx.shadowColor = 'rgba(0,0,0,.14)'; ctx.shadowBlur = 18; ctx.shadowOffsetY = 6; }
+    ctx.fillStyle = pal.cardBg; posterRRect(ctx, x, cy0, cellW, cellH, rad); ctx.fill();
+    ctx.restore();
+    if(pal.cardLine){ ctx.lineWidth = 3; ctx.strokeStyle = pal.cardLine; posterRRect(ctx, x, cy0, cellW, cellH, rad); ctx.stroke(); }
+    const img = o.imgs[i];
+    let showImg = !!o.showImage;
+    const P = o.showPrice ? posterPriceInfo(item, T, true, o.showOld) : { text:'', oldText:'', discount:0 };
+    if(big){
+      const imgW = showImg ? cellW * 0.44 : 0;
+      if(showImg){
+        ctx.save(); posterRRect(ctx, x + cellW - imgW, cy0, imgW, cellH, [0, rad, rad, 0]); ctx.clip();
+        if(img) posterDrawCover(ctx, img, x + cellW - imgW, cy0, imgW, cellH);
+        else { ctx.fillStyle = 'rgba(128,128,128,.18)'; ctx.fillRect(x + cellW - imgW, cy0, imgW, cellH); ctx.font = F(400, Math.round(cellH * 0.45)); ctx.textAlign = 'center'; ctx.fillStyle = pal.cardMuted; ctx.fillText(biz(restaurant.business_type, 'placeholderIcon'), x + cellW - imgW / 2, cy0 + cellH * 0.62); }
+        ctx.restore();
+        const br = clamp(cellH * 0.18, 28, 56); drawBadge(x + cellW - imgW + br + 14, cy0 + br + 14, br, P.discount);
+      }
+      const tx0 = x + 24, tx1 = x + cellW - imgW - 24, wTxt = tx1 - tx0, cx2 = (tx0 + tx1) / 2;
+      let ns = clamp(wTxt / 9, 26, 62);
+      const pillH = P.text ? Math.round(clamp(cellH * 0.26, 44, 90)) : 0;
+      const oh = P.oldText ? 40 : 0;
+      let lines = [];
+      const refit = ()=>{ ctx.font = D(ns); lines = posterWrap(ctx, item.name || '', wTxt, 2); };
+      refit();
+      while(lines.length * ns * 1.22 + 12 + oh + (pillH ? pillH + 8 : 0) > cellH - 28 && ns > 22){ ns -= 2; refit(); }
+      const total = lines.length * ns * 1.22 + 12 + oh + (pillH ? pillH + 8 : 0);
+      let yy = cy0 + (cellH - total) / 2;
+      ctx.fillStyle = pal.cardInk; ctx.textAlign = 'center'; ctx.font = D(ns);
+      lines.forEach((ln, li)=> ctx.fillText(ln, cx2, yy + ns * (0.92 + li * 1.22)));
+      yy += lines.length * ns * 1.22 + 12;
+      if(P.text){
+        if(P.oldText){ const os = 28; ctx.font = F(600, os); ctx.fillStyle = pal.cardMuted; ctx.direction = dirFor(false); const ow = ctx.measureText(P.oldText).width; ctx.fillText(P.oldText, cx2, yy + 28); ctx.strokeStyle = '#d93025'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(cx2 - ow / 2 - 4, yy + 18); ctx.lineTo(cx2 + ow / 2 + 4, yy + 18); ctx.stroke(); ctx.direction = 'rtl'; yy += oh; }
+        const fsz = posterFit(ctx, P.text, wTxt - 40, Math.round(pillH * 0.55), 18, (s2)=> F(800, s2));
+        ctx.font = F(800, fsz); const tw = ctx.measureText(P.text).width; ctx.direction = dirFor(item.pricing_type === 'sizes'); ctx.textAlign = 'center';
+        if(pal.priceStyle === 'text'){ ctx.fillStyle = pal.priceInk; ctx.fillText(P.text, cx2, yy + pillH / 2 + fsz * 0.33); }
+        else { const bw = Math.min(wTxt, tw + 48); ctx.fillStyle = pal.cardPriceBg || pal.priceBg; posterRRect(ctx, cx2 - bw / 2, yy, bw, pillH, pillH / 2); ctx.fill(); ctx.fillStyle = pal.cardPriceInk || pal.priceInk; ctx.fillText(P.text, cx2, yy + pillH / 2 + fsz * 0.33); }
+        ctx.direction = 'rtl';
+      }
+      return;
+    }
+    let ns = clamp(cellW / (showImg ? 10.5 : 8.5), 20, big ? (showImg ? 64 : 76) : (showImg ? 44 : 56));
+    let pillH = P.text ? Math.round(clamp(cellW / 6.2, 44, big ? 96 : 84)) : 0;
+    let nLines = 2;
+    const oldH = ()=> P.oldText ? Math.round(clamp(pillH * 0.5, 16, 28)) + 12 : 0;
+    const need = ()=> 12 + nLines * ns * 1.22 + 8 + (pillH ? pillH + 16 : 8) + oldH();
+    const minImgH = showImg ? cellH * 0.32 : 0;
+    while(need() > cellH - minImgH && (nLines > 1 || ns > 20 || pillH > 40)){
+      if(nLines > 1) nLines = 1; else if(ns > 20) ns -= 2; else pillH -= 4;
+    }
+    if(showImg && need() > cellH - minImgH) showImg = false;
+    if(!showImg && P.oldText && need() > cellH - 12) P.oldText = '';
+    const imgH = showImg ? Math.min(cellH * 0.62, Math.max(minImgH, cellH - need())) : 0;
+    if(showImg){
+      ctx.save(); posterRRect(ctx, x, cy0, cellW, imgH, [rad, rad, 0, 0]); ctx.clip();
+      if(img) posterDrawCover(ctx, img, x, cy0, cellW, imgH);
+      else { ctx.fillStyle = 'rgba(128,128,128,.18)'; ctx.fillRect(x, cy0, cellW, imgH); ctx.font = F(400, Math.round(imgH * 0.4)); ctx.textAlign = 'center'; ctx.fillStyle = pal.cardMuted; ctx.fillText(biz(restaurant.business_type, 'placeholderIcon'), x + cellW / 2, cy0 + imgH * 0.62); }
+      ctx.restore();
+      const br = clamp(Math.min(cellW * 0.12, imgH * 0.3), 24, 62);
+      drawBadge(x + br + 14, cy0 + br + 14, br, P.discount);
+    }
+    // الاسم: يتوسط المساحة بين الصورة والسعر
+    const regionTop = cy0 + imgH + (showImg ? 6 : 0);
+    const pillTop = cy0 + cellH - (pillH ? pillH + 16 : 8);
+    const regionBottom = pillTop - oldH();
+    ctx.font = D(ns); ctx.fillStyle = pal.cardInk; ctx.textAlign = 'center';
+    const lines = posterWrap(ctx, item.name || '', cellW - 32, nLines);
+    const blockH = lines.length * ns * 1.22;
+    const ny = regionTop + Math.max(0, (regionBottom - regionTop - blockH) / 2);
+    lines.forEach((ln, li)=> ctx.fillText(ln, x + cellW / 2, ny + ns * 0.92 + li * ns * 1.22));
+    // السعر
+    if(P.text){
+      const fsz = posterFit(ctx, P.text, cellW - 28 - 36, Math.round(pillH * 0.5), 16, (s2)=> F(800, s2));
+      ctx.font = F(800, fsz); const tw = ctx.measureText(P.text).width;
+      ctx.direction = dirFor(item.pricing_type === 'sizes'); ctx.textAlign = 'center';
+      if(pal.priceStyle === 'text'){
+        ctx.fillStyle = pal.priceInk; ctx.fillText(P.text, x + cellW / 2, pillTop + pillH / 2 + fsz * 0.33);
+      } else {
+        const bw = Math.min(cellW - 28, tw + 36);
+        ctx.fillStyle = pal.cardPriceBg || pal.priceBg; posterRRect(ctx, x + cellW / 2 - bw / 2, pillTop, bw, pillH, pillH / 2); ctx.fill();
+        ctx.fillStyle = pal.cardPriceInk || pal.priceInk; ctx.fillText(P.text, x + cellW / 2, pillTop + pillH / 2 + fsz * 0.33);
+      }
+      ctx.direction = 'rtl';
+      if(P.oldText){
+        const os = oldH() - 12; ctx.font = F(600, os); ctx.fillStyle = pal.cardMuted; ctx.direction = dirFor(false);
+        const ow = ctx.measureText(P.oldText).width, by = pillTop - 10;
+        ctx.fillText(P.oldText, x + cellW / 2, by);
+        ctx.strokeStyle = '#d93025'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x + cellW / 2 - ow / 2 - 4, by - os * 0.3); ctx.lineTo(x + cellW / 2 + ow / 2 + 4, by - os * 0.3); ctx.stroke();
+        ctx.direction = 'rtl';
+      }
+    }
+  };
+  if(lay === 'rows'){
+    const gridH = Math.max(200, gridBottom - y);
+    const gapR = n > 6 ? 10 : (o.size === 'story' ? 20 : 14);
+    const rowH = clamp((gridH - gapR * (n - 1)) / n, 54, o.size === 'story' ? 190 : 150);
+    let ry = y + Math.max(0, (gridH - (n * rowH + gapR * (n - 1))) / 2);
+    list.forEach((item, i)=>{
+      const img = o.imgs[i], showImg = !!o.showImage;
+      const P = o.showPrice ? posterPriceInfo(item, T, true, o.showOld) : { text:'', oldText:'', discount:0 };
+      ctx.save();
+      if(!pal.noShadow){ ctx.shadowColor = 'rgba(0,0,0,.12)'; ctx.shadowBlur = 14; ctx.shadowOffsetY = 5; }
+      ctx.fillStyle = pal.cardBg; posterRRect(ctx, pad, ry, cw, rowH, 22); ctx.fill(); ctx.restore();
+      if(pal.cardLine){ ctx.lineWidth = 2.5; ctx.strokeStyle = pal.cardLine; posterRRect(ctx, pad, ry, cw, rowH, 22); ctx.stroke(); }
+      const ip = 10, th = rowH - ip * 2;
+      let right = W - pad - ip - 6;
+      if(showImg){
+        ctx.save(); posterRRect(ctx, right - th, ry + ip, th, th, 16); ctx.clip();
+        if(img) posterDrawCover(ctx, img, right - th, ry + ip, th, th);
+        else { ctx.fillStyle = 'rgba(128,128,128,.2)'; ctx.fillRect(right - th, ry + ip, th, th); ctx.font = F(400, Math.round(th * 0.5)); ctx.textAlign = 'center'; ctx.fillStyle = pal.cardMuted; ctx.fillText(biz(restaurant.business_type, 'placeholderIcon'), right - th / 2, ry + ip + th * 0.64); }
+        ctx.restore();
+        const br = clamp(th * 0.2, 15, 30); drawBadge(right - th + br + 4, ry + ip + br + 4, br, P.discount);
+        right -= th + 18;
+      } else right -= 14;
+      const leftEdge = pad + 26; let priceW = 0, priceBox = 0;
+      const midY = ry + rowH / 2;
+      if(P.text){
+        const fs0 = clamp(rowH * 0.32, 22, 52);
+        const fs = posterFit(ctx, P.text, cw * 0.34, fs0, 16, (s2)=> F(800, s2));
+        ctx.font = F(800, fs); priceW = ctx.measureText(P.text).width;
+        const isPill = pal.priceStyle !== 'text'; priceBox = priceW + (isPill ? 36 : 0);
+        const cxp = leftEdge + priceBox / 2, shift = P.oldText ? fs * 0.28 : 0;
+        ctx.direction = dirFor(item.pricing_type === 'sizes'); ctx.textAlign = 'center';
+        if(isPill){ const ph = fs * 1.7; ctx.fillStyle = pal.cardPriceBg || pal.priceBg; posterRRect(ctx, cxp - priceBox / 2, midY + shift - ph / 2, priceBox, ph, ph / 2); ctx.fill(); ctx.fillStyle = pal.cardPriceInk || pal.priceInk; }
+        else ctx.fillStyle = pal.priceInk;
+        ctx.fillText(P.text, cxp, midY + shift + fs * 0.33);
+        if(P.oldText){
+          const os = Math.round(clamp(fs * 0.5, 14, 26)); ctx.font = F(600, os); ctx.fillStyle = pal.cardMuted; ctx.direction = dirFor(false);
+          const ow = ctx.measureText(P.oldText).width, oy = midY + shift - (isPill ? fs * 0.85 : fs * 0.7) - 6;
+          ctx.fillText(P.oldText, cxp, oy); ctx.strokeStyle = '#d93025'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(cxp - ow / 2 - 3, oy - os * 0.3); ctx.lineTo(cxp + ow / 2 + 3, oy - os * 0.3); ctx.stroke();
+        }
+        ctx.direction = 'rtl';
+      }
+      const avail = right - (leftEdge + priceBox + 36);
+      let ns = clamp(rowH * 0.34, 22, 50); const nl = rowH >= 112 ? 2 : 1;
+      if(nl === 1) ns = posterFit(ctx, item.name || '', avail, ns, 20, D);
+      ctx.font = D(ns); ctx.fillStyle = pal.cardInk; ctx.textAlign = 'right';
+      const lines = posterWrap(ctx, item.name || '', avail, nl);
+      const blockH = lines.length * ns * 1.22, by0 = midY - blockH / 2 + ns * 0.92;
+      lines.forEach((ln, li)=> ctx.fillText(ln, right, by0 + li * ns * 1.22));
+      if(pal.leader && lines.length === 1 && P.text){
+        const nw = ctx.measureText(lines[0]).width, x1 = right - nw - 16, x2 = leftEdge + priceBox + 16;
+        if(x1 - x2 > 30){ ctx.save(); ctx.setLineDash([1, 11]); ctx.lineCap = 'round'; ctx.lineWidth = 3.5; ctx.strokeStyle = pal.cardMuted; ctx.globalAlpha = .7; ctx.beginPath(); ctx.moveTo(x1, by0 - 5); ctx.lineTo(x2, by0 - 5); ctx.stroke(); ctx.restore(); }
+      }
+      ry += rowH + gapR;
+    });
+  } else if(lay === 'plain'){
+    const gridH = Math.max(200, gridBottom - y);
+    ctx.save(); ctx.fillStyle = pal.cardBg; posterRRect(ctx, pad, y, cw, gridH, 28); ctx.fill(); ctx.restore();
+    if(pal.cardLine){ ctx.lineWidth = 2.5; ctx.strokeStyle = pal.cardLine; posterRRect(ctx, pad, y, cw, gridH, 28); ctx.stroke(); }
+    const cols2 = n > 5 ? 2 : 1, perCol = Math.ceil(n / cols2), ip = 40, colGap = 56;
+    const colW = (cw - 2 * ip - (cols2 - 1) * colGap) / cols2;
+    const rowH = clamp((gridH - 40) / perCol, 54, 130), startY = y + (gridH - perCol * rowH) / 2;
+    list.forEach((item, i)=>{
+      const col = Math.floor(i / perCol), r = i % perCol;
+      const cx0 = W - pad - ip - col * (colW + colGap) - colW, right = cx0 + colW, ry = startY + r * rowH, midY = ry + rowH / 2;
+      const P = o.showPrice ? posterPriceInfo(item, T, true, o.showOld) : { text:'', oldText:'', discount:0 };
+      let pw = 0, fs = 0;
+      if(P.text){
+        fs = posterFit(ctx, P.text, colW * 0.4, Math.round(clamp(rowH * 0.36, 22, 50)), 16, (s2)=> F(800, s2)); ctx.font = F(800, fs); pw = ctx.measureText(P.text).width;
+        ctx.direction = dirFor(item.pricing_type === 'sizes'); ctx.textAlign = 'center'; ctx.fillStyle = pal.priceInk || pal.cardInk;
+        const sh2 = P.oldText ? fs * 0.25 : 0; ctx.fillText(P.text, cx0 + pw / 2, midY + sh2 + fs * 0.33);
+        if(P.oldText){ const os = Math.round(clamp(fs * 0.5, 14, 24)); ctx.font = F(600, os); ctx.fillStyle = pal.cardMuted; ctx.direction = dirFor(false); const ow = ctx.measureText(P.oldText).width, oy = midY + sh2 - fs * 0.62; ctx.fillText(P.oldText, cx0 + pw / 2, oy); ctx.strokeStyle = '#d93025'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(cx0 + pw / 2 - ow / 2 - 3, oy - os * 0.3); ctx.lineTo(cx0 + pw / 2 + ow / 2 + 3, oy - os * 0.3); ctx.stroke(); }
+        ctx.direction = 'rtl';
+      }
+      const avail = colW - pw - 36;
+      let ns = posterFit(ctx, item.name || '', avail, Math.round(clamp(rowH * 0.38, 22, 50)), 18, D);
+      const hasDesc = o.showDesc && item.description && rowH >= 80;
+      ctx.font = D(ns); ctx.fillStyle = pal.cardInk; ctx.textAlign = 'right';
+      const nm = posterWrap(ctx, item.name || '', avail, 1)[0] || '';
+      const by0 = midY + ns * 0.33 - (hasDesc ? ns * 0.42 : 0);
+      ctx.fillText(nm, right, by0);
+      if(hasDesc){ const ds = Math.round(clamp(rowH * 0.2, 16, 26)); ctx.font = F(500, ds); ctx.fillStyle = pal.cardMuted; const dd = posterWrap(ctx, item.description, avail, 1)[0] || ''; ctx.fillText(dd, right, by0 + ds * 1.5); }
+      if(pal.leader && P.text){
+        ctx.font = D(ns); const nw = ctx.measureText(nm).width, x1 = right - nw - 14, x2 = cx0 + pw + 14;
+        if(x1 - x2 > 26){ ctx.save(); ctx.setLineDash([1, 11]); ctx.lineCap = 'round'; ctx.lineWidth = 3.5; ctx.strokeStyle = pal.cardMuted; ctx.globalAlpha = .7; ctx.beginPath(); ctx.moveTo(x1, by0 - 5); ctx.lineTo(x2, by0 - 5); ctx.stroke(); ctx.restore(); }
+      }
+      if(r < perCol - 1){ ctx.save(); ctx.strokeStyle = pal.cardLine || pal.cardMuted; ctx.globalAlpha = .25; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(cx0, ry + rowH); ctx.lineTo(right, ry + rowH); ctx.stroke(); ctx.restore(); }
+    });
+  } else {
+    const cells = [];
+    const gridH = Math.max(200, gridBottom - y);
+    const mkGrid = (arr, cols, top, hMax)=>{
+      const rows = Math.ceil(arr.length / cols), cellW = (cw - gGap * (cols - 1)) / cols;
+      const cellH = Math.min((hMax - gGap * (rows - 1)) / rows, cellW * 1.5);
+      arr.forEach((idx, k)=>{
+        const r = Math.floor(k / cols), c = k % cols, inRow = r === rows - 1 ? arr.length - r * cols : cols;
+        const rowW = inRow * cellW + gGap * (inRow - 1), startX = (W - rowW) / 2;
+        cells.push({ i: idx, x: W - startX - (c + 1) * cellW - c * gGap, y: top + r * (cellH + gGap), w: cellW, h: cellH, big: false });
+      });
+      return rows * cellH + gGap * (rows - 1);
+    };
+    const idxs = list.map((_, k)=> k);
+    if((lay === 'feature' || lay === 'tilesfeature') && n >= 3){
+      const rest = n - 1, cols2 = o.size === 'story' ? (rest <= 4 ? 2 : 3) : wide ? (rest <= 3 ? rest : rest <= 8 ? 4 : 5) : (rest <= 2 ? rest : (rest === 4 ? 2 : 3));
+      const bigH = clamp(gridH * (rest <= 3 ? 0.42 : 0.33), 190, cw * 0.55);
+      const rows2 = Math.ceil(rest / cols2);
+      const usedBefore = cells.length;
+      const smallMax = gridH - bigH - gGap;
+      const smallUsed = mkGrid(idxs.slice(1), cols2, 0, smallMax);
+      const total = bigH + gGap + smallUsed, off = y + Math.max(0, (gridH - total) / 2);
+      cells.forEach(c=> c.y += off + bigH + gGap);
+      cells.unshift({ i: 0, x: pad, y: off, w: cw, h: bigH, big: true });
+    } else {
+      const used = mkGrid(idxs, o.size === 'story' ? (n <= 2 ? 1 : n <= 6 ? 2 : 3) : wide ? (n <= 3 ? n : n <= 8 ? 4 : 5) : (n <= 2 ? n : n === 4 ? 2 : 3), 0, gridH);
+      const off = y + (gridH - used) / 2; cells.forEach(c=> c.y += off);
+    }
+    const drawTile = (item, i, x, cy0, cellW, cellH, big)=>{
+      const img = o.imgs[i], showImg = !!o.showImage, rad = 26;
+      const P = o.showPrice ? posterPriceInfo(item, T, true, o.showOld) : { text:'', oldText:'', discount:0 };
+      ctx.save(); posterRRect(ctx, x, cy0, cellW, cellH, rad); ctx.clip();
+      if(showImg && img) posterDrawCover(ctx, img, x, cy0, cellW, cellH);
+      else { ctx.fillStyle = pal.cardBg; ctx.fillRect(x, cy0, cellW, cellH); if(showImg){ ctx.font = F(400, Math.round(cellH * 0.34)); ctx.textAlign = 'center'; ctx.fillStyle = pal.cardMuted; ctx.fillText(biz(restaurant.business_type, 'placeholderIcon'), x + cellW / 2, cy0 + cellH * 0.45); } }
+      const gr = ctx.createLinearGradient(0, cy0 + cellH * 0.3, 0, cy0 + cellH); gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(0,0,0,.88)'); ctx.fillStyle = gr; ctx.fillRect(x, cy0, cellW, cellH);
+      ctx.restore();
+      if(pal.cardLine){ ctx.lineWidth = 3; ctx.strokeStyle = pal.cardLine; posterRRect(ctx, x, cy0, cellW, cellH, rad); ctx.stroke(); }
+      const br = clamp(Math.min(cellW * 0.11, cellH * 0.14), 22, 56); drawBadge(x + br + 14, cy0 + br + 14, br, P.discount);
+      let ns = clamp(cellW / (big ? 12 : 10.5), 20, big ? 60 : 42);
+      let pillH = P.text ? Math.round(clamp(cellW / 6.5, 40, big ? 84 : 72)) : 0;
+      let nL = 2; const oldH = ()=> P.oldText ? 30 : 0;
+      const need = ()=> nL * ns * 1.2 + 8 + oldH() + (pillH ? pillH + 22 : 14);
+      while(need() > cellH * 0.72 && (nL > 1 || ns > 18 || pillH > 34)){ if(nL > 1) nL = 1; else if(ns > 18) ns -= 2; else pillH -= 4; }
+      const pillTop = cy0 + cellH - (pillH ? pillH + 14 : 12);
+      ctx.font = D(ns); ctx.fillStyle = '#ffffff'; ctx.textAlign = 'center';
+      const lines = posterWrap(ctx, item.name || '', cellW - 28, nL);
+      const nyEnd = pillTop - 8 - oldH();
+      lines.forEach((ln, li)=> ctx.fillText(ln, x + cellW / 2, nyEnd - (lines.length - 1 - li) * ns * 1.2 - ns * 0.2));
+      if(P.text){
+        if(P.oldText){ const os = 22; ctx.font = F(600, os); ctx.fillStyle = 'rgba(255,255,255,.8)'; ctx.direction = dirFor(false); const ow = ctx.measureText(P.oldText).width, by = pillTop - 6; ctx.fillText(P.oldText, x + cellW / 2, by); ctx.strokeStyle = '#ff6b5e'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(x + cellW / 2 - ow / 2 - 3, by - 7); ctx.lineTo(x + cellW / 2 + ow / 2 + 3, by - 7); ctx.stroke(); ctx.direction = 'rtl'; }
+        const fsz = posterFit(ctx, P.text, cellW - 28 - 30, Math.round(pillH * 0.52), 14, (s2)=> F(800, s2));
+        ctx.font = F(800, fsz); const tw = ctx.measureText(P.text).width, bw = Math.min(cellW - 24, tw + 32);
+        ctx.direction = dirFor(item.pricing_type === 'sizes'); ctx.textAlign = 'center';
+        ctx.fillStyle = pal.priceBg || pal.line; posterRRect(ctx, x + cellW / 2 - bw / 2, pillTop, bw, pillH, pillH / 2); ctx.fill();
+        ctx.fillStyle = pal.priceInk; ctx.fillText(P.text, x + cellW / 2, pillTop + pillH / 2 + fsz * 0.33); ctx.direction = 'rtl';
+      }
+    };
+    const drawSnap = (item, i, x, cy0, cellW, cellH)=>{
+      const img = o.imgs[i], showImg = !!o.showImage;
+      const P = o.showPrice ? posterPriceInfo(item, T, true, false) : { text:'', oldText:'', discount:0 };
+      const ang = (((i * 37) % 7) - 3) * 0.012, ip = Math.max(10, cellW * 0.05);
+      ctx.save(); ctx.translate(x + cellW / 2, cy0 + cellH / 2); ctx.rotate(ang);
+      const fw = cellW * 0.96, fh = cellH * 0.96;
+      ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.35)'; ctx.shadowBlur = 18; ctx.shadowOffsetY = 8; ctx.fillStyle = pal.cardBg; posterRRect(ctx, -fw / 2, -fh / 2, fw, fh, 8); ctx.fill(); ctx.restore();
+      let ns = clamp(cellW / 10.5, 18, 36), nL = 2;
+      const capH = ()=> nL * ns * 1.2 + 16;
+      while(capH() > fh * 0.4 && (nL > 1 || ns > 16)){ if(nL > 1) nL = 1; else ns -= 2; }
+      const imgH = showImg ? fh - ip * 2 - capH() : 0;
+      if(showImg){
+        ctx.save(); posterRRect(ctx, -fw / 2 + ip, -fh / 2 + ip, fw - 2 * ip, imgH, 4); ctx.clip();
+        if(img) posterDrawCover(ctx, img, -fw / 2 + ip, -fh / 2 + ip, fw - 2 * ip, imgH);
+        else { ctx.fillStyle = 'rgba(128,128,128,.2)'; ctx.fillRect(-fw / 2 + ip, -fh / 2 + ip, fw - 2 * ip, imgH); }
+        ctx.restore();
+      }
+      ctx.font = D(ns); ctx.fillStyle = pal.cardInk; ctx.textAlign = 'center';
+      const lines = posterWrap(ctx, item.name || '', fw - 2 * ip - 6, nL), top0 = showImg ? -fh / 2 + ip + imgH + 8 : -lines.length * ns * 0.6;
+      lines.forEach((ln, li)=> ctx.fillText(ln, 0, top0 + ns * (0.92 + li * 1.2)));
+      if(P.text){
+        const rb = clamp(cellW * 0.17, 34, 66);
+        ctx.save(); ctx.translate(fw / 2 - rb * 0.55, -fh / 2 + rb * 0.6); ctx.rotate(0.14);
+        ctx.shadowColor = 'rgba(0,0,0,.3)'; ctx.shadowBlur = 8; ctx.fillStyle = pal.priceBg || pal.line; ctx.beginPath(); ctx.arc(0, 0, rb, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
+        ctx.lineWidth = 3; ctx.strokeStyle = '#ffffff'; ctx.beginPath(); ctx.arc(0, 0, rb - 2, 0, Math.PI * 2); ctx.stroke();
+        const fz = posterFit(ctx, P.text, rb * 1.6, Math.round(rb * 0.46), 11, (s2)=> F(800, s2));
+        ctx.font = F(800, fz); ctx.direction = dirFor(item.pricing_type === 'sizes'); ctx.fillStyle = pal.priceInk; ctx.fillText(P.text, 0, fz * 0.33); ctx.direction = 'rtl'; ctx.restore();
+      }
+      ctx.restore();
+    };
+    cells.forEach(c=> lay === 'scatter' ? drawSnap(list[c.i], c.i, c.x, c.y, c.w, c.h) : (lay === 'tiles' || lay === 'tilesfeature') ? drawTile(list[c.i], c.i, c.x, c.y, c.w, c.h, c.big) : drawCell(list[c.i], c.i, c.x, c.y, c.w, c.h, c.big));
+  }
+  drawFooter();
+  ctx.textAlign = 'start';
+}
+
+// إعلان المنيو: نشر بوستر للعملاء عند فتح المنيو
+function promoStoragePath(url){ const m = String(url || '').split('/menu-images/')[1]; return m ? decodeURIComponent(m.split('?')[0]) : null; }
+async function clearMenuPromos(){
+  const { data } = await sb.from('menu_promos').select('id,image_url').eq('restaurant_id', restaurant.id);
+  const rows = data || [];
+  if(!rows.length) return;
+  const { error } = await sb.from('menu_promos').delete().eq('restaurant_id', restaurant.id);
+  if(error) throw error;
+  const paths = rows.map(r=> promoStoragePath(r.image_url)).filter(Boolean);
+  if(paths.length){ try{ await sb.storage.from('menu-images').remove(paths); }catch(e){} }
+}
+async function openPromoManager(){
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.innerHTML = `<div class="modal"><h3>📣 إعلان المنيو</h3><div id="promoMgrBody" class="orders-empty">جارِ التحميل...</div><div class="modal-actions"><button class="btn-cancel" id="promoMgrClose">إغلاق</button></div></div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', (e)=>{ if(e.target === overlay) overlay.remove(); });
+  overlay.querySelector('#promoMgrClose').addEventListener('click', ()=> overlay.remove());
+  const body = overlay.querySelector('#promoMgrBody');
+  const { data, error } = await sb.from('menu_promos').select('*').eq('restaurant_id', restaurant.id).order('created_at', { ascending:false });
+  if(error){ body.textContent = 'ميزة إعلان المنيو غير مفعّلة بعد في قاعدة البيانات.'; return; }
+  if(!data.length){ body.innerHTML = 'لا يوجد إعلان منشور حاليًا.<br>صمّم بوستر من «🖼️ بوستر» ثم اضغط «📣 نشر في المنيو».'; return; }
+  const pr = data[0], it = pr.item_id ? items.find(i=> i.id === pr.item_id) : null;
+  const fmt = (d)=> new Date(d).toLocaleDateString('ar-EG', { day:'numeric', month:'long', year:'numeric' });
+  body.className = '';
+  body.innerHTML = `
+    <img src="${escapeHtml(pr.image_url)}" alt="" style="width:100%; max-height:48vh; object-fit:contain; border-radius:12px; background:#eee;">
+    <div style="font-size:12.5px; margin:10px 0; color:var(--stone); line-height:1.8;">
+      ${it ? `🎯 يفتح الصنف: <b>${escapeHtml(it.name)}</b><br>` : '🎯 زر «تصفّح المنيو»<br>'}
+      ${pr.ends_at ? `⏰ ينتهي: ${fmt(pr.ends_at)}` : '⏰ بدون تاريخ انتهاء'}${pr.starts_at ? ` — يبدأ: ${fmt(pr.starts_at)}` : ''}
+    </div>
+    <div style="font-size:12px; color:var(--stone); margin-bottom:10px;">يظهر لكل عميل مرة واحدة في الجلسة عند فتح المنيو.</div>
+    <button type="button" class="btn-cancel" id="promoMgrDel" style="color:var(--danger);">🗑️ إيقاف الإعلان وحذفه</button>`;
+  body.querySelector('#promoMgrDel').addEventListener('click', async (e)=>{
+    if(!confirm('إيقاف إعلان المنيو وحذفه؟')) return;
+    e.target.disabled = true;
+    try{ await clearMenuPromos(); toast('تم إيقاف الإعلان'); overlay.remove(); }catch(err){ toast('تعذّر الحذف'); e.target.disabled = false; }
+  });
+}
+// تمييز الأصناف: شارات وأشكال لافتة للانتباه في المنيو العام
+const HL_BADGES = { new:['جديد', 'New', '🆕'], best:['الأكثر طلبًا', 'Bestseller', '🔥'], offer:['عرض خاص', 'Special offer', '🏷️'], hot:['حار', 'Spicy', '🌶️'], chef:['اختيار الشيف', "Chef's pick", '👨‍🍳'], fav:['مفضّل الزبائن', 'Customer favorite', '❤️'], limited:['كمية محدودة', 'Limited', '⏳'] };
+const HL_STYLES = { glow:'إطار مضيء', gold:'إطار ذهبي', soft:'خلفية مميزة بشريط جانبي', pulse:'نبض لافت للنظر' };
+function hlFieldsHtml(idB, idS, badge, style){
+  return `<div style="display:flex; gap:8px; flex-wrap:wrap;">
+    <label style="flex:1 1 150px;">الشارة <select id="${idB}" style="width:100%;"><option value="">بدون شارة</option>${Object.entries(HL_BADGES).map(([k, v])=> `<option value="${k}" ${badge === k ? 'selected' : ''}>${v[2]} ${v[0]}</option>`).join('')}</select></label>
+    <label style="flex:1 1 150px;">الشكل <select id="${idS}" style="width:100%;"><option value="">عادي</option>${Object.entries(HL_STYLES).map(([k, v])=> `<option value="${k}" ${style === k ? 'selected' : ''}>${v}</option>`).join('')}</select></label>
+  </div>`;
+}
+// حفظ اختيارات شاشات لوحة التحكم (لكل حساب) في المتصفح
+function dashPrefGet(k, fallback){
+  try{ const o = JSON.parse(localStorage.getItem('dashPrefs_v1_' + (restaurant && restaurant.id ? restaurant.id : 'x')) || '{}') || {}; return o[k] !== undefined ? o[k] : fallback; }catch(e){ return fallback; }
+}
+function dashPrefSet(k, v){
+  try{ const key = 'dashPrefs_v1_' + (restaurant && restaurant.id ? restaurant.id : 'x'); const o = JSON.parse(localStorage.getItem(key) || '{}') || {}; o[k] = v; localStorage.setItem(key, JSON.stringify(o)); }catch(e){}
+}
+function posterZip(files){
+  const te = new TextEncoder();
+  const tbl = new Uint32Array(256);
+  for(let n = 0; n < 256; n++){ let c = n; for(let k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1); tbl[n] = c >>> 0; }
+  const crc = (u8)=>{ let c = 0xFFFFFFFF; for(let i = 0; i < u8.length; i++) c = tbl[(c ^ u8[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; };
+  const d = new Date(), dt = ((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate(), tm = (d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1);
+  const parts = [], central = []; let off = 0;
+  files.forEach(f=>{
+    const name = te.encode(f.name), c = crc(f.data), sz = f.data.length;
+    const lh = new DataView(new ArrayBuffer(30));
+    lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint16(6, 0x0800, true); lh.setUint16(8, 0, true);
+    lh.setUint16(10, tm, true); lh.setUint16(12, dt, true); lh.setUint32(14, c, true); lh.setUint32(18, sz, true); lh.setUint32(22, sz, true);
+    lh.setUint16(26, name.length, true); lh.setUint16(28, 0, true);
+    parts.push(new Uint8Array(lh.buffer), name, f.data);
+    const ch = new DataView(new ArrayBuffer(46));
+    ch.setUint32(0, 0x02014b50, true); ch.setUint16(4, 20, true); ch.setUint16(6, 20, true); ch.setUint16(8, 0x0800, true); ch.setUint16(10, 0, true);
+    ch.setUint16(12, tm, true); ch.setUint16(14, dt, true); ch.setUint32(16, c, true); ch.setUint32(20, sz, true); ch.setUint32(24, sz, true);
+    ch.setUint16(28, name.length, true); ch.setUint32(42, off, true);
+    central.push(new Uint8Array(ch.buffer), name);
+    off += 30 + name.length + sz;
+  });
+  const cdSize = central.reduce((a, b)=> a + b.length, 0);
+  const end = new DataView(new ArrayBuffer(22));
+  end.setUint32(0, 0x06054b50, true); end.setUint16(8, files.length, true); end.setUint16(10, files.length, true); end.setUint32(12, cdSize, true); end.setUint32(16, off, true);
+  return new Blob([...parts, ...central, new Uint8Array(end.buffer)], { type:'application/zip' });
+}
+function posterDominantColor(img){
+  const c = document.createElement('canvas'); c.width = c.height = 48;
+  const x = c.getContext('2d'); x.drawImage(img, 0, 0, 48, 48);
+  const d = x.getImageData(0, 0, 48, 48).data, buckets = {};
+  for(let i = 0; i < d.length; i += 4){
+    const r = d[i], g = d[i + 1], b = d[i + 2], a = d[i + 3];
+    if(a < 128) continue;
+    const mx = Math.max(r, g, b), mn = Math.min(r, g, b), sat = mx ? (mx - mn) / mx : 0;
+    if(sat < 0.28 || mx < 50 || (mx > 245 && sat < 0.4)) continue;
+    const key = (r >> 5) + ',' + (g >> 5) + ',' + (b >> 5);
+    const o = buckets[key] || (buckets[key] = { n:0, r:0, g:0, b:0, w:0 });
+    o.n++; o.r += r; o.g += g; o.b += b; o.w += sat;
+  }
+  let best = null;
+  Object.values(buckets).forEach(o=>{ if(!best || o.w > best.w) best = o; });
+  if(!best) return null;
+  const h = (v)=> Math.round(v / best.n).toString(16).padStart(2, '0');
+  return '#' + h(best.r) + h(best.g) + h(best.b);
+}
+function openItemPosterModal(item){ openPosterModal([item]); }
+function openPosterModal(listIn){
+  let list = (listIn || []).filter(Boolean);
+  if(!list.length) return;
+  if(list.length > POSTER_MAX_ITEMS){ list = list.slice(0, POSTER_MAX_ITEMS); toast(`البوستر يتسع لـ ${POSTER_MAX_ITEMS} أصناف كحد أقصى — تم اختيار أول ${POSTER_MAX_ITEMS}`); }
+  const multi = list.length > 1;
+  let prefs = {};
+  const prefsKey = POSTER_PREFS_KEY + '_' + (restaurant && restaurant.id ? restaurant.id : 'x');
+  try{ prefs = JSON.parse(localStorage.getItem(prefsKey) || localStorage.getItem(POSTER_PREFS_KEY) || '{}') || {}; }catch(e){}
+  const P = Object.assign({ template:'classic', size:'square', theme:'light', font:'auto', digits:'en', currency:'asis',
+    showImage:true, showPrice:true, showOld:true, showDesc:false, showLogo:true, showName:true, showAddress:true, showPhone:true, showQr:true, showCredit:true, creditLang:'ar', creditStyle:'dark', creditPos:'bc', hdrStyle:'row', hdrPos:'right', qrSize:'m', qrPos:'l',
+    showTitle:true, title:'عروض الأسبوع', cutout:false, waPhone:'', group:'', favs:[], accents:{} }, prefs);
+  if(!POSTER_TEMPLATES[P.template]) P.template = 'classic';
+  if(!P.accents || typeof P.accents !== 'object') P.accents = {};
+  let tpl = P.template;
+  let favs = Array.isArray(P.favs) ? P.favs.filter(t=> POSTER_TEMPLATES[t]) : [];
+  const inGroup = (t, g)=> g === 'all' || (g === 'fav' ? favs.includes(t) : (POSTER_TPL_CATS[t] || 'rcso').includes(g));
+  let grp = P.group || (restaurant.business_type === 'store' ? 's' : 'r');
+  if(!POSTER_GROUPS.some(g=> g[0] === grp)) grp = 'all';
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  const chk = (id, label, on, hide)=> `<label style="display:${hide ? 'none' : 'flex'};gap:8px;align-items:center;margin:6px 0;"><input type="checkbox" id="${id}" ${on ? 'checked' : ''}> ${label}</label>`;
+  const sel = (id, label, opts, val)=> `<label style="display:block;margin:8px 0;">${label}<select id="${id}" style="width:100%;margin-top:4px;">${opts.map(([v, t])=> `<option value="${v}" ${v === val ? 'selected' : ''}>${t}</option>`).join('')}</select></label>`;
+  const tplChips = Object.entries(POSTER_TEMPLATES).map(([k, t])=> `<button type="button" class="pst-tpl" data-tpl="${k}" style="flex:0 0 calc(25% - 6px); min-width:0; height:54px; border-radius:12px; border:3px solid transparent; background:${t.bg}; color:${t.fg}; font-family:inherit; font-weight:800; font-size:13px; cursor:pointer; box-shadow:0 0 0 1px rgba(0,0,0,.2);">${t.name}</button>`).join('');
+  overlay.innerHTML = `
+    <div class="modal" style="width:min(940px,96vw); max-width:96vw;">
+      <h3>🖼️ ${multi ? `بوستر تسويقي — ${list.length} أصناف` : `بوستر تسويقي — ${escapeHtml(list[0].name)}`}</h3>
+      <div style="display:flex; flex-wrap:wrap; gap:18px; align-items:flex-start;">
+        <div style="flex:1 1 300px; min-width:0; text-align:center;">
+          <canvas id="posterCanvas" style="width:100%; max-width:420px; height:auto; border-radius:12px; box-shadow:0 6px 24px rgba(0,0,0,.25); background:#eee;"></canvas>
+          <div id="posterStatus" style="font-size:12px; color:var(--stone); margin-top:6px;">جارِ التجهيز...</div>
+          <div style="font-size:12px; margin-top:4px;"><span style="color:var(--stone);">✓ اختياراتك تُحفظ تلقائياً لهذا الحساب</span> · <button type="button" id="pstReset" style="background:none; border:none; padding:0; font:inherit; font-size:12px; color:var(--ember); text-decoration:underline; cursor:pointer;">↺ استرجاع الافتراضي</button></div>
+        </div>
+        <div style="flex:1 1 270px; min-width:0;">
+          <div style="font-weight:800; margin-bottom:6px;">القالب</div>
+          <div id="pstGrpRow" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px;">${POSTER_GROUPS.map(g=> `<button type="button" class="pst-grp" data-g="${g[0]}" style="padding:5px 11px; border-radius:999px; border:1.5px solid var(--ink); background:transparent; color:inherit; font-family:inherit; font-size:12.5px; font-weight:800; cursor:pointer;">${g[1]}</button>`).join('')}<button type="button" id="pstRandom" title="اختيار قالب مختلف بشكل عشوائي" style="padding:5px 11px; border-radius:999px; border:1.5px solid var(--ember); background:var(--ember); color:#fff; font-family:inherit; font-size:12.5px; font-weight:800; cursor:pointer;">🎲 عشوائي</button></div>
+          <div id="pstTplRow" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:6px;">${tplChips}</div>
+          <div style="margin-bottom:10px;"><button type="button" id="pstFav" style="background:none; border:none; padding:0; font:inherit; font-size:12.5px; font-weight:800; color:var(--ember); cursor:pointer; text-decoration:underline;"></button></div>
+          <div id="pstTitleWrap" style="${multi ? '' : 'display:none;'}">
+            ${chk('pstShowTitle', 'عنوان البوستر', P.showTitle)}
+            <input type="text" id="pstTitle" value="${escapeHtml(P.title || '')}" maxlength="40" placeholder="مثال: عروض الأسبوع" style="width:100%; margin-bottom:8px;">
+          </div>
+          <div style="font-weight:800; margin-bottom:4px;">البيانات المضافة</div>
+          ${chk('pstImage', multi ? 'صور الأصناف' : 'صورة ' + biz(restaurant.business_type, 'itemDef'), P.showImage)}
+          ${chk('pstPrice', 'السعر', P.showPrice)}
+          ${chk('pstOld', 'السعر قبل الخصم ونسبة الخصم (إن وُجد)', P.showOld)}
+          ${chk('pstDesc', 'الوصف', P.showDesc, multi)}
+          ${chk('pstLogo', 'لوجو المحل', P.showLogo)}
+          ${chk('pstName', 'اسم المحل', P.showName)}
+          ${chk('pstAddr', 'العنوان', P.showAddress)}
+          ${chk('pstPhone', 'رقم التليفون', P.showPhone)}
+          ${chk('pstQr', 'رمز QR للمنيو الإلكتروني', P.showQr)}
+          ${sel('pstQrSize', 'حجم رمز QR', [['s','صغير'],['m','متوسط'],['l','كبير'],['xl','كبير جداً']], P.qrSize)}
+          ${sel('pstQrPos', 'مكان رمز QR', [['l','أسفل — يسار'],['r','أسفل — يمين'],['c','أسفل — المنتصف (العنوان تحته)']], P.qrPos)}
+          ${chk('pstCredit', 'علامة «تصميم بواسطة M@g Menu»', P.showCredit !== false)}
+          ${sel('pstCrLang', 'لغة العلامة', [['ar','عربي: تصميم بواسطة منيو m@g'],['en','English: Designed by M@g Menu']], P.creditLang)}
+          ${sel('pstCrStyle', 'شكل العلامة', [['dark','داكن شفاف'],['light','أبيض'],['accent','بلون القالب'],['outline','إطار فقط'],['plain','نص فقط']], P.creditStyle)}
+          ${sel('pstCrPos', 'مكان العلامة', [['bc','أسفل — المنتصف'],['br','أسفل — يمين'],['bl','أسفل — يسار'],['sr','جانب أيمن (عمودي)'],['sl','جانب أيسر (عمودي)']], P.creditPos)}
+          ${sel('pstHdrStyle', 'شكل لوجو المحل واسمه', [['row','عادي'],['pill','داخل شريط أبيض'],['ring','لوجو بإطار مزدوج'],['lined','بخطوط جانبية (منتصف)']], P.hdrStyle)}
+          ${sel('pstHdrPos', 'مكان لوجو المحل واسمه', [['right','يمين'],['center','منتصف'],['left','يسار']], P.hdrPos)}
+          ${chk('pstOffer', '⏰ مدة العرض على البوستر', false)}
+          <div id="pstOfferWrap" style="display:none; gap:8px; margin:0 0 8px; flex-wrap:wrap; font-size:12.5px;">
+            <label style="flex:1 1 120px;">من <input type="date" id="pstOfferStart" style="width:100%;"></label>
+            <label style="flex:1 1 120px;">إلى <input type="date" id="pstOfferEnd" style="width:100%;"></label>
+          </div>
+          ${chk('pstCutout', 'إزالة خلفية الصورة (للخلفيات البيضاء / الموحّدة)', P.cutout)}
+          ${sel('pstSize', 'المقاس', Object.entries(POSTER_SIZES).map(([k, v])=> [k, v[2]]), P.size)}
+          ${sel('pstTheme', 'الخلفية (للقالبين الكلاسيك والعصري)', [['light', 'فاتحة'], ['dark', 'داكنة']], P.theme)}
+          ${sel('pstFont', 'الخط', [['auto', 'حسب القالب'], ['Tajawal', 'تجوال'], ['Cairo', 'القاهرة'], ['Almarai', 'المراعي'], ['Amiri', 'أميري'], ['Changa', 'شانجا']], P.font)}
+          ${sel('pstDigits', 'الأرقام', [['en', 'إنجليزي (1 2 3)'], ['ar', 'عربي (١ ٢ ٣)']], P.digits)}
+          ${sel('pstCur', 'العملة', [['asis', 'كما في الإعدادات'], ['short', 'عربي مختصر (ج.م)'], ['full', 'عربي كامل (جنيه)']], P.currency)}
+          <label style="display:flex;gap:8px;align-items:center;margin:8px 0;">لون الهوية <input type="color" id="pstColor" value="${P.accents[tpl] || POSTER_TEMPLATES[tpl].accent}" style="width:44px;height:30px;padding:0;border:none;"> <button type="button" id="pstColorLogo" style="background:none; border:none; padding:0; font:inherit; font-size:12px; font-weight:800; color:var(--ember); text-decoration:underline; cursor:pointer;">🎨 من لوجو المحل</button></label>
+        </div>
+      </div>
+      <div style="margin-top:10px; font-size:12.5px; display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+        <select id="pstStyleSel" style="flex:1 1 160px; min-width:0;"></select>
+        <button type="button" class="btn-cancel" id="pstStyleSave" style="padding:6px 10px;">💾 حفظ كستايل</button>
+        <button type="button" class="btn-cancel" id="pstStyleDel" style="padding:6px 10px;">🗑️ حذف</button>
+      </div>
+      <div style="margin-top:10px; font-size:12.5px;">
+        <input type="text" id="pstWaPhone" inputmode="tel" value="${escapeHtml(P.waPhone || '')}" placeholder="رقم واتساب لإرسال البوستر (اختياري) — مثال: 201012345678" style="width:100%;">
+      </div>
+      <div class="modal-actions">
+        <button class="btn-confirm" id="pstDownload">⬇️ تحميل الصورة</button>
+        <button class="btn-confirm" id="pstZip" style="background:#6b4eff;">📦 كل المقاسات (ZIP)</button>
+        <button class="btn-confirm" id="pstPublish" style="background:#d9480f;">📣 نشر في المنيو</button>
+        <button class="btn-confirm" id="pstShare" style="background:#25D366;">📤 مشاركة</button>
+        <button class="btn-confirm" id="pstWa" style="background:#128C7E;">💬 واتساب</button>
+        <button class="btn-cancel" id="pstClose">إغلاق</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', (e)=>{ if(e.target === overlay) overlay.remove(); });
+  const $ = (id)=> overlay.querySelector(id);
+  $('#pstClose').addEventListener('click', ()=> overlay.remove());
+  $('#pstReset').addEventListener('click', ()=>{ try{ localStorage.removeItem(prefsKey); localStorage.removeItem(POSTER_PREFS_KEY); }catch(e){} overlay.remove(); openPosterModal(list); toast('↺ رجعت الإعدادات الافتراضية'); });
+  const canvas = $('#posterCanvas'), status = $('#posterStatus');
+  const imgCache = new Map();
+  const getImg = async (url)=>{ if(!url) return null; if(!imgCache.has(url)) imgCache.set(url, await posterLoadImage(url)); return imgCache.get(url); };
+  let qrTried = false, qrImg = null, drawing = false, again = false, lastAssets = null;
+  const menuLink = `${location.origin}${location.pathname}?r=${encodeURIComponent(restaurant.slug || '')}`;
+  const applyGroup = ()=>{
+    overlay.querySelectorAll('.pst-grp').forEach(b=>{ const on = b.dataset.g === grp; b.style.background = on ? 'var(--ink)' : 'transparent'; b.style.color = on ? 'var(--paper)' : 'inherit'; });
+    const row = $('#pstTplRow');
+    const chips = [...row.querySelectorAll('.pst-tpl')];
+    chips.forEach((b, k)=>{ if(b.dataset.i === undefined){ b.dataset.i = k; b.dataset.name = b.textContent; } });
+    chips.sort((a, b)=> ((favs.includes(a.dataset.tpl) ? 0 : 1000) + Number(a.dataset.i)) - ((favs.includes(b.dataset.tpl) ? 0 : 1000) + Number(b.dataset.i))).forEach(b=> row.appendChild(b));
+    chips.forEach(b=>{ b.textContent = (favs.includes(b.dataset.tpl) ? '★ ' : '') + b.dataset.name; b.style.display = (inGroup(b.dataset.tpl, grp) || b.dataset.tpl === tpl) ? '' : 'none'; });
+    const fb = $('#pstFav'); if(fb) fb.textContent = favs.includes(tpl) ? '★ إزالة هذا القالب من المفضلة' : '☆ أضف هذا القالب للمفضلة';
+  };
+  const markTpl = ()=>{ applyGroup();
+    overlay.querySelectorAll('.pst-tpl').forEach(b=>{ b.style.borderColor = b.dataset.tpl === tpl ? '#1858C9' : 'transparent'; b.style.transform = b.dataset.tpl === tpl ? 'scale(1.04)' : ''; });
+    $('#pstTheme').disabled = (tpl === 'bold' || tpl === 'elegant' || !!POSTER_TEMPLATES[tpl].fixed);
+  };
+  const readOpts = ()=> ({
+    template:tpl, size:$('#pstSize').value, theme:$('#pstTheme').value, accent:$('#pstColor').value, font:$('#pstFont').value, digits:$('#pstDigits').value, currency:$('#pstCur').value,
+    showImage:$('#pstImage').checked, showPrice:$('#pstPrice').checked, showOld:$('#pstOld').checked, showDesc:$('#pstDesc').checked,
+    showLogo:$('#pstLogo').checked, showName:$('#pstName').checked, showAddress:$('#pstAddr').checked, showPhone:$('#pstPhone').checked, group:grp, favs, showQr:$('#pstQr').checked, showCredit:userCredit, creditLang:$('#pstCrLang').value, creditStyle:$('#pstCrStyle').value, creditPos:$('#pstCrPos').value, hdrStyle:$('#pstHdrStyle').value, hdrPos:$('#pstHdrPos').value, qrSize:$('#pstQrSize').value, qrPos:$('#pstQrPos').value, showOffer:$('#pstOffer').checked, offerStart:$('#pstOfferStart').value, offerEnd:$('#pstOfferEnd').value, cutout:$('#pstCutout').checked,
+    showTitle:$('#pstShowTitle').checked, title:$('#pstTitle').value, waPhone:$('#pstWaPhone').value
+  });
+  let userCredit = P.showCredit !== false;
+  const syncCredit = ()=>{
+    const cb = $('#pstCredit'); if(!cb) return;
+    const forced = $('#pstQr').checked || $('#pstLogo').checked;
+    cb.disabled = forced; cb.checked = forced ? true : userCredit;
+    cb.parentElement.title = forced ? 'العلامة إجبارية طالما رمز QR أو لوجو المحل مفعّل' : '';
+  };
+  $('#pstCredit').addEventListener('change', ()=>{ if(!$('#pstCredit').disabled) userCredit = $('#pstCredit').checked; });
+  ['#pstQr', '#pstLogo'].forEach(id=> $(id).addEventListener('change', syncCredit));
+  syncCredit();
+  const draw = async ()=>{
+    if(drawing){ again = true; return; }
+    drawing = true;
+    try{
+      const o = readOpts();
+      $('#pstOfferWrap').style.display = o.showOffer ? 'flex' : 'none';
+      P.accents[tpl] = o.accent;
+      try{ localStorage.setItem(prefsKey, JSON.stringify(Object.assign({}, o, { accents:P.accents, showOffer:false, offerStart:'', offerEnd:'' }))); }catch(e){}
+      const pal0 = posterPalette(o), body = o.font === 'auto' ? 'Tajawal' : o.font, disp = o.font === 'auto' ? pal0.disp : o.font;
+      try{ await Promise.all([...new Set([body, disp, 'Tajawal'])].map(f=> document.fonts.load(`800 40px "${f}"`))); await document.fonts.ready; }catch(e){}
+      let imgs = await Promise.all(list.map(it=> o.showImage ? getImg(it.image_url) : null));
+      let cutFail = 0;
+      if(o.showImage && o.cutout){
+        imgs = imgs.map((im, i)=>{
+          if(!im) return im;
+          const key = 'cut:' + list[i].image_url;
+          if(!imgCache.has(key)) imgCache.set(key, posterCutout(im));
+          const cut = imgCache.get(key);
+          if(!cut){ cutFail++; return im; }
+          return cut;
+        });
+      }
+      const logoImg = (o.showLogo && restaurant.logo_url) ? await getImg(restaurant.logo_url) : null;
+      if(o.showQr && restaurant.slug && !qrTried){ qrTried = true; status.textContent = 'جارِ إنشاء رمز QR...'; qrImg = await posterMakeQr(menuLink); }
+      lastAssets = { imgs, logoImg, qrImg: (o.showQr && restaurant.slug) ? qrImg : null };
+      await renderPoster(canvas, list, Object.assign({}, o, lastAssets));
+      const notes = [];
+      if(o.showImage){ const miss = list.filter((it, i)=> it.image_url && !imgs[i]).length; if(miss) notes.push(multi ? `تعذّر تحميل ${miss} صورة` : 'تعذّر تحميل صورة الصنف'); }
+      if(cutFail) notes.push(multi ? `تعذّرت إزالة الخلفية من ${cutFail} صورة (الخلفية غير موحّدة)` : 'تعذّرت إزالة الخلفية (الخلفية غير موحّدة)');
+      if(o.showLogo && restaurant.logo_url && !logoImg) notes.push('تعذّر تحميل اللوجو');
+      if(o.showQr && restaurant.slug && !qrImg) notes.push('تعذّر إنشاء رمز QR');
+      if(o.showQr && !restaurant.slug) notes.push('لا يوجد رابط للمتجر لإنشاء QR');
+      status.textContent = notes.length ? '⚠️ ' + notes.join(' — ') : 'المعاينة جاهزة';
+    }catch(e){ console.warn('poster failed', e); status.textContent = '⚠️ حدث خطأ أثناء التجهيز'; }
+    drawing = false;
+    if(again){ again = false; draw(); }
+  };
+  overlay.querySelectorAll('.pst-grp').forEach(b=> b.addEventListener('click', ()=>{ grp = b.dataset.g; applyGroup(); draw(); }));
+  $('#pstFav').addEventListener('click', ()=>{
+    favs = favs.includes(tpl) ? favs.filter(t=> t !== tpl) : [...favs, tpl];
+    applyGroup(); draw();
+  });
+  $('#pstRandom').addEventListener('click', ()=>{
+    const pool = [...overlay.querySelectorAll('.pst-tpl')].filter(b=> b.dataset.tpl !== tpl && inGroup(b.dataset.tpl, grp));
+    if(!pool.length) return;
+    pool[Math.floor(Math.random() * pool.length)].click();
+  });
+  overlay.querySelectorAll('.pst-tpl').forEach(b=> b.addEventListener('click', ()=>{
+    P.accents[tpl] = $('#pstColor').value;
+    tpl = b.dataset.tpl;
+    $('#pstColor').value = P.accents[tpl] || POSTER_TEMPLATES[tpl].accent;
+    markTpl(); draw();
+  }));
+  overlay.querySelectorAll('input[type=checkbox], select, input[type=color], input[type=date]').forEach(el=> el.addEventListener('change', draw));
+  // ---- ستايلات محفوظة ----
+  const stylesKey = prefsKey + '_styles';
+  const loadStyles = ()=>{ try{ return JSON.parse(localStorage.getItem(stylesKey) || '{}') || {}; }catch(e){ return {}; } };
+  const saveStyles = (m)=>{ try{ localStorage.setItem(stylesKey, JSON.stringify(m)); }catch(e){} };
+  const fillStyleSel = (selName)=>{
+    const m = loadStyles(), names = Object.keys(m);
+    $('#pstStyleSel').innerHTML = `<option value="">⭐ ستايلاتي المحفوظة (${names.length})</option>` + names.map(n=> `<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
+    if(selName) $('#pstStyleSel').value = selName;
+    $('#pstStyleDel').style.display = names.length ? '' : 'none';
+  };
+  const STYLE_SELECTS = { size:'pstSize', theme:'pstTheme', font:'pstFont', digits:'pstDigits', currency:'pstCur', creditLang:'pstCrLang', creditStyle:'pstCrStyle', creditPos:'pstCrPos', hdrStyle:'pstHdrStyle', hdrPos:'pstHdrPos', qrSize:'pstQrSize', qrPos:'pstQrPos' };
+  const STYLE_CHECKS = { showImage:'pstImage', showPrice:'pstPrice', showOld:'pstOld', showDesc:'pstDesc', showLogo:'pstLogo', showName:'pstName', showAddress:'pstAddr', showPhone:'pstPhone', showQr:'pstQr', cutout:'pstCutout' };
+  $('#pstStyleSave').addEventListener('click', ()=>{
+    const name = (prompt('اسم الستايل (مثال: ستايل المحل):') || '').trim().slice(0, 30);
+    if(!name) return;
+    const o = readOpts(), st = { template:o.template, accent:o.accent, showCredit:o.showCredit };
+    Object.keys(STYLE_SELECTS).forEach(k=> st[k] = o[k]);
+    Object.keys(STYLE_CHECKS).forEach(k=> st[k] = o[k]);
+    const m = loadStyles();
+    if(!m[name] && Object.keys(m).length >= 12){ toast('الحد الأقصى 12 ستايل — احذف ستايلاً أولاً'); return; }
+    m[name] = st; saveStyles(m); fillStyleSel(name); toast('تم حفظ الستايل');
+  });
+  $('#pstStyleDel').addEventListener('click', ()=>{
+    const n = $('#pstStyleSel').value; if(!n){ toast('اختر ستايلاً لحذفه'); return; }
+    if(!confirm(`حذف الستايل «${n}»؟`)) return;
+    const m = loadStyles(); delete m[n]; saveStyles(m); fillStyleSel(); toast('تم حذف الستايل');
+  });
+  $('#pstStyleSel').addEventListener('change', ()=>{
+    const st = loadStyles()[$('#pstStyleSel').value]; if(!st) return;
+    if(POSTER_TEMPLATES[st.template]) tpl = st.template;
+    P.accents[tpl] = st.accent; $('#pstColor').value = st.accent || POSTER_TEMPLATES[tpl].accent;
+    Object.entries(STYLE_SELECTS).forEach(([k, id])=>{ if(st[k] !== undefined && $('#' + id)) $('#' + id).value = st[k]; });
+    Object.entries(STYLE_CHECKS).forEach(([k, id])=>{ if(st[k] !== undefined && $('#' + id)) $('#' + id).checked = !!st[k]; });
+    userCredit = st.showCredit !== false; syncCredit(); markTpl(); draw();
+    toast('تم تطبيق الستايل');
+  });
+  fillStyleSel();
+  // ---- لون الهوية من لوجو المحل ----
+  $('#pstColorLogo').addEventListener('click', async ()=>{
+    try{
+      if(!restaurant.logo_url){ toast('لا يوجد لوجو للمحل — أضفه من إعدادات المتجر'); return; }
+      const im = (lastAssets && lastAssets.logoImg) || await getImg(restaurant.logo_url);
+      if(!im){ toast('تعذّر تحميل اللوجو'); return; }
+      const col = posterDominantColor(im);
+      if(!col){ toast('لم أجد لوناً مميزاً في اللوجو'); return; }
+      $('#pstColor').value = col; P.accents[tpl] = col; draw(); toast('تم أخذ اللون من اللوجو');
+    }catch(e){ toast('تعذّر قراءة ألوان اللوجو'); }
+  });
+  // ---- نشر البوستر كإعلان يظهر للعملاء عند فتح المنيو ----
+  $('#pstPublish').addEventListener('click', async ()=>{
+    const btn = $('#pstPublish'); if(btn.disabled) return;
+    if(!confirm('نشر هذا البوستر كإعلان يظهر لعملائك عند فتح المنيو؟\nسيحلّ محل أي إعلان منشور حاليًا.')) return;
+    btn.disabled = true; const old = btn.textContent; btn.textContent = 'جارِ النشر...';
+    try{
+      if(!lastAssets) await draw();
+      const o = readOpts();
+      const url = await uploadImageToStorage(canvas.toDataURL('image/jpeg', 0.9), `promos/${restaurant.id}`);
+      const row = { restaurant_id: restaurant.id, image_url: url, item_id: (!multi && list[0].id) ? list[0].id : null, active: true, starts_at: null, ends_at: null };
+      if(o.showOffer && o.offerStart){ row.starts_at = new Date(o.offerStart + 'T00:00:00').toISOString(); }
+      if(o.showOffer && o.offerEnd){ row.ends_at = new Date(o.offerEnd + 'T23:59:59').toISOString(); }
+      const probe = await sb.from('menu_promos').select('id').eq('restaurant_id', restaurant.id).limit(1);
+      if(probe.error){ toast('ميزة إعلان المنيو غير مفعّلة بعد في قاعدة البيانات'); try{ await sb.storage.from('menu-images').remove([promoStoragePath(url)]); }catch(e){} return; }
+      await clearMenuPromos();
+      const { error } = await sb.from('menu_promos').insert(row);
+      if(error) throw error;
+      toast('📣 تم نشر الإعلان — سيظهر لعملائك عند فتح المنيو' + (row.ends_at ? ' حتى نهاية مدة العرض' : ''));
+    }catch(e){ console.warn(e); toast('تعذّر نشر الإعلان'); }
+    finally{ btn.disabled = false; btn.textContent = old; }
+  });
+  // ---- تحميل عدة مقاسات في ملف ZIP ----
+  $('#pstZip').addEventListener('click', async ()=>{
+    const btn = $('#pstZip'); if(btn.disabled) return;
+    btn.disabled = true; const old = btn.textContent;
+    try{
+      if(!lastAssets) await draw();
+      const o = readOpts(), sizes = ['square', 'portrait', 'story', 'a4', 'wide'].filter(k=> POSTER_SIZES[k]);
+      const files = [], base = restaurant.slug || 'menu';
+      for(let i = 0; i < sizes.length; i++){
+        btn.textContent = `جارِ التجهيز ${i + 1}/${sizes.length}...`;
+        const tmp = document.createElement('canvas');
+        await renderPoster(tmp, list, Object.assign({}, o, lastAssets, { size:sizes[i] }));
+        const blob = await new Promise((res, rej)=> tmp.toBlob(b=> b ? res(b) : rej(new Error('empty')), 'image/png'));
+        files.push({ name:`${base}-poster-${sizes[i]}.png`, data:new Uint8Array(await blob.arrayBuffer()) });
+      }
+      const url = URL.createObjectURL(posterZip(files));
+      const a = document.createElement('a'); a.href = url; a.download = `${base}-posters.zip`; a.click();
+      setTimeout(()=> URL.revokeObjectURL(url), 4000);
+      toast('تم تحميل ملف ZIP بجميع المقاسات');
+    }catch(e){ console.warn(e); toast('تعذّر إنشاء ملف ZIP'); }
+    btn.disabled = false; btn.textContent = old;
+  });
+  let titleTimer = null;
+  $('#pstTitle').addEventListener('input', ()=>{ clearTimeout(titleTimer); titleTimer = setTimeout(draw, 250); });
+  const toBlob = ()=> new Promise((res, rej)=> { try{ canvas.toBlob(b=> b ? res(b) : rej(new Error('empty')), 'image/png'); }catch(e){ rej(e); } });
+  const fileName = ()=> `${restaurant.slug || 'menu'}-${multi ? 'poster' : String(list[0].name).replace(/[^\p{L}\p{N}]+/gu, '-').slice(0, 40)}.png`;
+  $('#pstDownload').addEventListener('click', async ()=>{
+    try{
+      const blob = await toBlob(); const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = fileName(); a.click();
+      setTimeout(()=> URL.revokeObjectURL(url), 3000); toast('تم تحميل الصورة');
+    }catch(e){ toast('تعذّر إنشاء الصورة (قد تكون صورة محمية من المتصفح)'); }
+  });
+  const shareText = ()=>{
+    const head = multi ? `${restaurant.name || ''}${$('#pstShowTitle').checked && $('#pstTitle').value.trim() ? ' — ' + $('#pstTitle').value.trim() : ''}` : `${list[0].name}${restaurant.name ? ' — ' + restaurant.name : ''}`;
+    const od = (()=>{ if(!$('#pstOffer').checked) return ''; const f = (v)=> v ? new Date(v + 'T12:00:00').toLocaleDateString('ar-EG-u-nu-latn', { day:'numeric', month:'long' }) : ''; const a = f($('#pstOfferStart').value), b = f($('#pstOfferEnd').value); return a && b ? `\n⏰ من ${a} إلى ${b}` : (b ? `\n⏰ ساري حتى ${b}` : (a ? `\n⏰ يبدأ من ${a}` : '')); })();
+    return head + od + (restaurant.slug ? `\n🔗 ${menuLink}` : '');
+  };
+  $('#pstWaPhone').addEventListener('change', draw);
+  $('#pstWa').addEventListener('click', async ()=>{
+    try{
+      const blob = await toBlob(); const file = new File([blob], fileName(), { type:'image/png' });
+      const phone = $('#pstWaPhone').value.replace(/[^0-9]/g, '');
+      if(!phone && navigator.canShare && navigator.canShare({ files:[file] })){
+        await navigator.share({ files:[file], title: restaurant.name || 'منيو', text: shareText() }); return;
+      }
+      const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = fileName(); a.click();
+      setTimeout(()=> URL.revokeObjectURL(url), 3000);
+      window.open('https://wa.me/' + phone + '?text=' + encodeURIComponent(shareText()), '_blank');
+      toast('تم تحميل الصورة — أرفقها في محادثة واتساب بعد فتحها');
+    }catch(e){ if(e && e.name !== 'AbortError') toast('تعذّرت المشاركة'); }
+  });
+  $('#pstShare').addEventListener('click', async ()=>{
+    try{
+      const blob = await toBlob(); const file = new File([blob], fileName(), { type:'image/png' });
+      if(navigator.canShare && navigator.canShare({ files:[file] })){
+        await navigator.share({ files:[file], title: multi ? (restaurant.name || 'منيو') : list[0].name, text: shareText() });
+      } else {
+        const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = fileName(); a.click();
+        setTimeout(()=> URL.revokeObjectURL(url), 3000); toast('المشاركة المباشرة غير متاحة هنا — تم تحميل الصورة لتشاركها يدوياً');
+      }
+    }catch(e){ if(e && e.name !== 'AbortError') toast('تعذّرت المشاركة'); }
+  });
+  markTpl();
+  draw();
+}
+
 function buildItemCard(item){
   const div = document.createElement('div');
   div.className = 'item-card';
@@ -13042,16 +14902,20 @@ function buildItemCard(item){
         <span class="item-price">${formatItemPriceLabel(item)}</span>
       </div>
       ${item.description ? `<div class="item-desc">${escapeHtml(item.description)}</div>` : ''}
+      ${(item.highlight_badge || item.highlight_style) ? `<div style="font-size:11px; color:var(--ember); margin-top:2px; font-weight:700;">✨ مميّز${item.highlight_badge && HL_BADGES[item.highlight_badge] ? ' — ' + HL_BADGES[item.highlight_badge][0] : ''}${item.highlight_style && HL_STYLES[item.highlight_style] ? ' (' + HL_STYLES[item.highlight_style] + ')' : ''}</div>` : ''}
       ${(itemAddons[item.id] || []).length ? `<div style="font-size:11px; color:var(--basil); margin-top:2px;">🧂 ${(itemAddons[item.id] || []).length} إضافة متاحة</div>` : ''}
       <div class="item-tools">
         <button data-action="edit">تعديل</button>
         <button data-action="duplicate">نسخ</button>
+        ${restaurant.restriction_share_disabled ? '' : `<button data-action="poster" title="إنشاء صورة تسويقية للصنف">🖼️ بوستر</button>`}
         <button data-action="toggleAvailability">${isAvailable ? 'إخفاء مؤقتًا (نفذت الكمية)' : 'إظهار مرة أخرى'}</button>
         ${restaurant.restriction_delete_disabled ? '' : `<button data-action="delete" class="danger">حذف</button>`}
       </div>
     </div>`;
   div.querySelector('[data-action="edit"]').addEventListener('click', ()=> openItemModal(item));
   div.querySelector('[data-action="duplicate"]').addEventListener('click', ()=> duplicateItem(item));
+  const posterBtn = div.querySelector('[data-action="poster"]');
+  if(posterBtn) posterBtn.addEventListener('click', (e)=>{ e.stopPropagation(); openItemPosterModal(item); });
   if(itemSelectMode){
     div.classList.add('selectable');
     const cb = document.createElement('input');
@@ -14016,7 +15880,8 @@ async function duplicateItem(item){
     price: item.price, description: item.description, image_url: null,
     pricing_type: item.pricing_type, position: nextPos, is_available: item.is_available,
     old_price: item.old_price, weight_sale_mode: item.weight_sale_mode,
-    min_weight_grams: item.min_weight_grams, cost_price: item.cost_price
+    min_weight_grams: item.min_weight_grams, cost_price: item.cost_price,
+    highlight_badge: item.highlight_badge || null, highlight_style: item.highlight_style || null
   };
   const { data: created, error } = await sb.from('items').insert(row).select().single();
   if(error || !created){ toast('تعذر نسخ الصنف'); return; }
@@ -14068,7 +15933,9 @@ function updateBulkBar(){
   bar.classList.toggle('hidden', !itemSelectMode);
   const n = selectedItemIds.size;
   document.getElementById('bulkCount').textContent = `${n} محدد`;
-  ['bulkHideBtn','bulkShowBtn','bulkMoveBtn','bulkDeleteBtn'].forEach(id=>{ const b = document.getElementById(id); if(b) b.disabled = n === 0; });
+  ['bulkHideBtn','bulkShowBtn','bulkMoveBtn','bulkDeleteBtn','bulkPosterBtn','bulkHlBtn'].forEach(id=>{ const b = document.getElementById(id); if(b) b.disabled = n === 0; });
+  const pstB = document.getElementById('bulkPosterBtn');
+  if(pstB) pstB.style.display = restaurant && restaurant.restriction_share_disabled ? 'none' : '';
   const del = document.getElementById('bulkDeleteBtn');
   if(del) del.style.display = restaurant && restaurant.restriction_delete_disabled ? 'none' : '';
   const all = document.getElementById('bulkSelectAllBtn');
@@ -14123,11 +15990,50 @@ function openBulkMoveModal(){
     toast('تم نقل الأصناف');
   });
 }
+document.getElementById('promoManagerBtn').addEventListener('click', openPromoManager);
+document.getElementById('discountPosterBtn').addEventListener('click', ()=>{
+  if(restaurant.restriction_share_disabled){ toast('🔒 هذه الميزة غير متاحة لحسابك'); return; }
+  const list = items.filter(i=> i.is_available !== false && i.old_price != null && Number(i.old_price) > Number(i.price) && Number(i.price) > 0)
+    .sort((a, b)=> (1 - Number(b.price) / Number(b.old_price)) - (1 - Number(a.price) / Number(a.old_price)));
+  if(!list.length){ toast('لا توجد أصناف عليها خصم (حدّد «السعر قبل الخصم» للصنف أولاً)'); return; }
+  openPosterModal(list);
+});
 document.getElementById('selectModeBtn').addEventListener('click', ()=> setItemSelectMode(!itemSelectMode));
 document.getElementById('bulkCancelBtn').addEventListener('click', ()=> setItemSelectMode(false));
 document.getElementById('bulkHideBtn').addEventListener('click', ()=> bulkSetAvailability(false));
 document.getElementById('bulkShowBtn').addEventListener('click', ()=> bulkSetAvailability(true));
 document.getElementById('bulkMoveBtn').addEventListener('click', openBulkMoveModal);
+document.getElementById('bulkHlBtn').addEventListener('click', ()=>{
+  const ids = [...selectedItemIds];
+  if(!ids.length) return;
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.innerHTML = `
+    <div class="modal">
+      <h3>✨ تمييز ${ids.length} في المنيو</h3>
+      <div class="orders-empty" style="text-align:right; padding:0 0 10px; font-size:12.5px;">اختر الشارة والشكل اللذين سيظهران لعملائك على الأصناف المحددة. «بدون شارة / عادي» تُزيل التمييز.</div>
+      ${hlFieldsHtml('bulkHlBadge', 'bulkHlStyle', '', '')}
+      <div class="modal-actions">
+        <button class="btn-confirm" id="bulkHlGo">تطبيق</button>
+        <button class="btn-cancel" id="bulkHlCancel">إلغاء</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', (e)=>{ if(e.target === overlay) overlay.remove(); });
+  overlay.querySelector('#bulkHlCancel').addEventListener('click', ()=> overlay.remove());
+  overlay.querySelector('#bulkHlGo').addEventListener('click', async ()=>{
+    const btn = overlay.querySelector('#bulkHlGo'); btn.disabled = true;
+    const { error } = await sb.from('items').update({ highlight_badge: overlay.querySelector('#bulkHlBadge').value || null, highlight_style: overlay.querySelector('#bulkHlStyle').value || null }).in('id', ids);
+    if(error){ toast('تعذر التحديث'); btn.disabled = false; return; }
+    overlay.remove(); setItemSelectMode(false); await refreshData(); toast('تم تحديث التمييز للأصناف المحددة');
+  });
+});
+document.getElementById('bulkPosterBtn').addEventListener('click', ()=>{
+  if(restaurant.restriction_share_disabled){ toast('🔒 هذه الميزة غير متاحة لحسابك'); return; }
+  const list = [...selectedItemIds].map(id=> items.find(i=> i.id === id)).filter(Boolean);
+  if(!list.length){ toast('حدّد صنفاً واحداً على الأقل'); return; }
+  openPosterModal(list);
+});
 document.getElementById('bulkSelectAllBtn').addEventListener('click', ()=>{
   const ids = visibleItemIdsNow();
   const allSelected = ids.length && ids.every(id=> selectedItemIds.has(id));
@@ -14227,6 +16133,10 @@ function openItemModal(existing){
       <div class="field fw" id="addonGroupsFieldWrap">
         <label>🧩 مجموعات الإضافات والمتغيرات (اختياري) — اختر أي مجموعات جاهزة من "الإضافات والمتغيرات" لربطها بهذا الصنف</label>
         <div id="itemAddonGroupsWrap"></div>
+      </div>
+      <div class="field fw">
+        <label>✨ تمييز الصنف في المنيو (اختياري) — لجذب انتباه العملاء</label>
+        ${hlFieldsHtml('itemHlBadge', 'itemHlStyle', existing && existing.highlight_badge, existing && existing.highlight_style)}
       </div>
       <div class="field fw">
         <label>الوصف (اختياري)</label>
@@ -14481,14 +16391,15 @@ function openItemModal(existing){
     }
     let itemId = existing ? existing.id : null;
     if(existing){
-      const { error } = await sb.from('items').update({ name, name_en, price, old_price, cost_price, description, image_url: finalImageUrl, pricing_type, weight_sale_mode, min_weight_grams }).eq('id', existing.id);
+      const highlight_badge = overlay.querySelector('#itemHlBadge').value || null, highlight_style = overlay.querySelector('#itemHlStyle').value || null;
+      const { error } = await sb.from('items').update({ name, name_en, price, old_price, cost_price, highlight_badge, highlight_style, description, image_url: finalImageUrl, pricing_type, weight_sale_mode, min_weight_grams }).eq('id', existing.id);
       if(error){ toast('تعذر الحفظ'); btn.disabled=false; return; }
       if(originalItemImageUrl && originalItemImageUrl !== finalImageUrl){
         await deleteStorageFileFromUrl(originalItemImageUrl); // امسح الصورة القديمة بعد نجاح الحفظ فقط
       }
     } else {
       const newPos = items.filter(i=>i.category_id===selectedCategoryId).length;
-      const { data, error } = await sb.from('items').insert({ category_id: selectedCategoryId, name, name_en, price, old_price, cost_price, description, image_url: finalImageUrl, pricing_type, weight_sale_mode, min_weight_grams, position: newPos }).select().single();
+      const { data, error } = await sb.from('items').insert({ category_id: selectedCategoryId, name, name_en, price, old_price, cost_price, highlight_badge: overlay.querySelector('#itemHlBadge').value || null, highlight_style: overlay.querySelector('#itemHlStyle').value || null, description, image_url: finalImageUrl, pricing_type, weight_sale_mode, min_weight_grams, position: newPos }).select().single();
       if(error){ toast('تعذر الإضافة'); btn.disabled=false; return; }
       itemId = data.id;
     }
@@ -15835,8 +17746,12 @@ async function loadPublic(slug){
         controlHtml = `<div class="sold-out-note">${lang==='en' ? 'Currently sold out' : 'نفذت الكمية حاليًا'}</div>`;
         cartLinesHtml = '';
       }
+      const hlOn = !soldOut && (i.highlight_badge || i.highlight_style);
+      const hlB = hlOn && HL_BADGES[i.highlight_badge] ? HL_BADGES[i.highlight_badge] : null;
+      const hlCls = hlOn ? ' hl' + (HL_STYLES[i.highlight_style] ? ' hl-' + i.highlight_style : '') : '';
       return `${headerHtml}
-      <div class="pub-item${soldOut ? ' sold-out' : ''}" data-id="${i.id}">
+      <div class="pub-item${soldOut ? ' sold-out' : ''}${hlCls}" data-id="${i.id}">
+        ${hlB ? `<span class="hl-badge">${hlB[2]} ${lang==='en' ? hlB[1] : hlB[0]}</span>` : ''}
         <div class="pub-item-front">
           ${soldOut ? `<span class="sold-out-tag">${lang==='en' ? 'Sold out' : 'نفذ'}</span>` : ''}
           <span class="chevron" data-action="toggle">${i.description ? '▾' : ''}</span>
@@ -17736,7 +19651,55 @@ async function loadPublic(slug){
       });
     }, 900);
   }
-  showOffersPopupOnce();
+  // إعلان المنيو: بوستر صمّمه صاحب المتجر يظهر للعميل عند فتح المنيو (مرة لكل جلسة) — له أولوية على تنبيه العروض
+  async function showPromoPopupOnce(){
+    try{
+      const force = new URLSearchParams(location.search).get('promo') === '1';
+      const { data, error } = await sb.from('menu_promos').select('*').eq('restaurant_id', rest.id).eq('active', true).order('created_at', { ascending:false }).limit(1);
+      if(error || !data || !data.length) return;
+      const pr = data[0], nowT = Date.now();
+      if(pr.starts_at && new Date(pr.starts_at).getTime() > nowT) return;
+      if(pr.ends_at && new Date(pr.ends_at).getTime() <= nowT) return;
+      const key = `promoSeen_${pr.id}`;
+      try{ if(!force && sessionStorage.getItem(key)) return; }catch(e){}
+      await new Promise((res, rej)=>{ const im = new Image(); im.onload = res; im.onerror = rej; im.src = pr.image_url; }).catch(()=>{ throw new Error('img'); });
+      if(document.querySelector('.overlay')) return;
+      try{ sessionStorage.setItem(key, '1'); }catch(e){}
+      const en = lang === 'en';
+      const it = pr.item_id ? pubItems.find(i=> i.id === pr.item_id && i.is_available !== false) : null;
+      const overlay = document.createElement('div');
+      overlay.className = 'overlay promo-overlay';
+      overlay.innerHTML = `
+        <div class="modal promo-modal" role="dialog" aria-modal="true">
+          <button type="button" class="promo-close" aria-label="${en ? 'Close' : 'إغلاق'}">✕</button>
+          <img src="${escapeHtml(pr.image_url)}" alt="">
+          <button type="button" class="promo-go">${it ? (en ? 'Order now' : 'اطلب الآن') : (en ? 'Browse the menu' : 'تصفّح المنيو')}</button>
+          <button type="button" class="promo-later">${en ? 'Close' : 'إغلاق'}</button>
+        </div>`;
+      document.body.appendChild(overlay);
+      const close = ()=>{ overlay.remove(); document.removeEventListener('keydown', onKey); };
+      const onKey = (e)=>{ if(e.key === 'Escape') close(); };
+      document.addEventListener('keydown', onKey);
+      overlay.addEventListener('click', (e)=>{ if(e.target === overlay) close(); });
+      overlay.querySelector('.promo-close').addEventListener('click', close);
+      overlay.querySelector('.promo-later').addEventListener('click', close);
+      overlay.querySelector('.promo-go').addEventListener('click', ()=>{
+        close();
+        if(!it) return;
+        if(isTilesFamily()){ activeCat = it.category_id; renderPublicBody(); }
+        requestAnimationFrame(()=>{
+          const row = Array.from(document.querySelectorAll('#pubBody .pub-item')).find(r=> r.dataset.id === it.id);
+          if(!row) return;
+          const grp = row.closest('.pub-cat-group');
+          if(grp){ document.querySelectorAll('#pubBody .pub-cat-group.open').forEach(g=> g.classList.remove('open')); grp.classList.add('open'); }
+          row.scrollIntoView({ behavior:'smooth', block:'center' });
+          row.classList.add('offer-flash');
+          setTimeout(()=> row.classList.remove('offer-flash'), 2600);
+        });
+      });
+    }catch(e){ /* الجدول غير مفعّل أو الصورة غير متاحة: نتجاهل بهدوء */ }
+  }
+  showPromoPopupOnce().then(()=> showOffersPopupOnce(), ()=> showOffersPopupOnce());
 
   // المفتاح العام لتفعيل/إيقاف كل الإعلانات الجانبية (تتحكم فيه من لوحة السوبر أدمن)
   sb.from('app_settings').select('ads_enabled').eq('id', true).maybeSingle().then(({ data: settingsRow })=>{

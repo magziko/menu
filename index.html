@@ -53,6 +53,24 @@
 body{margin:0; font-family:var(--body); background:var(--ink); color:var(--ink); min-height:100vh; overflow-x:hidden;}
 .hidden{display:none !important;}
 
+/* كارت إعلان مصغّر في شاشة الدخول — شاشات كبيرة فقط، قابل للإغلاق ويختفي تلقائيًا */
+#loginAd{ display:none; }
+@media (min-width:1280px) and (min-height:640px){
+  #loginAd{ display:block; position:fixed; left:24px; bottom:24px; z-index:50; width:268px; padding:14px 16px 14px 14px; border-radius:14px; background:rgba(42,40,37,.92); backdrop-filter:blur(6px); border:1px solid #3a3733; border-right:3px solid var(--basil); box-shadow:0 10px 30px rgba(0,0,0,.4); opacity:0; transform:translateY(14px); pointer-events:none; transition:opacity .45s ease, transform .45s ease; }
+  #loginAd.la-show{ opacity:1; transform:none; pointer-events:auto; }
+  #loginAd.la-gone{ display:none; }
+  #loginAd a{ display:flex; gap:11px; align-items:center; text-decoration:none; color:inherit; }
+  #loginAd .la-ico{ width:38px; height:38px; flex-shrink:0; border-radius:10px; background:rgba(63,98,71,.25); display:flex; align-items:center; justify-content:center; font-size:19px; }
+  #loginAd .la-tag{ font-size:10px; color:var(--stone); letter-spacing:.3px; }
+  #loginAd .la-title{ font-size:13.5px; font-weight:800; color:var(--paper); margin-top:1px; }
+  #loginAd .la-desc{ font-size:11.5px; color:#b9b3a3; margin-top:2px; line-height:1.5; }
+  #loginAd .la-cta{ font-size:11.5px; font-weight:800; color:#8fd19e; margin-top:5px; }
+  #loginAd .la-close{ position:absolute; top:6px; left:6px; width:22px; height:22px; border:0; border-radius:50%; background:transparent; color:var(--stone); font-size:12px; cursor:pointer; line-height:1; }
+  #loginAd .la-close:hover{ background:rgba(255,255,255,.1); color:var(--paper); }
+  #loginAd .la-bar{ position:absolute; right:0; bottom:0; height:2px; width:100%; background:var(--basil); transform-origin:right; border-radius:0 0 14px 14px; }
+  #loginAd.la-show .la-bar{ animation:laBar var(--la-dur,14s) linear forwards; }
+}
+@keyframes laBar{ from{ transform:scaleX(1);} to{ transform:scaleX(0);} }
 #authScreen{ min-height:100vh; background:var(--ink); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:30px 20px; }
 .auth-brand{ font-family:var(--display); color:var(--paper); font-size:32px; display:flex; align-items:center; gap:12px; margin-bottom:26px; }
 .auth-brand .dot{width:10px;height:10px;border-radius:50%;background:var(--ember);}
@@ -79,6 +97,24 @@ body{margin:0; font-family:var(--body); background:var(--ink); color:var(--ink);
 .as-card:hover .as-cta{ background:#d24a18; }
 .as-arrow{ display:inline-block; transition:transform .2s ease; }
 .as-card:hover .as-arrow{ transform:translateX(-4px); }
+.as-video{ display:flex; align-items:center; gap:14px; width:100%; margin-top:14px; padding:10px; text-align:right; cursor:pointer; font-family:var(--body); color:var(--paper); background:linear-gradient(160deg,#322F2B 0%,#262420 100%); border:1px solid #454138; border-radius:16px; transition:transform .2s ease, border-color .2s ease; }
+.as-video:hover{ transform:translateY(-2px); border-color:var(--ember); }
+.as-video-thumb{ position:relative; flex:0 0 132px; aspect-ratio:16/9; border-radius:10px; overflow:hidden; background:#1c1a17; }
+.as-video-thumb img{ width:100%; height:100%; object-fit:cover; display:block; opacity:.85; }
+.as-play{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:38px; height:38px; border-radius:50%; background:var(--ember); color:#fff; display:flex; align-items:center; justify-content:center; font-size:15px; box-shadow:0 4px 14px rgba(0,0,0,.5); }
+.as-video-txt{ display:flex; flex-direction:column; gap:3px; min-width:0; }
+.as-video-txt strong{ font-family:var(--display); font-size:15.5px; }
+.as-video-txt small{ color:var(--stone); font-size:12px; line-height:1.5; }
+.guide-video-modal{ width:min(860px,96vw) !important; padding:12px !important; }
+.guide-video-frame{ position:relative; width:100%; aspect-ratio:16/9; background:#000; border-radius:10px; overflow:hidden; }
+.guide-video-frame iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
+.guide-video-bar{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:10px; }
+.guide-banner{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin:0 0 14px; padding:12px 14px; background:linear-gradient(160deg,#322F2B 0%,#262420 100%); border:1px solid var(--ember); border-radius:12px; color:var(--paper); }
+.guide-banner .gb-txt{ flex:1 1 200px; font-size:13.5px; line-height:1.6; }
+.guide-banner .gb-txt strong{ font-family:var(--display); font-size:15px; display:block; }
+.guide-banner .gb-x{ background:transparent; border:0; color:var(--stone); font-size:20px; line-height:1; cursor:pointer; padding:4px 8px; }
+.guide-video-bar a{ font-size:12px; color:var(--stone); }
+
 @media (max-width:560px){
   .as-grid{ grid-template-columns:1fr; gap:10px; }
   .as-card{ flex-direction:row; flex-wrap:wrap; align-items:center; padding:14px; gap:4px 12px; text-align:start; }
@@ -176,7 +212,7 @@ body{margin:0; font-family:var(--body); background:var(--ink); color:var(--ink);
 .dash-menu-trigger .caret{ font-size:9px; opacity:.65; transition:transform .15s ease; }
 .dash-menu-group.open .dash-menu-trigger{ background:#3a3733; border-color:var(--stone); }
 .dash-menu-group.open .dash-menu-trigger .caret{ transform:rotate(180deg); }
-.dash-menu-dropdown{ position:absolute; top:calc(100% + 8px); inset-inline-start:0; background:#2A2825; border:1px solid #454138; border-radius:10px; padding:6px; min-width:235px; z-index:80; box-shadow:0 12px 32px rgba(0,0,0,.4); display:none; flex-direction:column; gap:3px; }
+.dash-menu-dropdown{ position:absolute; top:calc(100% + 8px); inset-inline-start:0; max-width:calc(100vw - 16px); background:#2A2825; border:1px solid #454138; border-radius:10px; padding:6px; min-width:235px; z-index:80; box-shadow:0 12px 32px rgba(0,0,0,.4); display:none; flex-direction:column; gap:3px; }
 .dash-menu-group.open .dash-menu-dropdown{ display:flex; }
 .dash-menu-dropdown .link-btn{ width:100%; text-align:right; border-radius:7px; background:transparent; border-color:transparent; padding:9px 12px; }
 .dash-menu-dropdown .link-btn:hover{ background:#3a3733; border-color:#454138; }
@@ -446,6 +482,118 @@ body{margin:0; font-family:var(--body); background:var(--ink); color:var(--ink);
   .orders-modal .o-wa-btn, .orders-modal .o-print-btn{ padding:7px 14px; }
 }
 .orders-sel{ flex:1; min-width:140px; border:1.5px solid var(--line); border-radius:10px; padding:8px 10px; font-family:inherit; font-size:13px; background:var(--paper); color:var(--ink); }
+/* تطوير شاشة الطلبات: كروت منتهية مضغوطة، شارات انتظار، شرائح ملخص، ووضع جدول */
+.orders-modal .order-row.is-done:not(.is-expanded){ padding:10px 14px; background:var(--paper-dim); box-shadow:none; opacity:.92; }
+.orders-modal .order-row.is-done:not(.is-expanded) .o-secondary,
+.orders-modal .order-row.is-done:not(.is-expanded) .o-wa-btn{ display:none !important; }
+.orders-modal .order-row.is-done:not(.is-expanded) .o-card-top{ padding-bottom:6px; margin-bottom:6px; }
+.o-expand-btn{ display:block; width:100%; margin-top:8px; border:0; background:transparent; color:var(--stone); font-family:var(--body); font-size:11.5px; font-weight:700; cursor:pointer; padding:2px 0; }
+.o-expand-btn:hover{ color:var(--ember); }
+.o-wait{ display:inline-block; font-weight:800; font-size:11.5px; padding:1px 9px; border-radius:999px; background:rgba(63,98,71,.14); color:var(--basil-dark); }
+.o-wait.warn{ background:rgba(184,135,47,.2); color:#8a5f0d; }
+.o-wait.late{ background:rgba(166,57,43,.16); color:var(--danger); animation:oWaitPulse 1.6s ease-in-out infinite; }
+@keyframes oWaitPulse{ 50%{ opacity:.6; } }
+.orders-summary .os-chip{ border:1.5px solid var(--line); background:var(--paper); color:var(--stone); font-family:var(--body); font-size:12px; font-weight:700; padding:3px 11px; border-radius:999px; cursor:pointer; }
+.orders-summary .os-chip:hover{ border-color:var(--ember); color:var(--ember); }
+.orders-summary .os-chip.active{ background:var(--ember); border-color:var(--ember); color:#fff; }
+.orders-summary .os-chip.active strong{ color:#fff; }
+.orders-modal .orders-list.is-table{ display:block; }
+.orders-table-wrap{ overflow-x:auto; border:1px solid var(--line); border-radius:12px; background:var(--paper); }
+.orders-table{ width:100%; border-collapse:collapse; font-size:12.5px; min-width:780px; }
+.orders-table th{ text-align:right; font-size:11.5px; color:var(--stone); font-weight:800; padding:9px 10px; border-bottom:1.5px solid var(--line); background:var(--paper-dim); position:sticky; top:0; white-space:nowrap; }
+.orders-modal .orders-table tr.order-row{ border:0; border-radius:0; padding:0; background:transparent; box-shadow:none; position:static; }
+.orders-modal .orders-table tr.order-row.is-new{ background:rgba(184,57,14,.06); }
+.orders-table td{ padding:8px 10px; border-bottom:1px solid var(--line); vertical-align:middle; }
+.orders-table .ot-items{ min-width:190px; color:var(--ink); }
+.orders-table .ot-line{ display:flex; gap:6px; align-items:baseline; padding:1px 0; }
+.orders-table .ot-line b{ font-family:var(--mono); color:var(--ember); min-width:26px; }
+.orders-table .ot-more{ border:0; background:rgba(184,57,14,.1); color:var(--ember-dark); font-family:var(--body); font-size:11.5px; font-weight:800; padding:2px 10px; border-radius:999px; cursor:pointer; margin-top:3px; }
+.orders-table .ot-more:hover{ background:var(--ember); color:#fff; }
+.orders-dark{ --paper:#262421; --paper-dim:#302d29; --ink:#f3eee0; --stone:#a8a292; --stone-light:#4a463f; --line:#3e3b35; --basil:#6fb27d; --basil-dark:#9ad6a6; --ember-dark:#ff9a73; --confirm-strong-dark:#9dbfff; --danger:#ff8a78; color:var(--ink); background:var(--paper) !important; }
+.orders-dark .orders-head, .orders-dark .orders-body, .orders-dark .orders-foot{ background:var(--paper) !important; color:var(--ink); border-color:var(--line) !important; }
+.orders-dark select, .orders-dark input[type=text], .orders-dark .orders-search-input{ background:#1c1a17 !important; color:var(--ink) !important; border-color:var(--line) !important; }
+.orders-dark .order-row{ background:#2d2a26; border-color:var(--line); }
+.orders-dark .order-row.is-new{ background:rgba(184,57,14,.16); }
+.orders-dark .order-row.is-done:not(.is-expanded){ background:#232120; }
+.orders-dark .o-items{ background:#1f1d1a; border-color:var(--line); }
+.orders-dark .o-items-count, .orders-dark .o-wait{ background:#3a3731; }
+.orders-dark .o-wait.warn{ background:rgba(184,135,47,.3); color:#f0c870; } .orders-dark .o-wait.late{ background:rgba(255,138,120,.2); color:#ff9a8a; }
+.orders-dark .order-filter-btn, .orders-dark .chip-btn, .orders-dark .os-chip{ background:#302d29; color:var(--stone); border-color:var(--line); }
+.orders-dark .order-filter-btn.active, .orders-dark .os-chip.active{ background:var(--ember); color:#fff; border-color:var(--ember); }
+.orders-dark .status-badge{ filter:brightness(.92) saturate(1.1); }
+.orders-dark .orders-table-wrap{ background:var(--paper); border-color:var(--line); }
+.orders-dark .orders-table th{ background:#302d29; }
+.orders-dark .orders-table td, .orders-dark .orders-table th{ border-color:var(--line); }
+.orders-dark .orders-table td.c-num, .orders-dark .orders-table td.c-name{ background:var(--paper); }
+.orders-dark .orders-table th.c-num, .orders-dark .orders-table th.c-name{ background:#302d29; }
+.orders-dark .orders-table tr.order-row.is-new td{ background:#3a2a22; }
+.orders-dark .o-ic, .orders-dark .btn-cancel{ background:#302d29; border-color:var(--line); color:var(--ink); }
+.orders-dark .orders-summary{ border-color:var(--line); color:var(--stone); } .orders-dark .orders-summary strong{ color:var(--ink); }
+.orders-dark .od-items td, .orders-dark .od-items th, .orders-dark .ks-row{ border-color:var(--line); }
+.orders-dark .o-map{ color:#9dbfff; background:rgba(157,191,255,.14); } .orders-dark .o-map:hover{ background:var(--confirm-strong); color:#fff; }
+.orders-table .status-badge{ white-space:nowrap; }
+.ot-bulk{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; padding:9px 12px; margin-bottom:8px; border-radius:12px; background:var(--ember); color:#fff; font-weight:800; font-size:13px; position:sticky; top:0; z-index:6; }
+.ot-bulk.hidden{ display:none !important; }
+.ot-bulk .status-select{ margin-top:0; }
+.ot-bulk button{ border:0; border-radius:8px; padding:6px 14px; font-family:var(--body); font-weight:800; font-size:12.5px; cursor:pointer; background:#fff; color:var(--ember-dark); }
+.ot-chk{ width:17px; height:17px; accent-color:var(--ember); vertical-align:middle; margin-inline-end:6px; cursor:pointer; }
+.o-ic{ display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:50%; background:var(--paper-dim); border:1px solid var(--line); text-decoration:none; font-size:14px; vertical-align:middle; margin-inline-start:4px; }
+.o-ic:hover{ background:var(--basil); border-color:var(--basil); }
+.o-map{ display:inline-flex; align-items:center; gap:4px; font-size:11.5px; font-weight:800; color:var(--confirm-strong); text-decoration:none; background:rgba(24,88,201,.1); padding:2px 10px; border-radius:999px; margin-inline-start:6px; }
+.o-map:hover{ background:var(--confirm-strong); color:#fff; }
+.o-next-row{ margin-top:10px; }
+.o-next-btn{ width:100%; border:0; border-radius:12px; padding:13px 14px; font-family:var(--body); font-size:15px; font-weight:800; color:#fff; background:var(--basil); cursor:pointer; box-shadow:0 2px 0 var(--basil-dark); transition:transform .08s ease, filter .15s; }
+.o-next-btn:hover{ filter:brightness(1.07); } .o-next-btn:active{ transform:translateY(1px); box-shadow:none; }
+.o-next-btn[data-to="preparing"]{ background:var(--ember); box-shadow:0 2px 0 var(--ember-dark); }
+.o-next-btn[data-to="delivered"]{ background:var(--confirm-strong); box-shadow:0 2px 0 var(--confirm-strong-dark); }
+.o-next-btn:disabled{ opacity:.55; cursor:wait; }
+.order-row.o-flash{ animation:oFlash 1.1s ease-in-out 6; }
+@keyframes oFlash{ 0%,100%{ box-shadow:0 0 0 0 rgba(184,57,14,0); } 50%{ box-shadow:0 0 0 6px rgba(184,57,14,.35); } }
+.orders-new-banner{ position:sticky; top:0; z-index:5; margin-bottom:10px; padding:10px 14px; border-radius:12px; background:var(--ember); color:#fff; font-weight:800; font-size:14px; text-align:center; cursor:pointer; box-shadow:0 4px 14px rgba(184,57,14,.35); animation:oBanner .35s ease-out; }
+@keyframes oBanner{ from{ transform:translateY(-12px); opacity:0; } to{ transform:none; opacity:1; } }
+.ks-row{ display:flex; align-items:center; gap:12px; padding:10px 4px; border-bottom:1px solid var(--line); }
+.ks-qty{ font-family:var(--mono); font-weight:800; font-size:22px; color:var(--ember); min-width:56px; text-align:center; }
+.ks-name{ flex:1; font-weight:800; font-size:15px; color:var(--ink); }
+.ks-meta{ font-size:11.5px; color:var(--stone); white-space:nowrap; }
+.od-modal{ max-width:560px; width:94vw; max-height:90vh; overflow-y:auto; }
+.od-grid{ display:grid; grid-template-columns:auto 1fr; gap:6px 14px; font-size:13px; margin:10px 0; }
+.od-grid dt{ color:var(--stone); font-weight:700; } .od-grid dd{ margin:0; font-weight:700; color:var(--ink); }
+.od-items{ width:100%; border-collapse:collapse; font-size:13px; margin-top:6px; }
+.od-items th{ text-align:right; font-size:11.5px; color:var(--stone); padding:6px 8px; border-bottom:1.5px solid var(--line); }
+.od-items td{ padding:7px 8px; border-bottom:1px solid var(--line); vertical-align:top; }
+.od-items .q{ font-family:var(--mono); font-weight:800; color:var(--ember); white-space:nowrap; }
+.orders-table .ot-line small{ color:var(--stone); }
+.orders-table.is-compact .ot-items{ max-width:260px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--stone); cursor:pointer; }
+.orders-table.is-compact .ot-line{ display:inline; }
+.orders-table.is-compact .ot-line + .ot-line::before{ content:'، '; }
+.orders-table-wrap{ -webkit-overflow-scrolling:touch; overscroll-behavior-x:contain; max-width:100%; }
+.orders-table th.c-num, .orders-table td.c-num{ position:sticky; right:0; z-index:2; background:var(--paper); min-width:54px; }
+.orders-table th.c-name, .orders-table td.c-name{ position:sticky; right:54px; z-index:2; background:var(--paper); box-shadow:-3px 0 5px -3px rgba(0,0,0,.18); }
+.orders-table th.c-num, .orders-table th.c-name{ background:var(--paper-dim); z-index:3; }
+.tl-opt{ display:flex; gap:10px; align-items:flex-start; padding:8px 10px; border:1.5px solid var(--line); border-radius:10px; margin-bottom:6px; cursor:pointer; }
+.tl-opt.on{ border-color:var(--ember); background:rgba(184,57,14,.07); }
+.tl-opt b{ display:block; font-size:13.5px; } .tl-opt small{ display:block; color:var(--stone); font-size:11.5px; margin-top:1px; }
+.tl-cols{ display:grid; grid-template-columns:1fr 1fr; gap:6px 12px; }
+.tl-col{ font-size:13px; font-weight:700; cursor:pointer; }
+@media (max-width:700px){
+  .orders-table{ font-size:12px; }
+  .orders-table td, .orders-table th{ padding:7px 8px; }
+  .orders-table .ot-name{ min-width:92px; max-width:110px; }
+}
+.orders-table .ot-name{ min-width:110px; }
+.orders-table .ot-cust{ display:block; text-decoration:none; color:inherit; }
+.orders-table .ot-cust small{ display:block; font-size:10.5px; font-weight:800; color:var(--confirm-strong); margin-top:1px; }
+.orders-dark .orders-table .ot-cust small{ color:#9dbfff; }
+.od-phone{ display:flex; align-items:center; gap:4px; flex-wrap:wrap; }
+.orders-table .ot-addr{ min-width:150px; max-width:240px; font-size:12px; }
+.orders-table .ot-type{ display:inline-block; padding:2px 10px; border-radius:999px; font-weight:800; font-size:11.5px; background:rgba(184,57,14,.12); color:var(--ember-dark); }
+.orders-table .ot-type.pick{ background:rgba(63,98,71,.15); color:var(--basil-dark); }
+.orders-table .ot-type.dine{ background:rgba(24,88,201,.12); color:var(--confirm-strong-dark); }
+.orders-table .ot-num{ font-family:var(--mono); font-weight:800; color:var(--ink); }
+.orders-table .ot-phone{ font-family:var(--mono); direction:ltr; display:inline-block; color:var(--ember); font-weight:700; }
+.orders-table .ot-total{ font-family:var(--mono); font-weight:800; white-space:nowrap; }
+.orders-table .ot-actions{ display:flex; gap:6px; align-items:center; }
+.orders-table .ot-actions .status-select{ margin-top:0; }
 .orders-summary{ display:flex; gap:14px; flex-wrap:wrap; align-items:center; padding:8px 12px; margin:8px 0 10px; border:1px dashed var(--line); border-radius:10px; font-size:12.5px; font-weight:700; color:var(--stone); }
 .orders-summary strong{ color:var(--ink); }
 .rt-tabs{ display:flex; gap:6px; margin-bottom:12px; }
@@ -949,6 +1097,45 @@ body.pub-mobile-ad-open .pub-order-btn{ bottom:calc(22px + 58px); }
 .report-doc th{ text-align:right; font-size:11px; color:#555; padding:4px 6px; border-bottom:1px solid #ccc; }
 .report-doc td{ padding:5px 6px; border-bottom:1px solid #eee; }
 .report-doc td.num{ direction:ltr; text-align:left; white-space:nowrap; }
+/* تقارير جدولية */
+.rtx-modal .rtx-range{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.rtx-presets{ display:flex; gap:6px; flex-wrap:wrap; }
+.rtx-dates{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; font-size:12px; color:var(--stone); }
+.rtx-dates input{ font-size:12px; padding:6px 8px; border-radius:8px; border:1px solid var(--line); background:var(--paper-dim); color:var(--ink); }
+.rtx-tabs{ display:flex; gap:4px; border-bottom:2px solid var(--line); margin-bottom:12px; overflow-x:auto; }
+.rtx-tabs button{ border:0; background:transparent; font-family:var(--body); font-weight:800; font-size:13.5px; color:var(--stone); padding:10px 16px; cursor:pointer; border-bottom:3px solid transparent; margin-bottom:-2px; white-space:nowrap; width:auto; }
+.rtx-tabs button.on{ color:var(--ember); border-bottom-color:var(--ember); }
+.rtx-title{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:10px; flex-wrap:wrap; }
+.rtx-title h4{ margin:0; font-size:16px; } .rtx-title p{ margin:3px 0 0; font-size:12px; color:var(--stone); }
+.rtx-h{ margin:18px 0 8px; font-size:14px; }
+.rtx-kpis{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-bottom:12px; }
+.rtx-kpi{ background:var(--paper-dim); border:1px solid var(--line); border-top:3px solid var(--c,var(--ember)); border-radius:12px; padding:10px 12px; }
+.rtx-kpi .l{ font-size:11.5px; color:var(--stone); font-weight:700; } .rtx-kpi .v{ font-size:17px; font-weight:800; margin-top:3px; font-family:var(--mono); color:var(--ink); }
+.rtx-filters{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:8px; font-size:12.5px; color:var(--stone); }
+.rtx-filters select, .rtx-bar select, .rtx-bar input{ font-size:12px; padding:6px 8px; border-radius:8px; border:1px solid var(--line); background:var(--paper-dim); color:var(--ink); }
+.rtx-bar{ display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px; font-size:12.5px; color:var(--stone); }
+.rtx-bar .rtx-search{ min-width:220px; flex:1; max-width:340px; }
+.rtx-wrap{ overflow:auto; max-height:56vh; border:1px solid var(--line); border-radius:12px; background:var(--paper); }
+.rtx-table{ width:100%; border-collapse:collapse; font-size:12.5px; min-width:720px; }
+.rtx-table th{ position:sticky; top:0; z-index:1; background:var(--paper-dim); text-align:right; padding:9px 10px; font-size:11.5px; font-weight:800; color:var(--stone); border-bottom:2px solid var(--line); white-space:nowrap; cursor:pointer; user-select:none; }
+.rtx-table.static th{ cursor:default; }
+.rtx-table th i{ font-style:normal; font-size:9px; margin-inline-start:5px; opacity:.45; } .rtx-table th.sorted{ color:var(--ember); } .rtx-table th.sorted i{ opacity:1; }
+.rtx-table td{ padding:9px 10px; border-bottom:1px solid var(--line); vertical-align:middle; }
+.rtx-table tbody tr:not(.rtx-detail):hover td{ background:rgba(184,57,14,.05); }
+.rtx-table td.n{ font-family:var(--mono); } .rtx-table td.nw{ white-space:nowrap; } .rtx-table .sub{ font-size:11px; color:var(--stone); font-family:var(--body); }
+.rtx-table .ltr{ direction:ltr; display:inline-block; font-family:var(--mono); }
+.rtx-table tr.tot td{ background:var(--paper-dim); font-weight:800; border-top:2px solid var(--line); }
+.rtx-table .rtx-x{ width:38px; padding-inline:6px; text-align:center; cursor:default; }
+.rtx-plus{ width:24px; height:24px; border-radius:50%; border:0; background:var(--basil); color:#fff; font-weight:800; font-size:15px; line-height:1; cursor:pointer; padding:0; }
+.rtx-plus.on{ background:var(--ember); }
+.rtx-detail > td{ background:var(--paper-dim); padding:10px 14px !important; }
+.rtx-items{ width:100%; border-collapse:collapse; font-size:12px; background:var(--paper); border-radius:8px; overflow:hidden; }
+.rtx-items th, .rtx-items td{ padding:6px 9px; border-bottom:1px solid var(--line); text-align:right; position:static; cursor:default; background:transparent; } .rtx-items td.n{ font-family:var(--mono); }
+.rtx-pager{ display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-top:10px; font-size:12px; color:var(--stone); }
+.rtx-pg{ display:flex; gap:8px; align-items:center; } .rtx-pg b{ color:var(--ink); font-family:var(--mono); }
+.rtx-pg button{ border:1px solid var(--line); background:var(--paper-dim); color:var(--ink); border-radius:8px; padding:6px 14px; font-family:var(--body); font-weight:700; font-size:12px; cursor:pointer; width:auto; }
+.rtx-pg button:disabled{ opacity:.4; cursor:default; }
+@media (max-width:700px){ .rtx-bar .rtx-search{ max-width:none; } .rtx-tabs button{ padding:9px 12px; font-size:13px; } }
 .report-kpi-row{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:6px; }
 .report-kpi{ flex:1; min-width:120px; border:1px solid #ddd; border-radius:8px; padding:8px 10px; }
 .report-kpi .kpi-label{ font-size:10.5px; color:#666; }
@@ -2303,6 +2490,20 @@ body.pub-design-filmstrip .pub-item .item-control .min-weight-note{ flex:0 0 aut
   <div id="loadingText">جارِ التحميل...</div>
 </div>
 
+<div id="loginAd" role="complementary" aria-label="إعلان">
+  <button type="button" class="la-close" id="loginAdClose" aria-label="إغلاق الإعلان">✕</button>
+  <a href="https://magziko.github.io/Pos/index.html" target="_blank" rel="noopener" data-ad="pos-login">
+    <span class="la-ico">🧾</span>
+    <span>
+      <div class="la-tag">إعلان</div>
+      <div class="la-title">نظام نقاط البيع</div>
+      <div class="la-desc">مبيعاتك ومخزونك وفروعك من مكان واحد</div>
+      <div class="la-cta">جرّب الآن ←</div>
+    </span>
+  </a>
+  <span class="la-bar"></span>
+</div>
+
 <div id="authScreen" class="hidden">
   <div class="auth-brand"><img class="auth-brand-logo" src="favicon.png" alt="منيو m@g"> منيو m@g</div>
   <div class="auth-box">
@@ -2357,6 +2558,10 @@ body.pub-design-filmstrip .pub-item .item-control .min-weight-note{ flex:0 0 aut
       <span class="as-cta">تصفح المنيو <span class="as-arrow">←</span></span>
     </a>
     </div>
+    <button type="button" class="as-video" id="authGuideVideoBtn" aria-label="شاهد فيديو شرح الموقع والتطبيق">
+      <span class="as-video-thumb"><img src="https://i.ytimg.com/vi/DGyDW51fqUk/hqdefault.jpg" alt="" loading="lazy"><span class="as-play">▶</span></span>
+      <span class="as-video-txt"><strong>شاهد فيديو الشرح</strong><small>جولة سريعة في لوحة التحكم وفي المنيو اللي بيشوفه عميلك</small></span>
+    </button>
   </div>
 </div>
 
@@ -2494,6 +2699,7 @@ body.pub-design-filmstrip .pub-item .item-control .min-weight-note{ flex:0 0 aut
           <button class="link-btn" id="installDashBtn">💻 تثبيت لوحة التحكم كتطبيق</button>
           <button class="link-btn" id="dashStartupBtn">🚀 تشغيل اللوحة عند فتح الجهاز</button>
           <button class="link-btn" id="dashShortcutsBtn">⌨️ اختصارات لوحة المفاتيح</button>
+          <button class="link-btn" id="guideVideoBtn">🎬 فيديو شرح الاستخدام</button>
         </div>
       </div>
 
@@ -2537,6 +2743,11 @@ body.pub-design-filmstrip .pub-item .item-control .min-weight-note{ flex:0 0 aut
     </div>
   </div>
   <div class="main">
+    <div class="guide-banner hidden" id="guideBanner" role="region" aria-label="فيديو الشرح">
+      <span class="gb-txt"><strong>🎬 أول مرة هنا؟</strong>شاهد فيديو الشرح عشان تعرف تستخدم لوحة التحكم وتجهّز منيو متجرك بسرعة</span>
+      <button type="button" class="chip-btn active" id="guideBannerWatch">▶ شاهد الشرح</button>
+      <button type="button" class="gb-x" id="guideBannerClose" aria-label="إخفاء" title="إخفاء">×</button>
+    </div>
     <section class="setup-card hidden" id="setupCard" aria-label="قائمة الإعداد">
       <div class="setup-head">
         <h3>🚀 جهّز متجرك للإطلاق</h3>
@@ -3177,6 +3388,36 @@ function toast(msg){
   el.classList.add('show');
   setTimeout(()=> el.classList.remove('show'), 2200);
 }
+/* فيديو شرح الموقع والتطبيق — الـ iframe ما بيتحمّلش إلا لما العميل يضغط (عشان ما نبطّأش الصفحة) */
+var GUIDE_VIDEO_ID = 'DGyDW51fqUk';
+function openGuideVideo(en){
+  if(document.getElementById('guideVideoOverlay')) return;
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.id = 'guideVideoOverlay';
+  overlay.innerHTML = `
+    <div class="modal guide-video-modal" role="dialog" aria-modal="true">
+      <div class="guide-video-frame">
+        <iframe src="https://www.youtube-nocookie.com/embed/${GUIDE_VIDEO_ID}?autoplay=1&rel=0&modestbranding=1" title="${en ? 'Walkthrough video' : 'فيديو الشرح'}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+      </div>
+      <div class="guide-video-bar">
+        <a href="https://youtu.be/${GUIDE_VIDEO_ID}" target="_blank" rel="noopener">${en ? 'Open on YouTube' : 'افتح على يوتيوب'}</a>
+        <button class="btn-cancel" id="guideVideoCloseBtn" type="button">${en ? 'Close' : 'إغلاق'}</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.querySelector('#guideVideoCloseBtn').addEventListener('click', ()=> overlay.remove());
+  overlay.addEventListener('click', (e)=>{ if(e.target === overlay) overlay.remove(); });
+}
+(function bindGuideVideoButtons(){
+  [['authGuideVideoBtn'], ['guideVideoBtn', true]].forEach(([id, track])=>{
+    const b = document.getElementById(id);
+    if(b) b.addEventListener('click', ()=>{
+      openGuideVideo(false);
+      if(track && typeof restaurant !== 'undefined' && restaurant){ setupSet('videoWatched', '1'); renderSetupChecklist(); }
+    });
+  });
+})();
 
 function toEgyptWaDigits(phone){
   // أرقام العملاء مخزّنة بصيغة محلية 01xxxxxxxxx، ويجب تحويلها إلى صيغة دولية 20xxxxxxxxxx حتى يعمل رابط واتساب بشكل صحيح
@@ -3341,6 +3582,7 @@ function renderAccountIdentity(){
 function show(id){
   if(id === 'dashboardScreen' || id === 'cashierScreen') renderAccountIdentity();
   if(id === 'authScreen' && typeof setupInstallableDashboard === 'function'){ try{ setupInstallableDashboard(); }catch(e){} }
+  if(typeof window.loginAdSync === 'function'){ try{ window.loginAdSync(id === 'authScreen'); }catch(e){} }
   ['loadingScreen','authScreen','onboardScreen','dashboardScreen','publicScreen','trackingScreen','cashierScreen'].forEach(s=>{
     document.getElementById(s).classList.toggle('hidden', s!==id);
   });
@@ -3962,6 +4204,7 @@ async function openCashierDashboard(staffRow){
   document.getElementById('cashierOrdersBtnBig').onclick = openOrdersOverlay;
   document.getElementById('cashierKitchenBtn').onclick = openKitchenScreen;
   maybeAutoOpenKitchen();
+  maybeAutoOpenOrders();
   document.getElementById('cashierSignOutBtn').onclick = signOutApp;
 }
 
@@ -3988,6 +4231,7 @@ async function openDashboard(){
   await checkSubscriptionExpiry();
   if(restaurant.account_suspended){ showAccountSuspendedBlock(); return; }
   maybeAutoOpenKitchen();
+  maybeAutoOpenOrders();
   await checkDemoExpiry();
   if(restaurant.restriction_banner_enabled) showTrialExpiredBanner();
   maybeShowRenewSoonBanner();
@@ -6568,8 +6812,14 @@ async function openOrdersOverlay(){
           <select id="alertToneSelect" style="font-size:11px; padding:4px 8px; border-radius:999px; border:1px solid var(--line); background:var(--paper-dim); color:var(--stone);">
             ${Object.entries(ALERT_TONES).map(([key,t])=> `<option value="${key}">${t.label}</option>`).join('')}
           </select>
+          <button type="button" class="chip-btn" id="ordersDarkBtn" title="الوضع الليلي لشاشة الطلبات"></button>
+          <button type="button" class="chip-btn" id="ordersKitchenBtn" title="إجمالي الأصناف المطلوب تحضيرها من الطلبات الجارية">🍳 المطلوب للمطبخ</button>
+          <button type="button" class="chip-btn hidden" id="ordersColsBtn" title="اختيار شكل الجدول والأعمدة">⚙️ شكل الجدول</button>
+          <button type="button" class="chip-btn hidden" id="ordersItemsBtn" title="عرض الأصناف والكميات كاملة أو مختصرة في الجدول"></button>
+          <button type="button" class="chip-btn" id="ordersViewBtn" title="تبديل طريقة العرض بين الكروت والجدول"></button>
           <button type="button" class="chip-btn" id="alertTonePreviewBtn">🔊 تجربة</button>
           <button type="button" class="chip-btn" id="autoPrintToggleBtn"></button>
+          <button type="button" class="chip-btn" id="autoOpenOrdersBtn" title="فتح شاشة الطلبات تلقائيًا عند الدخول للوحة التحكم على هذا الجهاز"></button>
           <button type="button" class="btn-export-sm" id="ordersExportBtn">📥 تصدير Excel</button>
         </span>
       </div>
@@ -6585,6 +6835,7 @@ async function openOrdersOverlay(){
       <div class="orders-selects">
         <select id="ordersStatusFilter" class="orders-sel" aria-label="حالة الطلب">
           <option value="all">كل الحالات</option>
+          <option value="active">قيد التنفيذ (انتظار + تجهيز + جاهز)</option>
           <option value="pending">قيد الانتظار</option>
           <option value="preparing">قيد التجهيز</option>
           <option value="ready">جاهز</option>
@@ -6603,7 +6854,7 @@ async function openOrdersOverlay(){
         <option value="all">🧾 كل الطلبات (توصيل / استلام / طاولات)</option>
         <option value="dine_in_any">🍽️ كل طلبات الطاولات</option>
       </select>
-      <input type="text" id="ordersSearchInput" class="orders-search-input" placeholder="بحث برقم الطلب، اسم العميل، أو رقم الهاتف...">
+      <input type="text" id="ordersSearchInput" class="orders-search-input" placeholder="بحث برقم الطلب، اسم العميل، رقم الهاتف، أو اسم صنف...">
       </div>
       <div class="orders-body">
       <div class="orders-list" id="ordersListWrap"><div class="orders-empty">جارِ التحميل...</div></div>
@@ -6651,6 +6902,18 @@ async function openOrdersOverlay(){
     autoPrintNote.innerHTML = `تفعيل الطباعة التلقائية هنا خاص بهذا الجهاز/المتصفح فقط (مثلًا شاشة المطبخ). سيفتح المتصفح نافذة الطباعة تلقائيًا مع كل طلب جديد، وستحتاج إلى الضغط على "طباعة" فيها، إلا إذا ضبطت المتصفح على وضع "kiosk printing" الذي يطبع مباشرة من دون نافذة — استشر الدعم الفني إذا احتجت إلى ضبط الجهاز بهذه الطريقة.`;
   };
   refreshAutoPrintUI();
+  const autoOpenBtn = overlay.querySelector('#autoOpenOrdersBtn');
+  const refreshAutoOpenUI = ()=>{
+    const on = isAutoOpenOrdersEnabled();
+    autoOpenBtn.textContent = on ? '🚀 فتح تلقائي عند الدخول: مفعّل' : '🚀 فتح تلقائي عند الدخول: متوقف';
+    autoOpenBtn.classList.toggle('active', on);
+  };
+  refreshAutoOpenUI();
+  autoOpenBtn.addEventListener('click', ()=>{
+    dashPrefSet('autoOpenOrders', !isAutoOpenOrdersEnabled());
+    refreshAutoOpenUI();
+    toast(isAutoOpenOrdersEnabled() ? 'ستُفتح شاشة الطلبات تلقائيًا عند الدخول على هذا الجهاز' : 'تم إيقاف الفتح التلقائي لشاشة الطلبات على هذا الجهاز');
+  });
   autoPrintBtn.addEventListener('click', ()=>{
     setAutoPrintEnabled(!isAutoPrintEnabled());
     refreshAutoPrintUI();
@@ -6678,6 +6941,8 @@ async function openOrdersOverlay(){
   }
 
   let itemsByOrder = {};
+  const itemRetryStarted = new Set(); // طلبات بدأنا إعادة تحميل أصنافها (الأصناف تُسجَّل بعد الطلب بلحظات وقد تتأخر)
+  const isFreshOrder = (o)=> (Date.now() - new Date(o.created_at).getTime()) < 5 * 60000;
   // أصناف الطلبات على دفعات صغيرة (عشان طول الرابط وحد 1000 صف)
   async function loadItemsForOrders(list){
     const ids = list.map(o=> o.id);
@@ -6696,6 +6961,13 @@ async function openOrdersOverlay(){
   (allDriversList || []).forEach(d=> driversById[d.id] = d);
 
   const STATUS_LABELS = { pending:'قيد الانتظار', preparing:'قيد التجهيز', ready:'جاهز', delivered:'تم التسليم', cancelled:'ملغي' };
+  // الزر السريع: الخطوة التالية في دورة الطلب بضغطة واحدة (يعيد استخدام نفس منطق قائمة الحالة)
+  const NEXT_STATUS = {
+    pending:   { to:'preparing', label:'👨‍🍳 ابدأ التجهيز' },
+    preparing: { to:'ready',     label:'✅ جاهز' },
+    ready:     { to:'delivered', label:'🏁 تم التسليم' }
+  };
+  const flashIds = new Set(); // طلبات وصلت لحظيًا: تومض لفترة
 
   // رسائل واتساب جاهزة تُرسل للعميل عند تغيير حالة طلبه (ميزة PRO) — يفتح واتساب برسالة معبأة مسبقًا ليضغط صاحب المتجر إرسال فقط
   const STATUS_WA_MESSAGES = {
@@ -6741,6 +7013,18 @@ async function openOrdersOverlay(){
   let currentStatusFilter = 'all';
   let currentTypeFilter = 'all';
   let searchQuery = '';
+  const selectedIds = new Set(); // تحديد متعدد في وضع الجدول
+  let darkMode = dashPrefGet('ordDark', false) === true;
+  const darkBtn = overlay.querySelector('#ordersDarkBtn');
+  const applyDark = ()=>{
+    overlay.querySelector('.orders-modal').classList.toggle('orders-dark', darkMode);
+    darkBtn.textContent = darkMode ? '☀️ نهاري' : '🌙 ليلي';
+  };
+  darkBtn.addEventListener('click', ()=>{ darkMode = !darkMode; dashPrefSet('ordDark', darkMode); applyDark(); });
+  applyDark();
+  let viewMode = dashPrefGet('ordView', 'cards') === 'table' ? 'table' : 'cards';
+  let itemsFull = dashPrefGet('ordItemsFull', true) !== false;
+  const effView = ()=> viewMode; // الجدول متاح على كل الشاشات، وعلى الموبايل يُسحب أفقيًا
 
   function matchesSearch(o){
     if(!searchQuery) return true;
@@ -6750,12 +7034,13 @@ async function openOrdersOverlay(){
     const inName = (o.customer_name || '').toLowerCase().includes(q);
     const inPhone = (o.customer_phone || '').includes(q);
     const inSecondaryPhone = (o.secondary_phone || '').includes(q);
-    return inNumber || inName || inPhone || inSecondaryPhone;
+    const inItems = (itemsByOrder[o.id] || []).some(l=> String(l.item_name || '').toLowerCase().includes(q));
+    return inNumber || inName || inPhone || inSecondaryPhone || inItems;
   }
 
   function orderRowHtml(o){
     const d = new Date(o.created_at);
-    const time = d.toLocaleString('ar-EG', { dateStyle:'medium', timeStyle:'short' });
+    const time = fmtOrderTime(d);
     const typeLabel = o.order_type === 'dine_in' ? orderTypeLabel(o) : (o.order_type === 'pickup' ? '📦 استلام' : '🛵 توصيل');
     const lines = itemsByOrder[o.id] || [];
     const itemsCount = lines.reduce((sum,l)=> sum + (Number(l.quantity)||0), 0);
@@ -6770,12 +7055,13 @@ async function openOrdersOverlay(){
               ${l.item_note ? `<span class="o-item-note">${escapeHtml(l.item_note)}</span>` : ''}
             </li>`).join('')}
         </ul>
-      </div>` : '';
+      </div>` : (isFreshOrder(o) ? `<div class="o-items"><div class="o-items-head">🧾 الأصناف <span class="o-items-count">⏳ جارِ التحميل...</span></div></div>` : '');
     const totalsHtml = o.total != null ? `<div class="o-total">الإجمالي <span>${Number(o.total).toFixed(2)} ${getRestaurantCurrency(restaurant)}</span></div>` : '';
     const status = o.status || 'pending';
     const today = isToday(o);
     const fresh = isNewOrder(o);
-    const rowClasses = ['order-row', fresh ? 'is-new' : '', today ? 'is-today' : ''].filter(Boolean).join(' ');
+    const isDone = (status === 'delivered' || status === 'cancelled');
+    const rowClasses = ['order-row', fresh ? 'is-new' : '', today ? 'is-today' : '', isDone ? 'is-done' : '', flashIds.has(o.id) ? 'o-flash' : ''].filter(Boolean).join(' ');
     const tagsHtml = `${fresh ? '<span class="o-tag new">جديد</span>' : ''}${today ? '<span class="o-tag today">اليوم</span>' : ''}`;
     const numberHtml = o.order_number != null ? `<span class="o-number">#${o.order_number}</span>` : '';
     const unseenBadgeHtml = unseenAtOpenIds.has(o.id) ? '<span class="o-tag" style="background:#4a3a10; color:#f5d98a;">👀 لم يُفتح بعد</span>' : '';
@@ -6797,7 +7083,7 @@ async function openOrdersOverlay(){
       const readyAt = new Date(o.estimated_ready_at);
       const now = new Date();
       const diffMin = Math.round((readyAt - now) / 60000);
-      const timeLabel = readyAt.toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit' });
+      const timeLabel = readyAt.toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit' });
       let colorVar = 'var(--basil)', statusLabel = `جاهز الساعة ${timeLabel}`;
       if(diffMin < 0){ colorVar = 'var(--danger)'; statusLabel = `متأخر ${Math.abs(diffMin)} دقيقة عن الموعد المتوقع (${timeLabel})`; }
       else if(diffMin <= 5){ colorVar = '#B8872F'; statusLabel = `قرّب الموعد — جاهز الساعة ${timeLabel}`; }
@@ -6815,42 +7101,323 @@ async function openOrdersOverlay(){
           <div class="o-badges"><span class="status-badge ${status}">${STATUS_LABELS[status] || status}</span>${payBadgeHtml}${ratingBadgeHtml}${tagsHtml}${unseenBadgeHtml}${printedBadgeHtml}</div>
         </div>
         <div class="o-contact-row">
-          <span class="o-phone">${escapeHtml(o.customer_phone)}</span>${o.secondary_phone ? ` / <span class="o-phone">${escapeHtml(o.secondary_phone)}</span>` : ''}
+          <span class="o-phone">${escapeHtml(o.customer_phone)}</span>${contactIcons(o.customer_phone)}${o.secondary_phone ? ` / <span class="o-phone">${escapeHtml(o.secondary_phone)}</span>${contactIcons(o.secondary_phone)}` : ''}
           <button type="button" class="o-wa-btn" data-action="sendMenuWa" data-phone="${escapeHtml(o.customer_phone)}" data-name="${escapeHtml(o.customer_name)}" title="إرسال رابط المنيو للعميل عبر واتساب">📲 إرسال المنيو</button>
           ${restaurant.restriction_print_disabled ? '' : `<button type="button" class="o-print-btn" data-action="printReceipt" data-order-id="${o.id}" title="طباعة الطلب / Print Order">🖨️ طباعة الطلب <span style="opacity:.75;">| Print Order</span></button>`}
         </div>
         ${markPaidHtml}
         <div class="o-time">📍 ${escapeHtml(o.city || '')}${o.area ? ' — ' + escapeHtml(o.area) : ''}${o.delivery_fee != null ? ` <span class="o-fee">(رسوم التوصيل: ${Number(o.delivery_fee).toFixed(2)} ${getRestaurantCurrency(restaurant)})</span>` : ''}</div>
-        ${o.address ? `<div class="o-time">${escapeHtml(o.address)}</div>` : ''}
+        ${o.address ? `<div class="o-time">${escapeHtml(o.address)} ${mapLink(o)}</div>` : (mapLink(o) ? `<div class="o-time">${mapLink(o)}</div>` : '')}
         ${itemsListHtml}
         ${totalsHtml}
         ${o.notes ? `<div class="o-notes">📝 ${escapeHtml(o.notes)}</div>` : ''}
         ${o.coupon_code ? `<div class="o-notes" style="color:var(--basil);">🏷️ كوبون: ${escapeHtml(o.coupon_code)} (- ${Number(o.discount_amount||0).toFixed(2)} ${getRestaurantCurrency(restaurant)})</div>` : ''}
-        <div class="o-time" style="margin-top:6px;">🕒 ${time}</div>
+        <div class="o-time" style="margin-top:6px;">🕒 ${time} ${waitBadgeHtml(o)}</div>
         ${prepHtml}
-        <select class="status-select" data-action="statusSelect" ${(status==='delivered' || status==='cancelled') ? 'disabled title="لا يمكن تغيير حالة الطلب بعد أن أصبح نهائيًا"' : ''}>
+        ${NEXT_STATUS[status] ? `<div class="o-next-row"><button type="button" class="o-next-btn" data-action="nextStatus" data-to="${NEXT_STATUS[status].to}">${NEXT_STATUS[status].label}</button></div>` : ''}
+        <select class="status-select o-secondary" data-action="statusSelect" ${restaurant.restriction_status_wa_disabled ? '' : 'data-wa-hint="1"'} ${(status==='delivered' || status==='cancelled') ? 'disabled title="لا يمكن تغيير حالة الطلب بعد أن أصبح نهائيًا"' : ''}>
           <option value="pending" ${status==='pending' ? 'selected' : ''}>قيد الانتظار</option>
           <option value="preparing" ${status==='preparing' ? 'selected' : ''}>قيد التجهيز</option>
           <option value="ready" ${status==='ready' ? 'selected' : ''}>جاهز</option>
           <option value="delivered" ${status==='delivered' ? 'selected' : ''}>تم التسليم</option>
           <option value="cancelled" ${status==='cancelled' ? 'selected' : ''}>ملغي</option>
         </select>
-        ${(status==='delivered' || status==='cancelled') ? `<div class="o-time" style="margin-top:2px; font-size:11px;">لا يمكن تغيير الحالة بعد أن أصبحت نهائية</div>` : ''}
-        ${!restaurant.restriction_status_wa_disabled ? `<div class="o-time" style="margin-top:2px; font-size:10.5px; color:var(--basil);">📲 سيتم فتح واتساب تلقائيًا لإرسال إشعار للعميل بالحالة الجديدة عند التغيير</div>` : `<div class="o-time" style="margin-top:2px; font-size:10.5px;">🔒 إشعار العميل بواتساب عند تغيير الحالة متاح في باقة PRO فقط</div>`}
+        ${(status==='delivered' || status==='cancelled') ? `<div class="o-time o-secondary" style="margin-top:2px; font-size:11px;">لا يمكن تغيير الحالة بعد أن أصبحت نهائية</div>` : ''}
+        ${restaurant.restriction_status_wa_disabled ? `<span class="o-secondary" title="🔒 إشعار العميل بواتساب عند تغيير الحالة متاح في باقة PRO فقط" style="font-size:11px; color:var(--stone); cursor:help;">🔒 إشعار واتساب (PRO)</span>` : ''}
         ${o.order_type !== 'pickup' ? `
-        <div style="display:flex; align-items:center; gap:6px; margin-top:8px; flex-wrap:wrap;">
+        <div class="o-secondary" style="display:flex; align-items:center; gap:6px; margin-top:8px; flex-wrap:wrap;">
           <select class="status-select" data-action="driverSelect" style="width:auto; flex:1; min-width:120px;">
             <option value="">🚴 بدون سائق معيّن</option>
             ${Object.values(driversById).map(d=> `<option value="${d.id}" ${o.driver_id === d.id ? 'selected' : ''}>${escapeHtml(d.name)}${!d.is_active ? ' (غير نشط)' : ''}</option>`).join('')}
           </select>
           ${o.driver_id && driversById[o.driver_id] ? `<button type="button" class="o-wa-btn" data-action="sendDriverWa" data-order-id="${o.id}" title="إرسال تفاصيل الطلب للسائق عبر واتساب">📲 إرسال للسائق</button>` : ''}
         </div>` : ''}
+        ${isDone ? `<button type="button" class="o-expand-btn" data-action="toggleExpand">المزيد ▾</button>` : ''}
       </div>`;
   }
 
+  // صيغة وقت موحّدة بأرقام لاتينية: 10/11/2026 04:45 م
+  function fmtOrderTime(d){
+    const dd = String(d.getDate()).padStart(2,'0'), mm = String(d.getMonth()+1).padStart(2,'0');
+    let h = d.getHours(); const ap = h >= 12 ? 'م' : 'ص'; h = h % 12 || 12;
+    return `${dd}/${mm}/${d.getFullYear()} ${String(h).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')} ${ap}`;
+  }
+  // شارة وقت الانتظار للطلبات الجارية: أخضر حتى 10 دقائق، أصفر حتى 20، أحمر بعدها
+  function waitBadgeHtml(o){
+    const st = o.status || 'pending';
+    if(st !== 'pending' && st !== 'preparing') return '';
+    const min = Math.max(0, Math.floor((Date.now() - new Date(o.created_at).getTime()) / 60000));
+    if(min > 600) return '';
+    const cls = min >= 20 ? 'late' : (min >= 10 ? 'warn' : '');
+    const label = min >= 60 ? `${Math.floor(min/60)} س ${min%60} د` : `${min} د`;
+    return `<span class="o-wait ${cls}" title="مضى على الطلب">⏳ منذ ${label}</span>`;
+  }
+  // ===== أعمدة الجدول: قابلة للاختيار، مع تصميمات جاهزة =====
+  const TABLE_COLS = [
+    { id:'num', label:'رقم الطلب', locked:true }, { id:'name', label:'العميل' }, { id:'phone', label:'الهاتف' },
+    { id:'type', label:'نوع الطلب' }, { id:'addr', label:'العنوان' }, { id:'items', label:'الأصناف والكميات' },
+    { id:'total', label:'الإجمالي' }, { id:'status', label:'الحالة' }, { id:'time', label:'الوقت' }, { id:'actions', label:'الإجراءات (الحالة والطباعة)' }
+  ];
+  const COL_PRESETS = {
+    compact:  { label:'مختصر', hint:'العميل بدون هاتف وعنوان (بياناته في النافذة)', cols:['num','name','type','items','total','status','time','actions'] },
+    detailed: { label:'مفصّل', hint:'الهاتف والعنوان ظاهرين في الجدول', cols:['num','name','phone','type','addr','items','total','status','time','actions'] },
+    kitchen:  { label:'للمطبخ', hint:'الأصناف والحالة فقط بدون أسعار وعناوين', cols:['num','name','type','items','status','time','actions'] },
+    delivery: { label:'للتوصيل', hint:'العنوان والهاتف والحالة للسائق', cols:['num','name','phone','addr','status','time','actions'] }
+  };
+  let tableCols = (()=>{
+    const saved = dashPrefGet('ordCols', null);
+    const valid = Array.isArray(saved) ? saved.filter(id=> TABLE_COLS.some(c=> c.id === id)) : null;
+    const cols = (valid && valid.length) ? valid : COL_PRESETS.compact.cols.slice();
+    if(!cols.includes('num')) cols.unshift('num');
+    return TABLE_COLS.map(c=> c.id).filter(id=> cols.includes(id));
+  })();
+  const TABLE_HEAD = {
+    num: ()=> `<th class="c-num"><input type="checkbox" class="ot-chk" id="otChkAll" title="تحديد كل الطلبات الجارية المعروضة">#</th>`,
+    name: ()=> `<th class="c-name">العميل</th>`, phone: ()=> `<th>الهاتف</th>`, type: ()=> `<th>نوع الطلب</th>`, addr: ()=> `<th>العنوان</th>`,
+    items: ()=> `<th>الأصناف والكميات</th>`, total: ()=> `<th>الإجمالي</th>`, status: ()=> `<th>الحالة</th>`, time: ()=> `<th>الوقت</th>`, actions: ()=> `<th>إجراءات</th>`
+  };
+  function orderTableRowHtml(o){
+    const status = o.status || 'pending';
+    const lines = itemsByOrder[o.id] || [];
+    const itemsTxt = lines.map(l=> `${l.quantity}× ${l.item_name}`).join('، ');
+    const typeLabel = o.order_type === 'dine_in' ? orderTypeLabel(o) : (o.order_type === 'pickup' ? '📦 استلام' : '🛵 توصيل');
+    const isOnlinePay = o.payment_method === 'wallet' || o.payment_method === 'instapay';
+    const final = (status === 'delivered' || status === 'cancelled');
+    const cur = getRestaurantCurrency(restaurant);
+    const cells = {
+      num: `<td class="ot-num c-num"><input type="checkbox" class="ot-chk" data-oid="${o.id}" ${selectedIds.has(o.id) ? 'checked' : ''} ${final ? 'disabled title="طلب نهائي"' : ''}><a href="#" data-action="openDetails" data-order-id="${o.id}" title="عرض تفاصيل الطلب" style="color:inherit; text-decoration:underline dotted;">${o.order_number != null ? '#' + o.order_number : '—'}</a></td>`,
+      name: `<td class="ot-name c-name"><a href="#" class="ot-cust" data-action="openDetails" data-order-id="${o.id}" title="عرض بيانات العميل وأزرار الاتصال"><strong>${escapeHtml(o.customer_name)}</strong><small>👤 البيانات</small></a></td>`,
+      phone: `<td style="white-space:nowrap;"><span class="ot-phone">${escapeHtml(o.customer_phone)}</span>${contactIcons(o.customer_phone)}${o.secondary_phone ? `<br><span class="ot-phone">${escapeHtml(o.secondary_phone)}</span>${contactIcons(o.secondary_phone)}` : ''}</td>`,
+      type: `<td style="white-space:nowrap;"><span class="ot-type ${o.order_type === 'dine_in' ? 'dine' : (o.order_type === 'pickup' ? 'pick' : 'deliv')}">${typeLabel}</span></td>`,
+      addr: `<td class="ot-addr">${o.order_type === 'pickup' ? '<span style="color:var(--stone);">استلام من المحل</span>' : (o.order_type === 'dine_in' ? '<span style="color:var(--stone);">داخل الصالة</span>' : `${escapeHtml([o.city, o.area].filter(Boolean).join(' — '))}${o.address ? `<div style="color:var(--stone); margin-top:2px;">${escapeHtml(o.address)}</div>` : ''}${mapLink(o) ? `<div style="margin-top:3px;">${mapLink(o)}</div>` : ''}`)}</td>`,
+      items: `<td><div class="ot-items" title="${escapeHtml(itemsTxt)}">${lines.length ? lines.slice(0, itemsFull ? 3 : lines.length).map(l=> `<div class="ot-line"><b>${escapeHtml(String(l.quantity))}×</b><span>${escapeHtml(l.item_name)}</span>${l.item_note ? `<small>(${escapeHtml(l.item_note)})</small>` : ''}</div>`).join('') : (isFreshOrder(o) ? '<span style="color:var(--stone);">⏳ جارِ تحميل الأصناف...</span>' : '<span style="color:var(--stone);">—</span>')}${(itemsFull && lines.length > 3) ? `<button type="button" class="ot-more" data-action="openDetails" data-order-id="${o.id}">+ ${lines.length - 3} صنف آخر ◂</button>` : ''}</div></td>`,
+      total: `<td class="ot-total">${o.total != null ? Number(o.total).toFixed(2) + ' ' + escapeHtml(cur) : ''}</td>`,
+      status: `<td><span class="status-badge ${status}">${STATUS_LABELS[status] || status}</span>${isOnlinePay ? `<div style="font-size:11px; margin-top:3px; color:${o.payment_status==='paid' ? 'var(--basil)' : '#8a5f0d'};">💳 ${o.payment_status==='paid' ? 'مدفوع' : 'بانتظار التأكيد'}</div>` : ''}</td>`,
+      time: `<td style="white-space:nowrap;">${fmtOrderTime(new Date(o.created_at))}</td>`,
+      actions: `<td><div class="ot-actions">
+        <select class="status-select" data-action="statusSelect" ${final ? 'disabled title="لا يمكن تغيير حالة الطلب بعد أن أصبح نهائيًا"' : ''}>
+          ${Object.entries(STATUS_LABELS).map(([k,v])=> `<option value="${k}" ${status===k ? 'selected' : ''}>${v}</option>`).join('')}
+        </select>
+        ${restaurant.restriction_print_disabled ? '' : `<button type="button" class="o-print-btn" data-action="printReceipt" data-order-id="${o.id}" title="طباعة الطلب">🖨️</button>`}
+      </div></td>`
+    };
+    // لو عمود الحالة (select) غير ظاهر، نحافظ على وجود عنصر مخفي حتى لا يتعطل منطق تغيير الحالة والـ badge
+    const hiddenHelpers = (tableCols.includes('actions') ? '' : `<td style="display:none;"><select class="status-select" data-action="statusSelect" disabled><option value="${status}" selected></option></select></td>`)
+      + (tableCols.includes('status') ? '' : `<td style="display:none;"><span class="status-badge ${status}"></span></td>`);
+    return `<tr class="order-row${isNewOrder(o) ? ' is-new' : ''}${flashIds.has(o.id) ? ' o-flash' : ''}" data-order-id="${o.id}">${tableCols.map(id=> cells[id]).join('')}${hiddenHelpers}</tr>`;
+  }
+  function ordersTableHtml(list){
+    return `<div class="ot-bulk${selectedIds.size ? '' : ' hidden'}" id="otBulkBar">
+      <span id="otBulkCount"></span>
+      <select class="status-select" id="otBulkStatus">${Object.entries(STATUS_LABELS).map(([k,v])=> `<option value="${k}">${v}</option>`).join('')}</select>
+      <button type="button" id="otBulkApply">تطبيق على المحدد</button>
+      <button type="button" id="otBulkClear" style="background:transparent; color:#fff; border:1px solid rgba(255,255,255,.6);">إلغاء التحديد</button>
+    </div><div class="orders-table-wrap"><table class="orders-table${itemsFull ? '' : ' is-compact'}"><thead><tr>${tableCols.map(id=> TABLE_HEAD[id]()).join('')}</tr></thead><tbody>${list.map(orderTableRowHtml).join('')}</tbody></table></div>`;
+  }
+  function openTableLayout(){
+    const sameAs = (arr)=> arr.length === tableCols.length && arr.every(x=> tableCols.includes(x));
+    const dv = document.createElement('div');
+    dv.className = 'overlay'; dv.style.zIndex = '10050';
+    const draw = ()=>{
+      const cur = Object.keys(COL_PRESETS).find(k=> sameAs(COL_PRESETS[k].cols));
+      dv.innerHTML = `<div class="modal od-modal${darkMode ? ' orders-dark' : ''}">
+        <h3 style="margin:0 0 4px;">⚙️ شكل جدول الطلبات</h3>
+        <div style="color:var(--stone); font-size:12.5px; margin-bottom:10px;">اختر تصميمًا جاهزًا، أو حدّد الأعمدة التي تريدها بنفسك. التغيير يظهر فورًا ويُحفظ على هذا الجهاز.</div>
+        <div style="font-weight:800; margin-bottom:6px;">تصميمات جاهزة</div>
+        ${Object.entries(COL_PRESETS).map(([k,pr])=> `<label class="tl-opt${cur === k ? ' on' : ''}"><input type="radio" name="tlPreset" value="${k}" ${cur === k ? 'checked' : ''}><span><b>${pr.label}</b><small>${pr.hint}</small></span></label>`).join('')}
+        <label class="tl-opt${cur ? '' : ' on'}"><input type="radio" name="tlPreset" value="custom" ${cur ? '' : 'checked'} disabled><span><b>مخصص</b><small>${cur ? 'يُفعَّل عند تعديل الأعمدة بالأسفل' : 'الأعمدة المحددة بالأسفل'}</small></span></label>
+        <div style="font-weight:800; margin:12px 0 6px;">الأعمدة الظاهرة</div>
+        <div class="tl-cols">${TABLE_COLS.map(c=> `<label class="tl-col"><input type="checkbox" data-col="${c.id}" ${tableCols.includes(c.id) ? 'checked' : ''} ${c.locked ? 'disabled' : ''}> ${c.label}</label>`).join('')}</div>
+        <div style="display:flex; margin-top:14px;"><button type="button" id="tlClose" style="margin-inline-start:auto; border:0; background:var(--paper-dim); color:var(--ink); font-family:var(--body); font-weight:800; padding:9px 22px; border-radius:10px; cursor:pointer;">تم</button></div>
+      </div>`;
+      dv.querySelectorAll('input[name="tlPreset"]:not(:disabled)').forEach(r=> r.addEventListener('change', ()=>{ setCols(COL_PRESETS[r.value].cols); }));
+      dv.querySelectorAll('input[data-col]').forEach(cb=> cb.addEventListener('change', ()=>{
+        const picked = [...dv.querySelectorAll('input[data-col]')].filter(x=> x.checked || x.disabled).map(x=> x.dataset.col);
+        setCols(picked);
+      }));
+      dv.querySelector('#tlClose').addEventListener('click', ()=> dv.remove());
+    };
+    const setCols = (cols)=>{
+      const set = TABLE_COLS.map(c=> c.id).filter(id=> id === 'num' || cols.includes(id));
+      tableCols = set; dashPrefSet('ordCols', set); draw(); renderList();
+    };
+    dv.addEventListener('click', (e)=>{ if(e.target === dv) dv.remove(); });
+    document.body.appendChild(dv); draw();
+  }
+
+  // أزرار اتصال وواتساب مباشرة على رقم العميل، ورابط الخريطة للعنوان
+  function contactIcons(phone){
+    const clean = String(phone || '').replace(/[^\d+]/g, '');
+    if(!clean) return '';
+    const wa = toEgyptWaDigits(phone);
+    return `<a class="o-ic" href="tel:${clean}" title="اتصال" onclick="event.stopPropagation()">📞</a>${wa ? `<a class="o-ic" href="https://wa.me/${wa}" target="_blank" rel="noopener" title="واتساب" onclick="event.stopPropagation()">💬</a>` : ''}`;
+  }
+  function mapLink(o){
+    if(o.order_type === 'pickup' || o.order_type === 'dine_in') return '';
+    const q = [o.address, o.area, o.city].filter(Boolean).join('، ');
+    if(!q) return '';
+    return `<a class="o-map" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}" target="_blank" rel="noopener" title="فتح العنوان على الخريطة" onclick="event.stopPropagation()">📍 الخريطة</a>`;
+  }
+  function showNewOrderBanner(row){
+    const body = overlay.querySelector('.orders-body'); if(!body) return;
+    let b = overlay.querySelector('#ordersNewBanner');
+    if(!b){
+      b = document.createElement('div'); b.id = 'ordersNewBanner'; b.className = 'orders-new-banner';
+      b.addEventListener('click', ()=>{ body.scrollTo({ top:0, behavior:'smooth' }); b.remove(); });
+      body.prepend(b);
+    }
+    b.textContent = `🆕 طلب جديد ${row.order_number != null ? '#' + row.order_number : ''} من ${row.customer_name || ''} — اضغط للعرض`;
+    clearTimeout(b._t); b._t = setTimeout(()=> b.remove(), 9000);
+  }
+
+  // تجميع الأصناف المطلوبة من الطلبات الجارية (قيد الانتظار + قيد التجهيز) لتحضيرها دفعة واحدة
+  function kitchenTotals(){
+    const map = new Map();
+    orders.filter(o=> { const st = o.status || 'pending'; return st === 'pending' || st === 'preparing'; }).forEach(o=>{
+      (itemsByOrder[o.id] || []).forEach(l=>{
+        const key = String(l.item_name || '').trim();
+        if(!key) return;
+        const e = map.get(key) || { name:key, qty:0, orders:new Set(), notes:[] };
+        e.qty += Number(l.quantity) || 0; e.orders.add(o.id);
+        if(l.item_note) e.notes.push(l.item_note);
+        map.set(key, e);
+      });
+    });
+    return [...map.values()].sort((a,b)=> b.qty - a.qty);
+  }
+  function updateKitchenBtn(){
+    const btn = overlay.querySelector('#ordersKitchenBtn'); if(!btn) return;
+    const n = kitchenTotals().reduce((t,e)=> t + e.qty, 0);
+    btn.textContent = n ? `🍳 المطلوب للمطبخ (${n})` : '🍳 المطلوب للمطبخ';
+  }
+  function openKitchenSummary(){
+    const rows = kitchenTotals();
+    const activeCount = orders.filter(o=> { const st = o.status || 'pending'; return st === 'pending' || st === 'preparing'; }).length;
+    const dv = document.createElement('div');
+    dv.className = 'overlay'; dv.style.zIndex = '10050';
+    dv.innerHTML = `<div class="modal od-modal${darkMode ? ' orders-dark' : ''}">
+      <h3 style="margin:0 0 4px;">🍳 المطلوب للمطبخ</h3>
+      <div style="color:var(--stone); font-size:12.5px; margin-bottom:8px;">إجمالي الأصناف في الطلبات الجارية (قيد الانتظار وقيد التجهيز) — ${activeCount} طلب</div>
+      ${rows.length ? rows.map(e=> `<div class="ks-row"><span class="ks-qty">${e.qty}×</span><span class="ks-name">${escapeHtml(e.name)}${e.notes.length ? `<div style="font-weight:600; font-size:12px; color:var(--stone);">📝 ${escapeHtml([...new Set(e.notes)].join('، '))}</div>` : ''}</span><span class="ks-meta">${e.orders.size} طلب</span></div>`).join('') : '<div class="orders-empty">لا توجد طلبات جارية الآن</div>'}
+      <div style="display:flex; gap:8px; margin-top:14px;">
+        <button type="button" id="ksPrint" style="border:0; background:var(--confirm-strong); color:#fff; font-family:var(--body); font-weight:800; padding:9px 18px; border-radius:10px; cursor:pointer;">🖨️ طباعة</button>
+        <button type="button" id="ksClose" style="margin-inline-start:auto; border:0; background:var(--paper-dim); color:var(--ink); font-family:var(--body); font-weight:800; padding:9px 22px; border-radius:10px; cursor:pointer;">إغلاق</button>
+      </div></div>`;
+    document.body.appendChild(dv);
+    const close = ()=> dv.remove();
+    dv.addEventListener('click', (e)=>{ if(e.target === dv) close(); });
+    dv.querySelector('#ksClose').addEventListener('click', close);
+    dv.querySelector('#ksPrint').addEventListener('click', ()=>{
+      const w = window.open('', '_blank', 'width=420,height=640'); if(!w){ toast('اسمح بالنوافذ المنبثقة للطباعة'); return; }
+      w.document.write(`<html dir="rtl"><head><meta charset="utf-8"><title>المطلوب للمطبخ</title><style>body{font-family:Tahoma,Arial,sans-serif;padding:12px} h3{margin:0 0 8px} .r{display:flex;gap:10px;padding:6px 0;border-bottom:1px dashed #999;font-size:15px} .q{font-weight:800;min-width:46px}</style></head><body><h3>المطلوب للمطبخ — ${activeCount} طلب</h3>${rows.map(e=> `<div class="r"><span class="q">${e.qty}×</span><span>${escapeHtml(e.name)}</span></div>`).join('')}<script>window.onload=function(){window.print();}<\/script></body></html>`);
+      w.document.close();
+    });
+  }
+  overlay.querySelector('#ordersKitchenBtn').addEventListener('click', openKitchenSummary);
+
+  function openOrderDetails(o){
+    if(!o) return;
+    const cur = getRestaurantCurrency(restaurant);
+    const lines = itemsByOrder[o.id] || [];
+    const status = o.status || 'pending';
+    const final = (status === 'delivered' || status === 'cancelled');
+    const typeLabel = o.order_type === 'dine_in' ? orderTypeLabel(o) : (o.order_type === 'pickup' ? '📦 استلام' : '🛵 توصيل');
+    const money = (v)=> v == null ? '' : Number(v).toFixed(2);
+    const itemsCount = lines.reduce((t,l)=> t + (Number(l.quantity)||0), 0);
+    const dv = document.createElement('div');
+    dv.className = 'overlay'; dv.style.zIndex = '10050';
+    dv.innerHTML = `<div class="modal od-modal${darkMode ? ' orders-dark' : ''}">
+      <h3 style="margin:0 0 4px;">طلب ${o.order_number != null ? '#' + o.order_number : ''} <span class="status-badge ${status}">${STATUS_LABELS[status] || status}</span></h3>
+      <dl class="od-grid">
+        <dt>العميل</dt><dd>${escapeHtml(o.customer_name)}</dd>
+        <dt>الهاتف</dt><dd><div class="od-phone"><span style="direction:ltr; font-family:var(--mono);">${escapeHtml(o.customer_phone || '')}</span>${contactIcons(o.customer_phone)}</div></dd>
+        ${o.secondary_phone ? `<dt>هاتف إضافي</dt><dd><div class="od-phone"><span style="direction:ltr; font-family:var(--mono);">${escapeHtml(o.secondary_phone)}</span>${contactIcons(o.secondary_phone)}</div></dd>` : ''}
+        <dt>نوع الطلب</dt><dd>${typeLabel}</dd>
+        ${o.order_type === 'delivery' || !o.order_type ? `<dt>العنوان</dt><dd>${escapeHtml([o.city, o.area].filter(Boolean).join(' — '))}${o.address ? '<br>' + escapeHtml(o.address) : ''}${mapLink(o) ? '<br>' + mapLink(o) : ''}${o.delivery_fee != null ? `<br><span style="color:var(--stone); font-weight:600;">رسوم التوصيل: ${money(o.delivery_fee)} ${escapeHtml(cur)}</span>` : ''}</dd>` : ''}
+        <dt>الوقت</dt><dd>${fmtOrderTime(new Date(o.created_at))} ${waitBadgeHtml(o)}</dd>
+        ${o.notes ? `<dt>ملاحظات</dt><dd>📝 ${escapeHtml(o.notes)}</dd>` : ''}
+        ${o.coupon_code ? `<dt>كوبون</dt><dd>🏷️ ${escapeHtml(o.coupon_code)} (- ${money(o.discount_amount || 0)} ${escapeHtml(cur)})</dd>` : ''}
+      </dl>
+      <div style="font-weight:800; margin-top:6px;">🧾 الأصناف <span class="o-items-count">${itemsCount} قطعة</span></div>
+      <table class="od-items"><thead><tr><th>الكمية</th><th>الصنف</th><th>السعر</th></tr></thead><tbody>
+        ${lines.map(l=> `<tr><td class="q">${escapeHtml(String(l.quantity))}×</td><td>${escapeHtml(l.item_name)}${l.addons_label ? `<div style="color:var(--stone); font-size:12px;">➕ ${escapeHtml(l.addons_label)}</div>` : ''}${l.item_note ? `<div style="color:var(--stone); font-size:12px;">📝 ${escapeHtml(l.item_note)}</div>` : ''}</td><td style="white-space:nowrap;">${l.price != null ? money(l.price) : ''}</td></tr>`).join('') || `<tr><td colspan="3" style="color:var(--stone);">${isFreshOrder(o) ? '⏳ جارِ تحميل الأصناف... أعد فتح النافذة بعد لحظات' : 'لا توجد أصناف'}</td></tr>`}
+      </tbody></table>
+      <div class="o-total">الإجمالي <span>${money(o.total)} ${escapeHtml(cur)}</span></div>
+      <div style="display:flex; gap:8px; align-items:center; margin-top:12px; flex-wrap:wrap;">
+        <select class="status-select" id="odStatus" style="margin-top:0;" ${final ? 'disabled' : ''}>
+          ${Object.entries(STATUS_LABELS).map(([k,v])=> `<option value="${k}" ${status===k ? 'selected' : ''}>${v}</option>`).join('')}
+        </select>
+        ${restaurant.restriction_print_disabled ? '' : '<button type="button" class="o-print-btn" id="odPrint">🖨️ طباعة الطلب</button>'}
+        <button type="button" class="o-wa-btn" id="odMenuWa" title="إرسال رابط المنيو للعميل عبر واتساب">📲 إرسال المنيو</button>
+        <button type="button" id="odClose" style="margin-inline-start:auto; border:0; background:var(--paper-dim); color:var(--ink); font-family:var(--body); font-weight:800; font-size:13px; padding:9px 22px; border-radius:10px; cursor:pointer;">إغلاق</button>
+      </div></div>`;
+    document.body.appendChild(dv);
+    const close = ()=> dv.remove();
+    dv.addEventListener('click', (e)=>{ if(e.target === dv) close(); });
+    dv.querySelector('#odClose').addEventListener('click', close);
+    const pb = dv.querySelector('#odPrint');
+    if(pb) pb.addEventListener('click', ()=> openReceiptPreviewModal(o, lines));
+    dv.querySelector('#odMenuWa').addEventListener('click', ()=> sendMenuLinkWhatsApp(o.customer_phone, o.customer_name));
+    dv.querySelector('#odStatus').addEventListener('change', async (e)=>{
+      const ns = e.target.value; e.target.disabled = true;
+      const payload = { status: ns }; if(ns === 'delivered') payload.delivered_at = new Date().toISOString();
+      const { error: uErr } = await sb.from('orders').update(payload).eq('id', o.id);
+      if(uErr){ toast('تعذر تحديث حالة الطلب'); e.target.disabled = false; return; }
+      o.status = ns; sendStatusWaToCustomer(o, ns); refreshNewOrdersCount(); toast('تم تحديث حالة الطلب'); close(); renderList();
+    });
+  }
+
+  function updateBulkBar(){
+    const bar = wrap.querySelector('#otBulkBar'); if(!bar) return;
+    bar.classList.toggle('hidden', selectedIds.size === 0);
+    const c = bar.querySelector('#otBulkCount'); if(c) c.textContent = `تم تحديد ${selectedIds.size} طلب`;
+    const all = wrap.querySelector('#otChkAll');
+    if(all){ const boxes = [...wrap.querySelectorAll('.ot-chk[data-oid]:not(:disabled)')]; all.checked = boxes.length > 0 && boxes.every(b=> b.checked); }
+  }
+  function attachBulkHandlers(){
+    if(!wrap.querySelector('#otBulkBar')) return;
+    wrap.querySelectorAll('.ot-chk[data-oid]').forEach(cb=> cb.addEventListener('change', ()=>{ cb.checked ? selectedIds.add(cb.dataset.oid) : selectedIds.delete(cb.dataset.oid); updateBulkBar(); }));
+    const all = wrap.querySelector('#otChkAll');
+    if(all) all.addEventListener('change', ()=>{ wrap.querySelectorAll('.ot-chk[data-oid]:not(:disabled)').forEach(cb=>{ cb.checked = all.checked; all.checked ? selectedIds.add(cb.dataset.oid) : selectedIds.delete(cb.dataset.oid); }); updateBulkBar(); });
+    wrap.querySelector('#otBulkClear').addEventListener('click', ()=>{ selectedIds.clear(); wrap.querySelectorAll('.ot-chk').forEach(cb=> cb.checked = false); updateBulkBar(); });
+    wrap.querySelector('#otBulkApply').addEventListener('click', async (e)=>{
+      const ns = wrap.querySelector('#otBulkStatus').value;
+      const targets = orders.filter(o=> selectedIds.has(o.id) && !['delivered','cancelled'].includes(o.status || 'pending') && (o.status || 'pending') !== ns);
+      if(!targets.length){ toast('لا توجد طلبات قابلة للتغيير في التحديد'); return; }
+      if(!confirm(`تغيير حالة ${targets.length} طلب إلى «${STATUS_LABELS[ns]}»؟\nملاحظة: لن تُرسل رسائل واتساب للعملاء مع التغيير الجماعي.`)) return;
+      e.currentTarget.disabled = true;
+      const payload = { status: ns }; if(ns === 'delivered') payload.delivered_at = new Date().toISOString();
+      const { error: bErr } = await sb.from('orders').update(payload).in('id', targets.map(o=> o.id));
+      if(bErr){ toast('تعذر تحديث الطلبات'); e.currentTarget.disabled = false; return; }
+      targets.forEach(o=> o.status = ns);
+      selectedIds.clear(); refreshNewOrdersCount(); toast(`تم تحديث ${targets.length} طلب`); renderList();
+    });
+    updateBulkBar();
+  }
+
   function attachRowHandlers(){
+    attachBulkHandlers();
+    wrap.querySelectorAll('[data-action="openDetails"]').forEach(b=> b.addEventListener('click', (e)=>{ e.preventDefault(); openOrderDetails(orders.find(x=> x.id === b.dataset.orderId)); }));
+    wrap.querySelectorAll('.orders-table.is-compact .ot-items').forEach(c=> c.addEventListener('click', ()=>{ c.style.whiteSpace = c.style.whiteSpace ? '' : 'normal'; c.style.maxWidth = c.style.maxWidth ? '' : 'none'; }));
     wrap.querySelectorAll('.order-row').forEach(row=>{
       const orderId = row.dataset.orderId;
+      const nextBtn = row.querySelector('[data-action="nextStatus"]');
+      if(nextBtn){
+        nextBtn.addEventListener('click', ()=>{
+          const sel = row.querySelector('[data-action="statusSelect"]');
+          if(!sel || sel.disabled) return;
+          nextBtn.disabled = true;
+          sel.value = nextBtn.dataset.to;
+          sel.dispatchEvent(new Event('change'));
+        });
+      }
+      const expBtn = row.querySelector('[data-action="toggleExpand"]');
+      if(expBtn){
+        expBtn.addEventListener('click', ()=>{
+          const on = row.classList.toggle('is-expanded');
+          expBtn.textContent = on ? 'إخفاء ▴' : 'المزيد ▾';
+        });
+      }
       const waBtn = row.querySelector('[data-action="sendMenuWa"]');
       if(waBtn){
         waBtn.addEventListener('click', ()=> sendMenuLinkWhatsApp(waBtn.dataset.phone, waBtn.dataset.name));
@@ -6897,7 +7464,7 @@ async function openOrdersOverlay(){
         const updatePayload = { status: newStatus };
         if(newStatus === 'delivered') updatePayload.delivered_at = new Date().toISOString();
         const { error: updErr } = await sb.from('orders').update(updatePayload).eq('id', orderId);
-        if(updErr){ toast('تعذر تحديث حالة الطلب'); select.disabled = false; return; }
+        if(updErr){ toast('تعذر تحديث حالة الطلب'); select.disabled = false; const nb0 = row.querySelector('.o-next-btn'); if(nb0) nb0.disabled = false; return; }
         const orderObj = orders.find(o=> o.id === orderId);
         if(orderObj) orderObj.status = newStatus;
         sendStatusWaToCustomer(orderObj, newStatus);
@@ -6920,6 +7487,13 @@ async function openOrdersOverlay(){
           select.disabled = false;
         }
         toast('تم تحديث حالة الطلب');
+        const nb = row.querySelector('.o-next-btn');
+        if(nb){
+          const nx = NEXT_STATUS[newStatus];
+          if(!nx){ const nr = nb.closest('.o-next-row'); if(nr) nr.remove(); }
+          else { nb.dataset.to = nx.to; nb.textContent = nx.label; nb.disabled = false; }
+        }
+        updateKitchenBtn();
       });
 
       const driverSelect = row.querySelector('[data-action="driverSelect"]');
@@ -6985,10 +7559,14 @@ async function openOrdersOverlay(){
     return true;
   }
 
-  function passesFilters(o){
+  function passesFilters(o, skipStatus){
     if(!matchesSearch(o)) return false;
     if(!matchesTableFilter(o)) return false;
-    if(currentStatusFilter !== 'all' && (o.status || 'pending') !== currentStatusFilter) return false;
+    if(!skipStatus && currentStatusFilter !== 'all'){
+      const st0 = o.status || 'pending';
+      if(currentStatusFilter === 'active'){ if(st0 !== 'pending' && st0 !== 'preparing' && st0 !== 'ready') return false; }
+      else if(st0 !== currentStatusFilter) return false;
+    }
     if(currentTypeFilter !== 'all' && (o.order_type || 'delivery') !== currentTypeFilter) return false;
     if(currentFilter === 'new') return isNewOrder(o);
     if(currentFilter === 'today') return isToday(o);
@@ -7004,25 +7582,65 @@ async function openOrdersOverlay(){
     const countable = filtered.filter(o=> (o.status || 'pending') !== 'cancelled');
     const sum = countable.reduce((t, o)=> t + (Number(o.total) || 0), 0);
     const active = filtered.filter(o=> { const st = o.status || 'pending'; return st === 'pending' || st === 'preparing' || st === 'ready'; }).length;
+    const base = orders.filter(o=> passesFilters(o, true));
+    const cnt = (f)=> base.filter(o=> f(o.status || 'pending')).length;
+    const chip = (key, label, n)=> `<button type="button" class="os-chip${currentStatusFilter === key ? ' active' : ''}" data-sfilter="${key}">${label} <strong>${n}</strong></button>`;
     el.innerHTML = `<span>عدد الطلبات: <strong>${filtered.length}</strong></span>`
-      + `<span>قيد التنفيذ: <strong>${active}</strong></span>`
+      + chip('pending', '🆕 جديدة', cnt(st=> st === 'pending'))
+      + chip('preparing', '👨‍🍳 قيد التجهيز', cnt(st=> st === 'preparing'))
+      + chip('ready', '✅ جاهزة', cnt(st=> st === 'ready'))
+      + chip('active', '⚡ قيد التنفيذ', cnt(st=> st === 'pending' || st === 'preparing' || st === 'ready'))
       + `<span>الإجمالي (بدون الملغي): <strong>${sum.toLocaleString('en-US', { maximumFractionDigits: 2 })} ${escapeHtml(cur)}</strong></span>`
       + (hasMoreOrders ? `<span style="font-weight:600;">المعروض: آخر ${orders.length} طلب — اضغط «تحميل طلبات أقدم» لعرض الباقي</span>` : '');
   }
 
   function renderList(){
-    const filtered = orders.filter(passesFilters);
+    const filtered = orders.filter(o=> passesFilters(o));
     renderSummary(filtered);
+    updateKitchenBtn();
+    orders.forEach(o=>{ if(isFreshOrder(o) && !(itemsByOrder[o.id] || []).length) ensureItems(o); }); // طلب حديث بلا أصناف: أعد المحاولة
     const moreBtn = overlay.querySelector('#ordersLoadMoreBtn');
     moreBtn.classList.toggle('hidden', !hasMoreOrders);
     if(filtered.length === 0){
       wrap.innerHTML = `<div class="orders-empty">${orders.length === 0 ? 'لا توجد طلبات بعد' : (searchQuery ? 'لا توجد نتائج مطابقة للبحث' : 'لا توجد طلبات في هذا التصنيف')}</div>`;
       return;
     }
-    wrap.innerHTML = filtered.map(orderRowHtml).join('');
+    wrap.classList.toggle('is-table', effView() === 'table');
+    if(effView() === 'table'){
+      wrap.innerHTML = ordersTableHtml(filtered);
+    } else {
+      // الأولوية في الكروت: الجديدة ثم قيد التجهيز ثم الجاهزة، والمنتهية في الآخر (الترتيب الزمني محفوظ داخل كل مجموعة)
+      const RANK = { pending:0, preparing:1, ready:2 };
+      const sorted = filtered.map((o,i)=> [o,i]).sort((x,y)=>{
+        const rx = RANK[x[0].status || 'pending'] ?? 3, ry = RANK[y[0].status || 'pending'] ?? 3;
+        return rx - ry || x[1] - y[1];
+      }).map(x=> x[0]);
+      wrap.innerHTML = sorted.map(orderRowHtml).join('');
+    }
     attachRowHandlers();
   }
 
+  const viewBtn = overlay.querySelector('#ordersViewBtn');
+  const itemsBtn = overlay.querySelector('#ordersItemsBtn');
+  const refreshViewBtn = ()=>{
+    viewBtn.textContent = viewMode === 'table' ? '▦ عرض الكروت' : '☰ عرض جدول';
+    itemsBtn.classList.toggle('hidden', viewMode !== 'table');
+    overlay.querySelector('#ordersColsBtn').classList.toggle('hidden', viewMode !== 'table');
+    itemsBtn.textContent = itemsFull ? '📋 الأصناف: كاملة' : '📋 الأصناف: مختصرة';
+  };
+  overlay.querySelector('#ordersColsBtn').addEventListener('click', openTableLayout);
+  itemsBtn.addEventListener('click', ()=>{ itemsFull = !itemsFull; dashPrefSet('ordItemsFull', itemsFull); refreshViewBtn(); renderList(); });
+
+  refreshViewBtn();
+  viewBtn.addEventListener('click', ()=>{ viewMode = viewMode === 'table' ? 'cards' : 'table'; dashPrefSet('ordView', viewMode); refreshViewBtn(); renderList(); });
+  overlay.querySelector('#ordersSummary').addEventListener('click', (e)=>{
+    const chipEl = e.target.closest('[data-sfilter]'); if(!chipEl) return;
+    const v = chipEl.dataset.sfilter;
+    currentStatusFilter = (currentStatusFilter === v) ? 'all' : v;
+    dashPrefSet('ordStatus', currentStatusFilter);
+    overlay.querySelector('#ordersStatusFilter').value = currentStatusFilter;
+    renderList();
+  });
   overlay.querySelector('#ordersStatusFilter').addEventListener('change', (e)=>{ currentStatusFilter = e.target.value; dashPrefSet('ordStatus', currentStatusFilter); renderList(); });
   overlay.querySelector('#ordersTypeFilter').addEventListener('change', (e)=>{ currentTypeFilter = e.target.value; dashPrefSet('ordType', currentTypeFilter); renderList(); });
   overlay.querySelector('#ordersLoadMoreBtn').addEventListener('click', async (e)=>{
@@ -7049,7 +7667,7 @@ async function openOrdersOverlay(){
   });
 
   overlay.querySelector('#ordersExportBtn').addEventListener('click', ()=>{
-    const filtered = orders.filter(passesFilters);
+    const filtered = orders.filter(o=> passesFilters(o));
     if(hasMoreOrders) toast('التصدير يشمل الطلبات المحمّلة فقط — حمّل الأقدم أولًا إن أردت تصدير جميعها');
     exportOrdersToExcel(filtered, itemsByOrder, 'تصدير');
   });
@@ -7073,6 +7691,8 @@ async function openOrdersOverlay(){
     if([...tSel.options].some(o=> o.value === st)){ tSel.value = st; currentTypeFilter = st; }
   }
   renderList();
+  // تحديث شارات وقت الانتظار كل دقيقة
+  const waitTick = setInterval(()=>{ if(!document.body.contains(overlay)){ clearInterval(waitTick); return; } if(!document.hidden) softRender(); }, 60000);
 
   // تحديث لحظي للشاشة المفتوحة (مهم لشاشة المطبخ/الكاشير الكبيرة): طلب جديد يظهر فورًا، وتغيير الحالة من جهاز تاني ينعكس
   let softTimer = null;
@@ -7084,6 +7704,18 @@ async function openOrdersOverlay(){
       renderList();
     }, 400);
   }
+  // يعيد محاولة جلب أصناف الطلب الجديد بفواصل متزايدة حتى تظهر (بدل محاولة واحدة بعد 0.8 ثانية)
+  async function ensureItems(row){
+    if(!row || itemRetryStarted.has(row.id)) return;
+    itemRetryStarted.add(row.id);
+    for(const wait of [1500, 3000, 6000, 12000, 20000]){
+      if((itemsByOrder[row.id] || []).length) return;
+      await new Promise(r=> setTimeout(r, wait));
+      if(!document.body.contains(overlay)) return;
+      try{ delete itemsByOrder[row.id]; await loadItemsForOrders([row]); }catch(e){}
+      if((itemsByOrder[row.id] || []).length){ softRender(); return; }
+    }
+  }
   window.__ordersModalApi = {
     overlay,
     async onInsert(row){
@@ -7093,6 +7725,10 @@ async function openOrdersOverlay(){
       if(orders.some(o=> o.id === row.id)) return;
       unseenAtOpenIds.add(row.id);
       orders.unshift(row);
+      flashIds.add(row.id);
+      setTimeout(()=>{ flashIds.delete(row.id); document.querySelectorAll(`[data-order-id="${row.id}"].o-flash`).forEach(el=> el.classList.remove('o-flash')); }, 7000);
+      showNewOrderBanner(row);
+      if(!(itemsByOrder[row.id] || []).length) ensureItems(row);
       sb.from('orders').update({ seen_at: new Date().toISOString() }).eq('id', row.id).then(()=>{}, ()=>{});
       softRender();
     },
@@ -7108,6 +7744,18 @@ async function openOrdersOverlay(){
 // ===== شاشة المطبخ الحية: أعمدة (جديد / قيد التجهيز / سُلّم مؤخرًا) مع مؤقتات وتحديث لحظي =====
 // رابط شاشة المطبخ المباشر (?kitchen=1): بعد تسجيل الدخول تُفتح الشاشة تلقائيًا — مناسب لتابلت المطبخ بحساب كاشير
 function kitchenScreenLink(){ return location.origin + location.pathname + '?kitchen=1'; }
+// فتح شاشة الطلبات تلقائيًا بعد الدخول للوحة التحكم (مفعّل افتراضيًا، ويوقفه صاحب المحل من داخل الشاشة). الإعداد خاص بكل جهاز.
+function isAutoOpenOrdersEnabled(){ return dashPrefGet('autoOpenOrders', true) !== false; }
+function maybeAutoOpenOrders(){
+  try{
+    if(!isAutoOpenOrdersEnabled()) return;
+    if(typeof isSuperAdmin !== 'undefined' && isSuperAdmin) return; // الأدمن العام لا تُفتح له شاشة محل تلقائيًا
+    if(new URLSearchParams(location.search).get('kitchen') === '1') return; // رابط المطبخ له شاشته
+    if(restaurant && restaurant.account_suspended) return;
+    if(document.querySelector('.orders-overlay') || window.__kdsApi) return;
+    openOrdersOverlay();
+  }catch(e){}
+}
 function maybeAutoOpenKitchen(){
   try{ if(new URLSearchParams(location.search).get('kitchen') === '1') openKitchenScreen(); }catch(e){}
 }
@@ -7144,6 +7792,19 @@ async function openKitchenScreen(){
   let filter = 'all';
   const busy = new Set();
 
+  const itemRetryStarted = new Set();
+  // إعادة محاولة جلب أصناف الطلب الجديد حتى تظهر (الأصناف تُسجَّل بعد الطلب وقد تتأخر عن 0.8 ثانية)
+  async function ensureItems(row){
+    if(!row || itemRetryStarted.has(row.id)) return;
+    itemRetryStarted.add(row.id);
+    for(const wait of [1500, 3000, 6000, 12000, 20000]){
+      if((itemsByOrder[row.id] || []).length) return;
+      await new Promise(r=> setTimeout(r, wait));
+      if(!document.body.contains(overlay)) return;
+      try{ delete itemsByOrder[row.id]; await loadItems([row]); }catch(e){}
+      if((itemsByOrder[row.id] || []).length){ render(); return; }
+    }
+  }
   async function loadItems(list){
     const ids = list.map(o=> o.id).filter(id=> !itemsByOrder[id]);
     for(let k = 0; k < ids.length; k += 40){
@@ -7301,6 +7962,7 @@ async function openKitchenScreen(){
       orders.push(row);
       try{ await loadItems([row]); }catch(e){}
       render();
+      if(!(itemsByOrder[row.id] || []).length) ensureItems(row);
     },
     onUpdate(row){
       if(!row) return;
@@ -7807,7 +8469,7 @@ async function openAdminPanel(){
   });
 
   /* ================ تبويب إحصائيات الإعلانات ================ */
-  const AD_LABELS = { pos:'🧾 نظام نقاط البيع', radio:'📻 راديو القرآن', quran:'📖 موقع المصحف', sentence:'🗣️ موقع تعلّم الإنجليزية' };
+  const AD_LABELS = { pos:'🧾 نظام نقاط البيع', radio:'📻 راديو القرآن', quran:'📖 موقع المصحف', sentence:'🗣️ موقع تعلّم الإنجليزية', 'pos-login':'🔐 نقاط البيع — شاشة الدخول' };
   function adLabelFor(key){
     if(AD_LABELS[key]) return AD_LABELS[key];
     if(key.startsWith('custom:')) return '📣 إعلان مخصص — ' + key.slice(7);
@@ -9617,6 +10279,7 @@ function setupStepList(){
   const itemsWithImg = items.filter(i=> i.image_url).length;
   const btnVisible = (id)=>{ const el = document.getElementById(id); return !!el && !el.classList.contains('hidden'); };
   const steps = [
+    { key:'video', text:'شاهد فيديو شرح الاستخدام', done: setupGet('videoWatched') === '1', optional:true, act: ()=>{ setupSet('videoWatched', '1'); openGuideVideo(false); renderSetupChecklist(); }, label:'▶ شاهد الفيديو', show:true },
     { key:'logo', text:'أضف شعار متجرك', done: !!restaurant.logo_url, act: ()=> openSettingsAndFocus('restNameInput'), label:'افتح الإعدادات', show: btnVisible('restaurantSettingsBtn') },
     { key:'category', text:'أضف أول فئة', done: categories.length > 0, act: ()=> document.getElementById('addCategoryBtn').click(), label:'إضافة فئة', show:true },
     { key:'items', text:`أضف 5 من ${word} على الأقل (${Math.min(items.length, 5)}/5)`, done: items.length >= 5, act: ()=> document.getElementById(categories.length ? 'addItemBtn' : 'addCategoryBtn').click(), label: categories.length ? 'إضافة' : 'إضافة فئة', show:true },
@@ -9663,7 +10326,29 @@ async function refreshSetupChecklist(){
     setupZonesCount = error ? null : (count || 0);
   }catch(e){ setupZonesCount = null; }
   renderSetupChecklist();
+  maybeShowGuideIntro();
 }
+// أول زيارة للداش بورد: متجر جديد (أقل من يومين) → الفيديو يفتح تلقائيًا مرة واحدة فقط؛ غير كده بانر صغير لحد ما العميل يشاهد أو يخفيه
+function maybeShowGuideIntro(){
+  const banner = document.getElementById('guideBanner');
+  if(!banner || !restaurant) return;
+  if(setupGet('guideIntro') === '1' || setupGet('videoWatched') === '1'){ banner.classList.add('hidden'); return; }
+  const ageDays = restaurant.created_at ? (Date.now() - new Date(restaurant.created_at).getTime()) / 86400000 : 999;
+  if(ageDays < 2 && !document.querySelector('.overlay')){
+    setupSet('guideIntro', '1'); setupSet('videoWatched', '1');
+    banner.classList.add('hidden');
+    openGuideVideo(false);
+    renderSetupChecklist();
+    return;
+  }
+  banner.classList.remove('hidden');
+}
+(function bindGuideBanner(){
+  const w = document.getElementById('guideBannerWatch'), x = document.getElementById('guideBannerClose');
+  const done = ()=>{ if(restaurant){ setupSet('guideIntro', '1'); } document.getElementById('guideBanner').classList.add('hidden'); };
+  if(w) w.addEventListener('click', ()=>{ if(restaurant){ setupSet('videoWatched', '1'); } done(); openGuideVideo(false); renderSetupChecklist(); });
+  if(x) x.addEventListener('click', done);
+})();
 (function bindSetupChecklist(){
   const hide = document.getElementById('setupHideBtn');
   if(hide) hide.addEventListener('click', ()=>{ setupSet('hidden', '1'); document.getElementById('setupCard').classList.add('hidden'); toast('تم إخفاء قائمة الإعداد'); });
@@ -10148,7 +10833,10 @@ document.getElementById('reportsBtn').addEventListener('click', async ()=>{
     <div class="modal modal-screen ms-xl">
       <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:4px;">
         <h3 style="margin:0;">التقارير والتحليلات</h3>
-        <button type="button" class="btn-export-sm" id="statsExportPdfBtn">📄 تصدير تقرير شهري</button>
+        <span style="display:flex; gap:6px; flex-wrap:wrap;">
+          <button type="button" class="btn-export-sm" id="tblReportsBtn" style="background:var(--ember);">📋 تقارير جدولية</button>
+          <button type="button" class="btn-export-sm" id="statsExportPdfBtn">📄 تصدير تقرير شهري</button>
+        </span>
       </div>
       <div id="statsSummaryWrap"><div class="orders-empty">جارِ التحميل...</div></div>
       <div class="modal-actions">
@@ -10159,6 +10847,7 @@ document.getElementById('reportsBtn').addEventListener('click', async ()=>{
   overlay.querySelector('#statsCloseBtn').addEventListener('click', ()=> overlay.remove());
   overlay.addEventListener('click', (e)=>{ if(e.target===overlay) overlay.remove(); });
 
+  overlay.querySelector('#tblReportsBtn').addEventListener('click', ()=> openTableReportsModal());
   const wrap = overlay.querySelector('#statsSummaryWrap');
   const { data: rows, error } = await sb.from('order_stats_daily').select('*').eq('restaurant_id', restaurant.id).order('day', { ascending:false });
   const { data: visitRows } = await sb.from('menu_visits_daily').select('*').eq('restaurant_id', restaurant.id).order('day', { ascending:false });
@@ -10850,6 +11539,356 @@ function exportOrdersToExcel(orderList, itemsByOrderMap, filenameLabel){
   const filename = `${restaurant.slug || 'orders'}-${filenameLabel || 'طلبات'}-${dateTag}.xlsx`;
   XLSX.writeFile(wb, filename);
   toast(`تم تصدير ${orderList.length} طلب بنجاح`);
+}
+
+// ===== تقارير جدولية: الطلبات / إجمالي المبيعات / تفاصيل المبيعات =====
+async function openTableReportsModal(initialTab){
+  const cur = getRestaurantCurrency(restaurant);
+  const money = (v)=> (Number(v) || 0).toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 });
+  const cairoDay = (iso)=> new Date(iso).toLocaleDateString('en-CA', { timeZone:'Africa/Cairo' });
+  const addDays = (day, n)=>{ const d = new Date(day + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0,10); };
+  const fmtDT = (iso)=> new Date(iso).toLocaleString('en-GB', { timeZone:'Africa/Cairo', day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit', hour12:true }).replace(',', '').replace(/am/i, 'ص').replace(/pm/i, 'م');
+  const STATUS = ORDER_STATUS_LABELS_EXPORT;
+  const typeKey = (o)=> o.order_type === 'dine_in' ? 'dine_in' : (o.order_type === 'pickup' ? 'pickup' : 'delivery');
+  const TYPE_LABEL = { delivery:'🛵 توصيل', pickup:'📦 استلام', dine_in:'🍽️ داخل المطعم' };
+  const sub = (o)=> o.subtotal != null ? Number(o.subtotal) : (Number(o.total || 0) - Number(o.delivery_fee || 0) + Number(o.discount_amount || 0));
+  const payKey = (o)=> o.payment_method === 'wallet' ? 'wallet' : (o.payment_method === 'instapay' ? 'instapay' : 'cash');
+  const PAY_LABEL = { cash:'نقدًا', wallet:'محفظة إلكترونية', instapay:'إنستاباي' };
+  const payText = (o)=>{
+    const k = payKey(o); if(k === 'cash') return 'نقدًا';
+    return `${PAY_LABEL[k]} — ${o.payment_status === 'paid' ? 'مدفوع' : 'بانتظار التأكيد'}`;
+  };
+
+  const today = cairoDay(new Date().toISOString());
+  const PRESETS = [
+    ['اليوم', ()=> [today, today]], ['أمس', ()=> [addDays(today,-1), addDays(today,-1)]],
+    ['آخر 7 أيام', ()=> [addDays(today,-6), today]], ['آخر 30 يومًا', ()=> [addDays(today,-29), today]],
+    ['هذا الشهر', ()=> [today.slice(0,8) + '01', today]],
+    ['الشهر الماضي', ()=>{ const first = today.slice(0,8) + '01'; const lastPrev = addDays(first, -1); return [lastPrev.slice(0,8) + '01', lastPrev]; }]
+  ];
+  const state = { tab: initialTab || 'orders', from: addDays(today,-6), to: today, orders: [], status: 'all', itemsCache: {} };
+
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.innerHTML = `
+    <div class="modal modal-screen ms-xl rtx-modal${dashPrefGet('ordDark', false) === true ? ' orders-dark' : ''}">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px;">
+        <h3 style="margin:0;">📋 التقارير الجدولية</h3>
+        <button type="button" id="rtClose" style="width:auto; border:0; background:var(--paper-dim); color:var(--ink); font-family:var(--body); font-weight:800; font-size:13px; padding:8px 20px; border-radius:10px; cursor:pointer;">إغلاق</button>
+      </div>
+      <div class="rtx-range">
+        <div class="rtx-presets">${PRESETS.map((p,i)=> `<button type="button" class="chip-btn" data-preset="${i}">${p[0]}</button>`).join('')}</div>
+        <div class="rtx-dates">
+          <label>من <input type="date" id="rtFrom"></label>
+          <label>إلى <input type="date" id="rtTo"></label>
+          <button type="button" class="chip-btn active" id="rtGo" style="padding:7px 16px;">عرض</button>
+        </div>
+      </div>
+      <div class="rtx-tabs">
+        <button type="button" data-tab="orders">تقرير الطلبات</button>
+        <button type="button" data-tab="summary">إجمالي المبيعات</button>
+        <button type="button" data-tab="details">تفاصيل المبيعات</button>
+      </div>
+      <div id="rtBody" class="rtx-body"><div class="orders-empty">جارِ التحميل...</div></div>
+    </div>`;
+  document.body.appendChild(overlay);
+  const body = overlay.querySelector('#rtBody');
+  const fromEl = overlay.querySelector('#rtFrom'), toEl = overlay.querySelector('#rtTo');
+  overlay.querySelector('#rtClose').addEventListener('click', ()=> overlay.remove());
+  overlay.addEventListener('click', (e)=>{ if(e.target === overlay) overlay.remove(); });
+
+  // ---------- جلب البيانات ----------
+  async function loadRange(){
+    const lo = new Date(state.from + 'T00:00:00Z'); lo.setUTCDate(lo.getUTCDate() - 1);
+    const hi = new Date(state.to + 'T00:00:00Z'); hi.setUTCDate(hi.getUTCDate() + 2);
+    const all = [];
+    for(let off = 0; ; off += 1000){
+      const { data, error } = await sb.from('orders')
+        .select('id,order_number,created_at,status,customer_name,customer_phone,order_type,table_number,city,area,subtotal,delivery_fee,discount_amount,total,coupon_code,payment_method,payment_detail,payment_status')
+        .eq('restaurant_id', restaurant.id)
+        .gte('created_at', lo.toISOString()).lt('created_at', hi.toISOString())
+        .order('created_at', { ascending:false }).range(off, off + 999);
+      if(error) throw error;
+      all.push(...(data || []));
+      if(!data || data.length < 1000) break;
+    }
+    state.orders = all.filter(o=> { const d = cairoDay(o.created_at); return d >= state.from && d <= state.to; });
+  }
+  async function fetchItems(ids){
+    const need = ids.filter(id=> !state.itemsCache[id]);
+    for(let i = 0; i < need.length; i += 300){
+      const chunk = need.slice(i, i + 300);
+      const { data } = await sb.from('order_items').select('order_id,item_name,quantity,price,item_note,addons_label').in('order_id', chunk);
+      chunk.forEach(id=> state.itemsCache[id] = []);
+      (data || []).forEach(l=>{ (state.itemsCache[l.order_id] = state.itemsCache[l.order_id] || []).push(l); });
+    }
+  }
+  const itemsDetailHtml = (lines)=> !lines.length ? '<div class="orders-empty">لا توجد أصناف</div>' : `
+    <table class="rtx-items"><thead><tr><th>الصنف</th><th>الإضافات / الملاحظة</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th></tr></thead><tbody>
+    ${lines.map(l=> `<tr><td>${escapeHtml(l.item_name)}</td><td>${escapeHtml([l.addons_label, l.item_note].filter(Boolean).join(' • ')) || '—'}</td><td class="n">${escapeHtml(String(l.quantity))}</td><td class="n">${money(l.price)}</td><td class="n">${money(Number(l.price || 0) * Number(l.quantity || 0))}</td></tr>`).join('')}
+    </tbody></table>`;
+
+  // ---------- جدول عام: ترتيب + بحث + ترقيم + صف تفاصيل قابل للفتح ----------
+  function dataTable(host, cfg){
+    const st = { q:'', key:cfg.sort.key, dir:cfg.sort.dir, page:1, size:Number(dashPrefGet('rtSize', 25)) || 25 };
+    host.innerHTML = `
+      <div class="rtx-bar">
+        <label>عرض <select class="rtx-size">${[10,25,50,100].map(n=> `<option value="${n}" ${n === st.size ? 'selected' : ''}>${n}</option>`).join('')}</select> سجل</label>
+        <input type="search" class="rtx-search" placeholder="${cfg.placeholder || 'بحث...'}">
+      </div>
+      <div class="rtx-wrap"><table class="rtx-table"><thead></thead><tbody></tbody></table></div>
+      <div class="rtx-pager"></div>`;
+    const thead = host.querySelector('thead'), tbody = host.querySelector('tbody'), pager = host.querySelector('.rtx-pager');
+    const view = ()=>{
+      let list = cfg.rows;
+      const q = st.q.trim().toLowerCase();
+      if(q) list = list.filter(r=> cfg.searchOf(r).toLowerCase().includes(q));
+      const col = cfg.cols.find(c=> c.key === st.key);
+      if(col){
+        list = list.slice().sort((a,b)=>{
+          const x = col.val(a), y = col.val(b);
+          const r = (typeof x === 'number' && typeof y === 'number') ? x - y : String(x).localeCompare(String(y), 'ar');
+          return st.dir === 'asc' ? r : -r;
+        });
+      }
+      return list;
+    };
+    const draw = ()=>{
+      const list = view();
+      const pages = Math.max(1, Math.ceil(list.length / st.size));
+      if(st.page > pages) st.page = pages;
+      const slice = list.slice((st.page - 1) * st.size, st.page * st.size);
+      const span = cfg.cols.length + (cfg.expand ? 1 : 0);
+      thead.innerHTML = `<tr>${cfg.expand ? '<th class="rtx-x"></th>' : ''}${cfg.cols.map(c=> `<th class="${c.key === st.key ? 'sorted' : ''}" data-key="${c.key}">${c.label}<i>${c.key === st.key ? (st.dir === 'asc' ? '▲' : '▼') : '⇅'}</i></th>`).join('')}</tr>`;
+      tbody.innerHTML = slice.length ? slice.map(r=> `<tr data-id="${r.id}">${cfg.expand ? `<td class="rtx-x"><button type="button" class="rtx-plus" data-open="${r.id}" aria-label="تفاصيل">+</button></td>` : ''}${cfg.cols.map(c=> `<td class="${c.cls || ''}">${c.html(r)}</td>`).join('')}</tr><tr class="rtx-detail" data-detail="${r.id}" hidden><td colspan="${span}"></td></tr>`).join('')
+        : `<tr><td colspan="${span}" class="orders-empty">${cfg.empty || 'لا توجد بيانات'}</td></tr>`;
+      const from = list.length ? (st.page - 1) * st.size + 1 : 0, to = Math.min(list.length, st.page * st.size);
+      pager.innerHTML = `<span>عرض ${from} إلى ${to} من ${list.length} سجل</span>
+        <span class="rtx-pg"><button type="button" data-pg="prev" ${st.page <= 1 ? 'disabled' : ''}>السابق</button><b>${st.page} / ${pages}</b><button type="button" data-pg="next" ${st.page >= pages ? 'disabled' : ''}>التالي</button></span>`;
+    };
+    host.addEventListener('click', async (e)=>{
+      const th = e.target.closest('th[data-key]');
+      if(th){ const k = th.dataset.key; if(st.key === k) st.dir = st.dir === 'asc' ? 'desc' : 'asc'; else { st.key = k; st.dir = 'desc'; } st.page = 1; draw(); return; }
+      const pg = e.target.closest('[data-pg]');
+      if(pg){ st.page += pg.dataset.pg === 'next' ? 1 : -1; draw(); return; }
+      const op = e.target.closest('[data-open]');
+      if(op){
+        const id = op.dataset.open, row = host.querySelector(`tr[data-detail="${id}"]`);
+        const opening = row.hidden;
+        row.hidden = !opening; op.textContent = opening ? '–' : '+'; op.classList.toggle('on', opening);
+        if(opening && !row.dataset.loaded){
+          row.firstElementChild.innerHTML = '<div class="orders-empty">جارِ التحميل...</div>';
+          await fetchItems([id]);
+          row.firstElementChild.innerHTML = itemsDetailHtml(state.itemsCache[id] || []);
+          row.dataset.loaded = '1';
+        }
+      }
+    });
+    host.querySelector('.rtx-size').addEventListener('change', (e)=>{ st.size = Number(e.target.value); dashPrefSet('rtSize', st.size); st.page = 1; draw(); });
+    host.querySelector('.rtx-search').addEventListener('input', (e)=>{ st.q = e.target.value; st.page = 1; draw(); });
+    draw();
+    return { rows: view };
+  }
+
+  const kpi = (label, value, color)=> `<div class="rtx-kpi" style="--c:${color};"><div class="l">${label}</div><div class="v">${value}</div></div>`;
+  const toolbar = (title, hint)=> `<div class="rtx-title"><div><h4>${title}</h4><p>${hint}</p></div><span style="display:flex; gap:6px; flex-wrap:wrap;"><button type="button" class="btn-export-sm" id="rtPrint" style="background:var(--confirm-strong);">🖨️ طباعة / PDF</button><button type="button" class="btn-export-sm" id="rtExport">⬇️ تصدير Excel</button></span></div>`;
+  const stamp = ()=> `${state.from}_${state.to}`;
+  const saveXlsx = (aoa, widths, sheet, label)=>{
+    const ws = XLSX.utils.aoa_to_sheet(aoa); ws['!cols'] = widths.map(w=> ({ wch:w }));
+    const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, sheet);
+    XLSX.writeFile(wb, `${restaurant.slug || 'restaurant'}-${label}-${stamp()}.xlsx`);
+    toast('تم تصدير التقرير بنجاح');
+  };
+  // الطباعة / PDF: نفس آلية التقرير الشهري (منطقة طباعة مخفية + window.print)؛ في نافذة الطباعة اختر «حفظ كـ PDF»
+  const printReport = (title, innerHtml)=>{
+    const html = `<div class="report-doc"><h1>${escapeHtml(restaurant.name || '')} — ${title}</h1><div class="report-sub">الفترة: ${state.from} إلى ${state.to} · أُنشئ بتاريخ ${fmtDT(new Date().toISOString())}</div>${innerHtml}</div>`;
+    let area = document.getElementById('reportPrintArea');
+    if(!area){ area = document.createElement('div'); area.id = 'reportPrintArea'; document.body.appendChild(area); }
+    area.innerHTML = html;
+    let ps = document.getElementById('receiptPageStyle');
+    if(!ps){ ps = document.createElement('style'); ps.id = 'receiptPageStyle'; document.head.appendChild(ps); }
+    ps.textContent = '@page{ size:A4; margin:12mm; } .report-doc tr{ page-break-inside:avoid; } .report-doc tr.tot td{ font-weight:800; border-top:1.5px solid #111; } .report-doc .sm{ font-size:10px; color:#555; }';
+    const prev = document.title;
+    document.title = `${title} ${state.from} إلى ${state.to}`;
+    const restore = ()=>{ document.title = prev; window.removeEventListener('afterprint', restore); };
+    window.addEventListener('afterprint', restore);
+    window.print();
+  };
+  const pTable = (heads, bodyRows)=> `<table><thead><tr>${heads.map(h=> `<th>${h}</th>`).join('')}</tr></thead><tbody>${bodyRows.join('')}</tbody></table>`;
+  const pKpis = (arr)=> `<div class="report-kpi-row" style="margin-bottom:10px;">${arr.map(([l,v])=> `<div class="report-kpi"><div class="kpi-label">${l}</div><div class="kpi-value" style="font-size:14px;">${v}</div></div>`).join('')}</div>`;
+  const itemsText = (id)=> (state.itemsCache[id] || []).map(l=> `${l.item_name} ×${l.quantity}${l.item_note ? ` (${l.item_note})` : ''}`).join('، ');
+
+  // ---------- تقرير الطلبات ----------
+  function renderOrders(){
+    const rows = state.status === 'all' ? state.orders : state.orders.filter(o=> (o.status || 'pending') === state.status);
+    body.innerHTML = toolbar('تقرير الطلبات', 'كل الطلبات في الفترة المحددة بجميع حالاتها — اضغط + لعرض أصناف الطلب')
+      + `<div class="rtx-filters"><label>الحالة <select id="rtStatus"><option value="all">كل الحالات</option>${Object.entries(STATUS).map(([k,v])=> `<option value="${k}" ${state.status === k ? 'selected' : ''}>${v}</option>`).join('')}</select></label>
+         <span class="rtx-count">عدد الطلبات: <b>${rows.length}</b></span></div><div id="rtTable"></div>`;
+    const t = dataTable(body.querySelector('#rtTable'), {
+      rows, sort:{ key:'date', dir:'desc' }, expand:true, placeholder:'بحث برقم الطلب، اسم العميل، أو الهاتف...',
+      searchOf: (o)=> `${o.order_number ?? ''} ${o.customer_name || ''} ${o.customer_phone || ''} ${o.area || ''}`,
+      empty:'لا توجد طلبات في هذه الفترة',
+      cols:[
+        { key:'num', label:'رقم الطلب', val:o=> Number(o.order_number) || 0, html:o=> `#${o.order_number ?? '—'}`, cls:'n' },
+        { key:'date', label:'التاريخ', val:o=> new Date(o.created_at).getTime(), html:o=> fmtDT(o.created_at), cls:'nw' },
+        { key:'type', label:'نوع الطلب', val:o=> typeKey(o), html:o=> `${o.order_type === 'dine_in' ? orderTypeLabel(o) : TYPE_LABEL[typeKey(o)]}${o.area && typeKey(o) === 'delivery' ? `<div class="sub">${escapeHtml(o.area)}</div>` : ''}`, cls:'nw' },
+        { key:'status', label:'الحالة', val:o=> o.status || 'pending', html:o=> `<span class="status-badge ${o.status || 'pending'}">${STATUS[o.status || 'pending'] || o.status}</span>`, cls:'nw' },
+        { key:'name', label:'العميل', val:o=> o.customer_name || '', html:o=> escapeHtml(o.customer_name || '—') },
+        { key:'phone', label:'الهاتف', val:o=> o.customer_phone || '', html:o=> `<span class="ltr">${escapeHtml(o.customer_phone || '')}</span>`, cls:'nw' },
+        { key:'total', label:'الإجمالي', val:o=> Number(o.total) || 0, html:o=> `${money(o.total)} ${escapeHtml(cur)}`, cls:'n nw' },
+        { key:'pay', label:'الدفع', val:o=> payText(o), html:o=> escapeHtml(payText(o)), cls:'nw' }
+      ]
+    });
+    body.querySelector('#rtStatus').addEventListener('change', (e)=>{ state.status = e.target.value; renderOrders(); });
+    body.querySelector('#rtExport').addEventListener('click', async ()=>{
+      const list = t.rows(); if(!list.length){ toast('لا توجد بيانات لتصديرها'); return; }
+      await fetchItems(list.map(o=> o.id));
+      const aoa = [['رقم الطلب','التاريخ والوقت','نوع الطلب','المنطقة','الحالة','العميل','الهاتف','الأصناف',`الإجمالي (${cur})`,'طريقة الدفع']];
+      list.forEach(o=> aoa.push([o.order_number ?? '', fmtDT(o.created_at), orderTypeLabel(o), o.area || '', STATUS[o.status || 'pending'] || o.status, o.customer_name || '', o.customer_phone || '', itemsText(o.id), Number(o.total || 0), payText(o)]));
+      saveXlsx(aoa, [10,20,14,14,12,20,14,50,14,22], 'تقرير الطلبات', 'تقرير-الطلبات');
+    });
+    body.querySelector('#rtPrint').addEventListener('click', ()=>{
+      const list = t.rows(); if(!list.length){ toast('لا توجد بيانات للطباعة'); return; }
+      const sales = list.filter(o=> (o.status || 'pending') !== 'cancelled').reduce((s,o)=> s + Number(o.total || 0), 0);
+      const statusLabel = state.status === 'all' ? 'كل الحالات' : STATUS[state.status];
+      printReport('تقرير الطلبات', pKpis([['عدد الطلبات', list.length], [`إجمالي القيمة (بدون الملغي) ${escapeHtml(cur)}`, money(sales)], ['الحالة', statusLabel]])
+        + pTable(['#','التاريخ','النوع','الحالة','العميل','الهاتف',`الإجمالي (${escapeHtml(cur)})`,'الدفع'],
+          list.map(o=> `<tr><td class="num">${o.order_number ?? '—'}</td><td class="num">${fmtDT(o.created_at)}</td><td>${escapeHtml(orderTypeLabel(o).replace(/^\S+\s/, ''))}${o.area && typeKey(o) === 'delivery' ? `<div class="sm">${escapeHtml(o.area)}</div>` : ''}</td><td>${STATUS[o.status || 'pending'] || ''}</td><td>${escapeHtml(o.customer_name || '—')}</td><td class="num">${escapeHtml(o.customer_phone || '')}</td><td class="num">${money(o.total)}</td><td>${escapeHtml(payText(o))}</td></tr>`)));
+    });
+  }
+
+  // ---------- تقرير إجمالي المبيعات ----------
+  function renderSummary(){
+    const valid = state.orders.filter(o=> (o.status || 'pending') !== 'cancelled');
+    const cancelled = state.orders.filter(o=> (o.status || 'pending') === 'cancelled');
+    const agg = (list)=> list.reduce((a,o)=>{ a.n++; a.sub += sub(o); a.disc += Number(o.discount_amount || 0); a.fee += Number(o.delivery_fee || 0); a.total += Number(o.total || 0); return a; }, { n:0, sub:0, disc:0, fee:0, total:0 });
+    const all = agg(valid);
+    const byType = ['delivery','pickup','dine_in'].map(k=> [k, agg(valid.filter(o=> typeKey(o) === k))]);
+    const byPay = ['cash','wallet','instapay'].map(k=> [k, agg(valid.filter(o=> payKey(o) === k)), valid.filter(o=> payKey(o) === k && o.payment_status !== 'paid' && k !== 'cash').length]);
+    const byStatus = Object.keys(STATUS).map(k=> [k, agg(state.orders.filter(o=> (o.status || 'pending') === k))]);
+    const lost = agg(cancelled);
+    const pct = (v)=> all.total ? (v / all.total * 100).toFixed(1) + '%' : '—';
+    const avg = (a)=> a.n ? money(a.total / a.n) : '—';
+    const row = (label, a, extra)=> `<tr><td><b>${label}</b></td><td class="n">${a.n}</td><td class="n">${money(a.sub)}</td><td class="n">${money(a.disc)}</td><td class="n">${money(a.fee)}</td><td class="n"><b>${money(a.total)}</b></td><td class="n">${avg(a)}</td><td class="n">${extra}</td></tr>`;
+    const head = (first, last)=> `<thead><tr><th>${first}</th><th>الطلبات</th><th>قيمة الأصناف</th><th>الخصومات</th><th>رسوم التوصيل</th><th>الإجمالي</th><th>متوسط الطلب</th><th>${last}</th></tr></thead>`;
+    body.innerHTML = toolbar('تقرير إجمالي المبيعات', 'ملخص المبيعات في الفترة المحددة (الطلبات الملغية غير محسوبة في المبيعات)')
+      + `<div class="rtx-kpis">
+          ${kpi('إجمالي المبيعات', `${money(all.total)} ${escapeHtml(cur)}`, 'var(--basil)')}
+          ${kpi('عدد الطلبات', all.n, 'var(--confirm-strong)')}
+          ${kpi('متوسط قيمة الطلب', all.n ? `${money(all.total / all.n)} ${escapeHtml(cur)}` : '—', 'var(--ember)')}
+          ${kpi('إجمالي الخصومات', `${money(all.disc)} ${escapeHtml(cur)}`, '#b8872f')}
+          ${kpi('رسوم التوصيل', `${money(all.fee)} ${escapeHtml(cur)}`, '#6a5acd')}
+          ${kpi('الطلبات الملغية', `${lost.n} • ${money(lost.total)} ${escapeHtml(cur)}`, 'var(--danger)')}
+        </div>
+        <h4 class="rtx-h">حسب نوع الطلب</h4>
+        <div class="rtx-wrap"><table class="rtx-table static">${head('نوع الطلب','النسبة من المبيعات')}<tbody>
+          ${byType.map(([k,a])=> row(TYPE_LABEL[k], a, pct(a.total))).join('')}
+          <tr class="tot"><td><b>الإجمالي</b></td><td class="n">${all.n}</td><td class="n">${money(all.sub)}</td><td class="n">${money(all.disc)}</td><td class="n">${money(all.fee)}</td><td class="n">${money(all.total)}</td><td class="n">${avg(all)}</td><td class="n">100%</td></tr>
+        </tbody></table></div>
+        <h4 class="rtx-h">حسب طريقة الدفع</h4>
+        <div class="rtx-wrap"><table class="rtx-table static">${head('طريقة الدفع','بانتظار تأكيد الدفع')}<tbody>
+          ${byPay.map(([k,a,un])=> row(PAY_LABEL[k], a, k === 'cash' ? '—' : un)).join('')}
+        </tbody></table></div>
+        <h4 class="rtx-h">حسب حالة الطلب</h4>
+        <div class="rtx-wrap"><table class="rtx-table static">${head('الحالة','النسبة من الطلبات')}<tbody>
+          ${byStatus.map(([k,a])=> row(`<span class="status-badge ${k}">${STATUS[k]}</span>`, a, state.orders.length ? (a.n / state.orders.length * 100).toFixed(1) + '%' : '—')).join('')}
+        </tbody></table></div>`;
+    body.querySelector('#rtExport').addEventListener('click', ()=>{
+      const aoa = [[`تقرير إجمالي المبيعات (${state.from} إلى ${state.to})`], [],
+        ['حسب نوع الطلب','الطلبات','قيمة الأصناف','الخصومات','رسوم التوصيل','الإجمالي','متوسط الطلب'],
+        ...byType.map(([k,a])=> [TYPE_LABEL[k].replace(/^\S+\s/, ''), a.n, a.sub, a.disc, a.fee, a.total, a.n ? a.total / a.n : 0]),
+        ['الإجمالي', all.n, all.sub, all.disc, all.fee, all.total, all.n ? all.total / all.n : 0], [],
+        ['حسب طريقة الدفع','الطلبات','قيمة الأصناف','الخصومات','رسوم التوصيل','الإجمالي','متوسط الطلب','بانتظار التأكيد'],
+        ...byPay.map(([k,a,un])=> [PAY_LABEL[k], a.n, a.sub, a.disc, a.fee, a.total, a.n ? a.total / a.n : 0, un]), [],
+        ['حسب الحالة','الطلبات','قيمة الأصناف','الخصومات','رسوم التوصيل','الإجمالي'],
+        ...byStatus.map(([k,a])=> [STATUS[k], a.n, a.sub, a.disc, a.fee, a.total])];
+      saveXlsx(aoa, [26,12,14,12,14,14,14,16], 'إجمالي المبيعات', 'إجمالي-المبيعات');
+    });
+    body.querySelector('#rtPrint').addEventListener('click', ()=>{
+      const pr = (label, a, extra)=> `<tr><td>${label}</td><td class="num">${a.n}</td><td class="num">${money(a.sub)}</td><td class="num">${money(a.disc)}</td><td class="num">${money(a.fee)}</td><td class="num"><b>${money(a.total)}</b></td><td class="num">${avg(a)}</td><td class="num">${extra}</td></tr>`;
+      const heads = (f, l)=> [f,'الطلبات','قيمة الأصناف','الخصومات','رسوم التوصيل','الإجمالي','متوسط الطلب', l];
+      printReport('تقرير إجمالي المبيعات', pKpis([['إجمالي المبيعات', `${money(all.total)} ${escapeHtml(cur)}`], ['عدد الطلبات', all.n], ['متوسط الطلب', all.n ? money(all.total / all.n) : '—'], ['الخصومات', money(all.disc)], ['رسوم التوصيل', money(all.fee)], ['الملغي', `${lost.n} • ${money(lost.total)}`]])
+        + '<h2>حسب نوع الطلب</h2>' + pTable(heads('نوع الطلب','النسبة'), byType.map(([k,a])=> pr(TYPE_LABEL[k].replace(/^\S+\s/, ''), a, pct(a.total))).concat([`<tr class="tot"><td>الإجمالي</td><td class="num">${all.n}</td><td class="num">${money(all.sub)}</td><td class="num">${money(all.disc)}</td><td class="num">${money(all.fee)}</td><td class="num">${money(all.total)}</td><td class="num">${avg(all)}</td><td class="num">100%</td></tr>`]))
+        + '<h2>حسب طريقة الدفع</h2>' + pTable(heads('طريقة الدفع','بانتظار التأكيد'), byPay.map(([k,a,un])=> pr(PAY_LABEL[k], a, k === 'cash' ? '—' : un)))
+        + '<h2>حسب حالة الطلب</h2>' + pTable(heads('الحالة','النسبة'), byStatus.map(([k,a])=> pr(STATUS[k], a, state.orders.length ? (a.n / state.orders.length * 100).toFixed(1) + '%' : '—'))));
+    });
+  }
+
+  // ---------- تقرير تفاصيل المبيعات ----------
+  function renderDetails(){
+    const rows = state.orders.filter(o=> (o.status || 'pending') !== 'cancelled');
+    const totalSales = rows.reduce((s,o)=> s + Number(o.total || 0), 0);
+    const totalSub = rows.reduce((s,o)=> s + sub(o), 0);
+    const totalDisc = rows.reduce((s,o)=> s + Number(o.discount_amount || 0), 0);
+    const totalFee = rows.reduce((s,o)=> s + Number(o.delivery_fee || 0), 0);
+    const online = rows.filter(o=> payKey(o) !== 'cash' && o.payment_status === 'paid').reduce((s,o)=> s + Number(o.total || 0), 0);
+    body.innerHTML = toolbar('تقرير تفاصيل المبيعات', 'كل طلب مبيع على حدة مع الخصم والتوصيل — اضغط + لعرض الأصناف وأسعارها')
+      + `<div class="rtx-kpis">
+          ${kpi('إجمالي المبيعات', `${money(totalSales)} ${escapeHtml(cur)}`, 'var(--basil)')}
+          ${kpi('قيمة الأصناف', `${money(totalSub)} ${escapeHtml(cur)}`, 'var(--confirm-strong)')}
+          ${kpi('الخصومات', `${money(totalDisc)} ${escapeHtml(cur)}`, '#b8872f')}
+          ${kpi('رسوم التوصيل', `${money(totalFee)} ${escapeHtml(cur)}`, '#6a5acd')}
+          ${kpi('مدفوع إلكترونيًا', `${money(online)} ${escapeHtml(cur)}`, 'var(--ember)')}
+          ${kpi('عدد الطلبات', rows.length, 'var(--stone)')}
+        </div><div id="rtTable"></div>`;
+    const t = dataTable(body.querySelector('#rtTable'), {
+      rows, sort:{ key:'date', dir:'desc' }, expand:true, placeholder:'بحث برقم الطلب أو اسم العميل...',
+      searchOf: (o)=> `${o.order_number ?? ''} ${o.customer_name || ''} ${o.customer_phone || ''}`,
+      empty:'لا توجد مبيعات في هذه الفترة',
+      cols:[
+        { key:'date', label:'التاريخ', val:o=> new Date(o.created_at).getTime(), html:o=> fmtDT(o.created_at), cls:'nw' },
+        { key:'num', label:'رقم الطلب', val:o=> Number(o.order_number) || 0, html:o=> `#${o.order_number ?? '—'}`, cls:'n' },
+        { key:'type', label:'النوع', val:o=> typeKey(o), html:o=> o.order_type === 'dine_in' ? orderTypeLabel(o) : TYPE_LABEL[typeKey(o)], cls:'nw' },
+        { key:'name', label:'العميل', val:o=> o.customer_name || '', html:o=> escapeHtml(o.customer_name || '—') },
+        { key:'sub', label:'قيمة الأصناف', val:o=> sub(o), html:o=> money(sub(o)), cls:'n' },
+        { key:'disc', label:'الخصم', val:o=> Number(o.discount_amount) || 0, html:o=> `${money(o.discount_amount)}${o.coupon_code ? `<div class="sub">${escapeHtml(o.coupon_code)}</div>` : ''}`, cls:'n' },
+        { key:'fee', label:'التوصيل', val:o=> Number(o.delivery_fee) || 0, html:o=> money(o.delivery_fee), cls:'n' },
+        { key:'total', label:'الإجمالي', val:o=> Number(o.total) || 0, html:o=> `<b>${money(o.total)}</b>`, cls:'n' },
+        { key:'pay', label:'الدفع', val:o=> payText(o), html:o=> escapeHtml(payText(o)), cls:'nw' }
+      ]
+    });
+    body.querySelector('#rtExport').addEventListener('click', async ()=>{
+      const list = t.rows(); if(!list.length){ toast('لا توجد بيانات لتصديرها'); return; }
+      await fetchItems(list.map(o=> o.id));
+      const aoa = [['التاريخ والوقت','رقم الطلب','النوع','العميل','الأصناف','قيمة الأصناف','الخصم','كوبون','رسوم التوصيل',`الإجمالي (${cur})`,'طريقة الدفع']];
+      list.forEach(o=> aoa.push([fmtDT(o.created_at), o.order_number ?? '', orderTypeLabel(o), o.customer_name || '', itemsText(o.id), sub(o), Number(o.discount_amount || 0), o.coupon_code || '', Number(o.delivery_fee || 0), Number(o.total || 0), payText(o)]));
+      aoa.push(['الإجمالي','','','','', totalSub, totalDisc, '', totalFee, totalSales, '']);
+      saveXlsx(aoa, [20,10,14,20,50,14,10,12,14,14,22], 'تفاصيل المبيعات', 'تفاصيل-المبيعات');
+    });
+    body.querySelector('#rtPrint').addEventListener('click', async ()=>{
+      const list = t.rows(); if(!list.length){ toast('لا توجد بيانات للطباعة'); return; }
+      await fetchItems(list.map(o=> o.id));
+      const tot = list.reduce((a,o)=>{ a.sub += sub(o); a.disc += Number(o.discount_amount || 0); a.fee += Number(o.delivery_fee || 0); a.total += Number(o.total || 0); return a; }, { sub:0, disc:0, fee:0, total:0 });
+      printReport('تفاصيل المبيعات', pKpis([['إجمالي المبيعات', `${money(tot.total)} ${escapeHtml(cur)}`], ['قيمة الأصناف', money(tot.sub)], ['الخصومات', money(tot.disc)], ['رسوم التوصيل', money(tot.fee)], ['عدد الطلبات', list.length]])
+        + pTable(['التاريخ','#','النوع','العميل','الأصناف','قيمة الأصناف','الخصم','التوصيل','الإجمالي','الدفع'],
+          list.map(o=> `<tr><td class="num">${fmtDT(o.created_at)}</td><td class="num">${o.order_number ?? '—'}</td><td>${escapeHtml(orderTypeLabel(o).replace(/^\S+\s/, ''))}</td><td>${escapeHtml(o.customer_name || '—')}</td><td class="sm">${escapeHtml(itemsText(o.id)) || '—'}</td><td class="num">${money(sub(o))}</td><td class="num">${money(o.discount_amount)}</td><td class="num">${money(o.delivery_fee)}</td><td class="num"><b>${money(o.total)}</b></td><td>${escapeHtml(payText(o))}</td></tr>`)
+            .concat([`<tr class="tot"><td colspan="5">الإجمالي</td><td class="num">${money(tot.sub)}</td><td class="num">${money(tot.disc)}</td><td class="num">${money(tot.fee)}</td><td class="num">${money(tot.total)}</td><td></td></tr>`])));
+    });
+  }
+
+  // ---------- التحكم ----------
+  const draw = ()=>{
+    overlay.querySelectorAll('.rtx-tabs button').forEach(b=> b.classList.toggle('on', b.dataset.tab === state.tab));
+    ({ orders:renderOrders, summary:renderSummary, details:renderDetails })[state.tab]();
+  };
+  async function run(){
+    if(!fromEl.value || !toEl.value || fromEl.value > toEl.value){ toast('اختر فترة صحيحة (من تاريخ إلى تاريخ)'); return; }
+    state.from = fromEl.value; state.to = toEl.value;
+    body.innerHTML = '<div class="orders-empty">جارِ التحميل...</div>';
+    try{ await loadRange(); }catch(e){ body.innerHTML = '<div class="orders-empty">تعذر تحميل التقرير</div>'; return; }
+    draw();
+  }
+  overlay.querySelectorAll('.rtx-tabs button').forEach(b=> b.addEventListener('click', ()=>{ state.tab = b.dataset.tab; draw(); }));
+  overlay.querySelectorAll('[data-preset]').forEach(b=> b.addEventListener('click', ()=>{
+    const [f, t] = PRESETS[Number(b.dataset.preset)][1]();
+    fromEl.value = f; toEl.value = t;
+    overlay.querySelectorAll('[data-preset]').forEach(x=> x.classList.toggle('active', x === b));
+    run();
+  }));
+  overlay.querySelector('#rtGo').addEventListener('click', ()=>{ overlay.querySelectorAll('[data-preset]').forEach(x=> x.classList.remove('active')); run(); });
+  fromEl.value = state.from; toEl.value = state.to;
+  overlay.querySelector('[data-preset="2"]').classList.add('active');
+  run();
 }
 
 async function openStaffModal(){
@@ -17446,11 +18485,13 @@ async function loadPublic(slug){
         <div class="modal-actions">
           <button class="btn-cancel" id="aboutCloseBtn">${lang==='en' ? 'Close' : 'إغلاق'}</button>
           <button class="btn-confirm" id="aboutSignupBtn" type="button">${lang==='en' ? 'Create your account now' : 'أنشئ حسابك الآن'}</button>
+          <button class="btn-cancel" id="aboutVideoBtn" type="button">▶ ${lang==='en' ? 'Watch the walkthrough' : 'شاهد الشرح'}</button>
           <a class="btn-confirm" style="display:flex; align-items:center; justify-content:center; text-decoration:none;" href="${waLink}" target="_blank" rel="noopener">${lang==='en' ? 'Ask us on WhatsApp' : 'اسألنا عبر واتساب'}</a>
         </div>
       </div>`;
     document.body.appendChild(overlay);
     overlay.querySelector('#aboutCloseBtn').addEventListener('click', ()=> overlay.remove());
+    overlay.querySelector('#aboutVideoBtn').addEventListener('click', ()=> openGuideVideo(lang==='en'));
     overlay.querySelector('#aboutSignupBtn').addEventListener('click', ()=>{
       location.href = `${location.origin}${location.pathname}?signup=1`;
     });
@@ -19726,6 +20767,16 @@ document.querySelectorAll('.dash-menu-group').forEach(group=>{
     const willOpen = !group.classList.contains('open');
     document.querySelectorAll('.dash-menu-group.open').forEach(g=>{ if(g!==group) g.classList.remove('open'); });
     group.classList.toggle('open', willOpen);
+    if(willOpen){
+      // لو القائمة طالعة برّه حدود الشاشة (زي قائمة الإعدادات في أقصى الشمال) نقلب اتجاه فتحها
+      const dd = group.querySelector('.dash-menu-dropdown');
+      if(dd){
+        dd.style.left = dd.style.right = '';
+        const r = dd.getBoundingClientRect(), vw = document.documentElement.clientWidth;
+        if(r.left < 8){ dd.style.right = 'auto'; dd.style.left = '0'; }
+        else if(r.right > vw - 8){ dd.style.left = 'auto'; dd.style.right = '0'; }
+      }
+    }
   });
   group.querySelectorAll('.dash-menu-dropdown button').forEach(btn=>{
     btn.addEventListener('click', ()=> group.classList.remove('open'));
@@ -19774,6 +20825,8 @@ boot();
       );
     }catch(e){ console.error('track_ad_event failed:', e); }
   }
+
+  window.__trackAdEvent = trackAdEvent;
 
   function initSideAds(){
     var closeBtns = document.querySelectorAll('[data-side-ad-close]');
@@ -19921,6 +20974,98 @@ boot();
   } else {
     initRailAd();
   }
+})();
+
+// === زر إظهار/إخفاء كلمة المرور في شاشة الدخول ===
+// يعمل فقط لكلمة مرور كتبها المستخدم بنفسه الآن؛ لا يكشف أي كلمة مرور معبّأة تلقائيًا من المتصفح أو متروكة من جلسة سابقة
+document.addEventListener('DOMContentLoaded', function(){
+  var inp = document.getElementById('authPassword');
+  if(!inp || inp.parentElement.classList.contains('pw-wrap')) return;
+  var w = document.createElement('div');
+  w.className = 'pw-wrap'; w.style.cssText = 'position:relative;';
+  inp.parentElement.insertBefore(w, inp); w.appendChild(inp);
+  inp.style.paddingLeft = '42px';
+  var b = document.createElement('button');
+  b.type = 'button'; b.textContent = '👁'; b.setAttribute('aria-label', 'إظهار كلمة المرور');
+  b.style.cssText = 'position:absolute; left:6px; top:50%; transform:translateY(-50%); border:0; background:transparent; color:#b9b3a3; font-size:17px; cursor:pointer; padding:6px; width:auto; line-height:1;';
+  w.appendChild(b);
+  var typed = false, hideT = null;
+  function isAutofilled(){
+    var r = false;
+    try{ r = inp.matches(':-webkit-autofill'); }catch(e){}
+    if(!r){ try{ r = inp.matches(':autofill'); }catch(e){} }
+    return r;
+  }
+  function hidePw(){ clearTimeout(hideT); inp.type = 'password'; b.textContent = '👁'; }
+  function refresh(){
+    var ok = typed && inp.value !== '' && !isAutofilled();
+    b.style.opacity = ok ? '1' : '.35';
+    b.title = ok ? 'إظهار/إخفاء كلمة المرور' : 'متاح فقط أثناء كتابة كلمة المرور يدويًا';
+    if(!ok) hidePw();
+    return ok;
+  }
+  // علامة "كتبها المستخدم": تتفعّل بلوحة المفاتيح أو اللصق، وتُلغى بمجرد تفريغ الخانة (فاختيار المتصفح لكلمة محفوظة لا يمر بها)
+  inp.addEventListener('keydown', function(e){ if(e.isTrusted && e.key && e.key.length === 1 || e.key === 'Backspace' || e.key === 'Delete') typed = true; });
+  inp.addEventListener('paste', function(){ typed = true; });
+  inp.addEventListener('input', function(){ if(inp.value === '') typed = false; refresh(); });
+  b.addEventListener('click', function(){
+    if(!refresh()) return;
+    if(inp.type === 'password'){
+      inp.type = 'text'; b.textContent = '🙈';
+      clearTimeout(hideT); hideT = setTimeout(hidePw, 6000); // يعود للإخفاء تلقائيًا بعد 6 ثوانٍ
+    } else hidePw();
+  });
+  inp.addEventListener('blur', hidePw);
+  refresh();
+  window.pwEyeReset = function(){ typed = false; refresh(); };
+});
+
+// === إعلان مصغّر في شاشة الدخول: شاشات كبيرة فقط، يظهر بعد لحظات، قابل للإغلاق، ويختفي تلقائيًا ===
+(function(){
+  var SHOW_DELAY = 2500, VISIBLE_MS = 14000, KEY = 'magLoginAdClosed';
+  var wideMQ = window.matchMedia('(min-width:1280px) and (min-height:640px)');
+  var tShow = null, tHide = null, adsOn = null, tracked = false;
+  function el(){ return document.getElementById('loginAd'); }
+  function closed(){ try{ return sessionStorage.getItem(KEY) === '1'; }catch(e){ return false; } }
+  function clear(){ clearTimeout(tShow); clearTimeout(tHide); tShow = tHide = null; }
+  function hide(permanent){
+    clear();
+    var a = el(); if(!a) return;
+    a.classList.remove('la-show');
+    if(permanent){ a.classList.add('la-gone'); try{ sessionStorage.setItem(KEY,'1'); }catch(e){} }
+  }
+  function loadFlag(){
+    if(adsOn !== null || typeof sb === 'undefined') return Promise.resolve();
+    return Promise.resolve(sb.from('app_settings').select('ads_enabled').eq('id', true).maybeSingle())
+      .then(function(r){ adsOn = !r.data || r.data.ads_enabled !== false; })
+      .catch(function(){ adsOn = true; });
+  }
+  function start(){
+    var a = el();
+    if(!a || closed() || !wideMQ.matches) return;
+    clear();
+    loadFlag().then(function(){
+      if(adsOn === false) return;
+      tShow = setTimeout(function(){
+        var a2 = el(); if(!a2 || a2.classList.contains('la-gone')) return;
+        a2.style.setProperty('--la-dur', VISIBLE_MS + 'ms');
+        a2.classList.add('la-show');
+        if(!tracked && typeof window.__trackAdEvent === 'function'){ tracked = true; window.__trackAdEvent('pos-login','impression'); }
+        tHide = setTimeout(function(){ hide(false); }, VISIBLE_MS);
+      }, SHOW_DELAY);
+    });
+  }
+  window.loginAdSync = function(onAuth){ if(onAuth){ if(window.pwEyeReset) window.pwEyeReset(); start(); } else hide(false); };
+  document.addEventListener('DOMContentLoaded', function(){
+    var a = el(); if(!a) return;
+    var c = document.getElementById('loginAdClose');
+    if(c) c.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); hide(true); });
+    // إيقاف العدّ التنازلي أثناء المرور بالماوس حتى لا يختفي والزائر يقرأ
+    a.addEventListener('mouseenter', function(){ clearTimeout(tHide); var b=a.querySelector('.la-bar'); if(b) b.style.animationPlayState='paused'; });
+    a.addEventListener('mouseleave', function(){ var b=a.querySelector('.la-bar'); if(b) b.style.animationPlayState='running'; clearTimeout(tHide); tHide = setTimeout(function(){ hide(false); }, 4000); });
+    var auth = document.getElementById('authScreen');
+    if(auth && !auth.classList.contains('hidden')) start();
+  });
 })();
 </script>
 </body>

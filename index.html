@@ -2500,6 +2500,7 @@ html.dash-en .as-video, html.dash-en .dash-menu-dropdown .link-btn, html.dash-en
   content:''; position:absolute; inset:-8px; }
 .promo-close::after, .dark-quickview-close::after, .offers-close::after, .trial-close-btn::after, .renew-close-btn::after, .fav-btn::after{ inset:-6px; }
 </style>
+<script>/*en-locale*/(function(){var P=function(proto,name){var o=proto[name];proto[name]=function(l){var a=arguments;if(typeof l==='string'&&/^ar(-EG)?$/.test(l)&&document.documentElement&&document.documentElement.dir==='ltr'){a=Array.prototype.slice.call(a);a[0]='en-GB';}return o.apply(this,a);};};P(Date.prototype,'toLocaleString');P(Date.prototype,'toLocaleDateString');P(Date.prototype,'toLocaleTimeString');P(Number.prototype,'toLocaleString');})();</script>
 </head>
 <body>
 
@@ -7194,7 +7195,7 @@ async function openOrdersOverlay(){
   // صيغة وقت موحّدة بأرقام لاتينية: 10/11/2026 04:45 م
   function fmtOrderTime(d){
     const dd = String(d.getDate()).padStart(2,'0'), mm = String(d.getMonth()+1).padStart(2,'0');
-    let h = d.getHours(); const ap = h >= 12 ? 'م' : 'ص'; h = h % 12 || 12;
+    let h = d.getHours(); const _en = document.documentElement.dir==='ltr'; const ap = h >= 12 ? (_en ? 'PM' : 'م') : (_en ? 'AM' : 'ص'); h = h % 12 || 12;
     return `${dd}/${mm}/${d.getFullYear()} ${String(h).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')} ${ap}`;
   }
   // شارة وقت الانتظار للطلبات الجارية: أخضر حتى 10 دقائق، أصفر حتى 20، أحمر بعدها
@@ -11263,7 +11264,7 @@ document.getElementById('reportsBtn').addEventListener('click', async ()=>{
     });
     byHour.forEach((c,h)=>{ if(c > peakHour.count) peakHour = { hour:h, count:c }; });
     Object.entries(dayTotals).forEach(([day,c])=>{ if(c > peakDay.count) peakDay = { day, count:c }; });
-    const DOW_LABELS = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+    const DOW_LABELS = document.documentElement.dir==='ltr' ? ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'] : ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
     let peakDowIdx = 0; byDow.forEach((c,i)=>{ if(c > byDow[peakDowIdx]) peakDowIdx = i; });
     const peakDayLabel = peakDay.day ? new Date(peakDay.day + 'T12:00:00').toLocaleDateString('ar-EG', { day:'numeric', month:'long', year:'numeric' }) : '—';
     peakSummaryWrap.innerHTML = `
@@ -18585,6 +18586,12 @@ async function loadPublic(slug){
     } else {
       infoBtn.classList.add('hidden');
     }
+    (function(){ const L=[['pubFontSizeBtn','Large text','تكبير الخط'],['pubInstallBtn','Add to home screen','احفظ على شاشتك الرئيسية'],['pubAboutBtn','About m@g Menu','عن منيو m@g']];
+      var dm=document.getElementById('pubDarkModeBtn'); if(dm) dm.title = lang==='en' ? 'Dark mode' : 'الوضع الداكن';
+      var mb=document.getElementById('pubMoreBtn'); if(mb) mb.title = lang==='en' ? 'More' : 'المزيد';
+      document.querySelectorAll('[data-side-ad-close]').forEach(function(e){ e.setAttribute('aria-label', lang==='en' ? 'Close ad' : 'إغلاق الإعلان'); });
+      var pf=document.getElementById('pubFooter'); if(pf && lang==='en' && pf.textContent.indexOf('منيو m@g')>-1) pf.innerHTML = pf.innerHTML.replace('منيو m@g','m@g Menu').replace('نسخة تجريبية (Demo) — لم يتم تفعيل الاشتراك بعد','Demo version: subscription not activated yet');
+      L.forEach(function(x){ const el=document.querySelector('#'+x[0]+' .pub-more-item-label'); if(el) el.textContent = lang==='en' ? x[1] : x[2]; }); })();
     const aboutBtn = document.getElementById('pubAboutBtn');
     aboutBtn.onclick = ()=>{ closeMoreMenu(); showAboutModal(); };
     const installBtn = document.getElementById('pubInstallBtn');
@@ -18608,9 +18615,9 @@ async function loadPublic(slug){
     overlay.innerHTML = `
       <div class="modal info-modal">
         <div style="text-align:center; margin-bottom:14px;">
-          <img src="favicon.png" alt="منيو m@g" style="width:68px; height:68px; border-radius:18px; object-fit:cover; box-shadow:0 8px 20px rgba(0,0,0,.3);">
+          <img src="favicon.png" alt="${lang==='en' ? 'm@g Menu' : 'منيو m@g'}" style="width:68px; height:68px; border-radius:18px; object-fit:cover; box-shadow:0 8px 20px rgba(0,0,0,.3);">
         </div>
-        <h3 style="text-align:center;">✨ منيو m@g</h3>
+        <h3 style="text-align:center;">✨ ${lang==='en' ? 'm@g Menu' : 'منيو m@g'}</h3>
         <p style="margin:0 0 16px; color:var(--stone); font-size:14px; line-height:1.7; text-align:center;">
           ${lang==='en'
             ? `This menu was created using m@g Menu — a platform that enables any restaurant or store to build its own online menu and receive orders directly.`
@@ -18838,7 +18845,7 @@ async function loadPublic(slug){
       return;
     }
     const weightPresets = [250,500,750,1000,1500,2000];
-    function weightLabel(g){ return g >= 1000 ? `${(g/1000).toString().replace('.0','')} كجم` : `${g} جم`; }
+    function weightLabel(g){ return g >= 1000 ? `${(g/1000).toString().replace('.0','')} ${lang==='en' ? 'kg' : 'كجم'}` : `${g} ${lang==='en' ? 'g' : 'جم'}`; }
     function itemCartLinesHtml(itemId){
       return Object.entries(cart).filter(([k,v])=>v.item.id===itemId).map(([k,v])=>`
         <div class="qty-stepper" data-cart-key="${k}" style="justify-content:space-between; width:100%;">
@@ -21539,6 +21546,30 @@ DASH_EN_RX.unshift(
 );
 
 var _dashPhraseKeys = null, _dashPhraseN = 0;
+
+Object.assign(DASH_EN, {
+"إيقاف":"Deactivate","صورة الصنف":"Item image","مثال: بيتزا مارجريتا":"e.g. Margherita pizza",
+"مكونات الصنف أو ملاحظات إضافية":"Item ingredients or extra notes","إنشاء صورة تسويقية للصنف":"Create a promo image for this item",
+"منيو m@g":"m@g Menu","البريد":"Email","اضغط للنسخ":"click to copy","لا توجد":"There are no","البداية":"Start",
+"صورة مشاركة القائمة":"Menu share image","شارك قائمة":"Share the menu of","QR Code لقائمة":"QR code for the menu of",
+"علامة":"Badge","مصر": "Egypt", "السعودية": "Saudi Arabia", "الإمارات": "United Arab Emirates", "قطر": "Qatar", "الكويت": "Kuwait", "البحرين": "Bahrain", "عُمان": "Oman", "الأردن": "Jordan", "لبنان": "Lebanon", "سوريا": "Syria", "العراق": "Iraq", "فلسطين": "Palestine", "اليمن": "Yemen", "ليبيا": "Libya", "تونس": "Tunisia", "الجزائر": "Algeria", "المغرب": "Morocco", "السودان": "Sudan", "موريتانيا": "Mauritania", "الصومال": "Somalia", "جيبوتي": "Djibouti", "جزر القمر": "Comoros", "تركيا": "Turkey", "بريطانيا": "United Kingdom", "ألمانيا": "Germany", "فرنسا": "France", "إيطاليا": "Italy", "أمريكا": "United States", "كندا": "Canada", "أستراليا": "Australia", "ماليزيا": "Malaysia", "إندونيسيا": "Indonesia", "باكستان": "Pakistan", "الهند": "India","العام (رابط واحد لكل فروعك)":"Public (one link for all your branches)","إجمالًا":"total","أبيض":"White","يمين":"Right","يسار":"Left","تجوال":"Tajawal","القاهرة":"Cairo","المراعي":"Almarai","أميري":"Amiri","شانجا":"Changa","فئة":"Category","عربي":"Arabic","ونسبة":"and","إن وُجد":"if any","كجم":"kg","جم":"g",
+"رابط واحد ثابت لحسابك، الزبون يفتحه ويختار فرعه بنفسه. يمكنك تغيير الجزء الأخير منه إلى أي نص تفضّله":"One fixed link for your account. The customer opens it and picks their branch. You can change the last part of it to any text you prefer",
+"صورة جاهزة بمقاس ستوري إنستجرام/فيسبوك، نزّلها أو ابعتها على طول من هنا":"A ready image sized for Instagram/Facebook stories. Download it or send it right from here",
+"عند التفعيل يظهر زر «احجز طاولة» في المنيو العام. الموعد بتوقيت القاهرة، ويجب أن يكون بعد 30 دقيقة من الآن على الأقل، ويظل «بانتظار التأكيد» حتى تؤكده أنت":"When enabled, a \"Book a table\" button appears in the public menu. Times are in Cairo time and must be at least 30 minutes from now. A booking stays \"Awaiting confirmation\" until you confirm it",
+"هل ترغب في تحليل أعمق (اتجاه المبيعات، أكثر الأصناف مبيعًا، أوقات الذروة، العملاء، المناطق، وتصدير تقرير)؟ جرّب \"التقارير\" من شريط الأدوات":"Want a deeper analysis (sales trend, best-selling items, peak hours, customers, areas and report export)? Try \"Reports\" from the toolbar",
+"اسم المستخدم (Username) الخاص بصفحة الفيسبوك، دون كتابة الرابط كاملاً. مثال: إذا كان رابط صفحتك facebook.com/mypage فأدخل mypage فقط":"The username of your Facebook page, without the full link. Example: if your page link is facebook.com/mypage, enter just mypage",
+"يُحسب وقت الجاهزية المتوقع تلقائيًا لكل طلب جديد بناءً على هذا الرقم، ويمكنك تعديله لكل طلب على حدة من شاشة الطلبات":"The expected ready time is calculated automatically for each new order from this number. You can adjust it per order from the orders screen",
+"عندما تصل قيمة الأصناف في السلة إلى هذا المبلغ، تصبح رسوم التوصيل صفرًا، ويظهر للعميل في السلة شريط يخبره بالمبلغ المتبقي للحصول على التوصيل المجاني":"When the items in the cart reach this amount, delivery becomes free, and the customer sees a bar in the cart showing how much is left for free delivery",
+"عند تفعيلها، سيتمكن العميل من اختيار الدفع أونلاين وقت تأكيد الطلب، وسيرى بيانات الدفع التي تكتبها هنا (محفظة إلكترونية واحدة أو أكثر و/أو حساب إنستاباي)":"When enabled, the customer can choose to pay online when confirming the order, and will see the payment details you enter here (one or more e-wallets and/or an InstaPay account)",
+"يحتوي ملف النسخة الاحتياطية على بيانات حقيقية لعملائك (الأسماء وأرقام الهواتف وعناوين الطلبات)، وهو بذلك ملف حساس — احتفظ به في مكان آمن، ولا تشاركه مع أي جهة غير موثوقة":"The backup file contains real data about your customers (names, phone numbers and order addresses), so it is sensitive. Keep it somewhere safe and do not share it with anyone you do not trust"
+});
+DASH_EN_RX.unshift(
+ [/^من (\d+:\d+) لـ (\d+:\d+) (.*)$/, (m,a,b,c)=>'From '+a+' to '+b+' '+c.replace('طلب','orders')],
+ [/^عملاء أدخلوا رقم هاتفهم.*?\(آخر (\d+) أيام\)[\s\S]*$/, (m,d)=>'Customers who entered their phone number and added items to the cart, then left without completing the order (last '+d+' days). Tap to send a WhatsApp reminder: the message opens pre-filled and you press send yourself'],
+ [/^نسخة كاملة من بيانات .+? \(الإعدادات[\s\S]*$/, ()=>'A full copy of your data (settings, categories, items, delivery zones, orders and customers) in one file you can keep. A backup is also downloaded automatically once a day when you first open the dashboard'],
+ [/^تحذير: ستستبدل عملية الاستعادة جميع بيانات .+? الحالية[\s\S]*$/, ()=>'Warning: restoring will replace all of your current data with the data in the file. You cannot go back to the current state afterwards unless you have another backup']
+);
+
 function dashTrPhrases(core){
   const n = Object.keys(DASH_EN).length;
   if(!_dashPhraseKeys || _dashPhraseN !== n){ _dashPhraseN = n; _dashPhraseKeys = Object.keys(DASH_EN).filter(k=> k.length >= 3).sort((a, b)=> b.length - a.length); }
@@ -21569,6 +21600,7 @@ function dashTrString(str){
   const core = body.slice(0, body.length - tail.length);
   if(!core) return null;
   let en = DASH_EN[core];
+  if(en === undefined && /\s{2,}/.test(core)) en = DASH_EN[core.replace(/\s+/g,' ')];
   if(en === undefined){
     for(const [rx, fn] of DASH_EN_RX){ const m = core.match(rx); if(m){ en = fn(...m); break; } }
   }
@@ -21594,8 +21626,8 @@ function dashTrOne(node){
     if(en !== null && en !== orig){ _dashTr.map.set(node, { orig, applied:en }); node.nodeValue = en; }
     else if(rec) _dashTr.map.delete(node);
   } else if(node.nodeType === 1){
-    if(dashTrSkip(node)) return;
-    ['placeholder','title','aria-label'].forEach(a=>{
+    if(dashTrSkip(node) && node.tagName !== 'TEXTAREA') return;
+    ['placeholder','title','aria-label','alt'].forEach(a=>{
       const v = node.getAttribute(a); if(!v) return;
       if(node.hasAttribute('data-ar-' + a) && node.getAttribute('data-en-' + a) === v) return;
       const en = dashTrString(v);
